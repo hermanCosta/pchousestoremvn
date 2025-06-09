@@ -25,12 +25,14 @@ import com.pchouse.pchousestoremvn.models.ProductService;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderFault;
 import com.pchouse.pchousestoremvn.models.ServiceOrderNote;
+import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrderProdServ;
 import com.pchouse.pchousestoremvn.views.modals.CustomerModal;
 import com.pchouse.pchousestoremvn.views.modals.DepositModal;
 import com.pchouse.pchousestoremvn.views.modals.NoteModal;
 import com.pchouse.pchousestoremvn.views.modals.PaymentModal;
 import java.awt.EventQueue;
+import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
@@ -63,8 +65,9 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
     private final DefaultTableModel _dtmFault;
     private final DefaultListModel _defaultListModelProdServ;
     private final DefaultListModel _defaultListModelFault;
+    Frame _parentFrame = JOptionPane.getFrameForComponent(this);
 
-    private ServiceOrder _orderModel;
+    private ServiceOrder _servicerderModel;
     // public OrderPayment _orderPayment = null;
 
     public CreatedOrderView(ServiceOrder orderModel, List<ServiceOrderFault> listOrderFault, List<ServiceOrderProdServ> listOrderProdServ, List<Deposit> listOrderDeposit) {
@@ -95,7 +98,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
         this.list_prod_serv_search.setModel(_defaultListModelProdServ);
         this.list_fault_search.setModel(_defaultListModelFault);
 
-        this._orderModel = orderModel;
+        this._servicerderModel = orderModel;
         loadOrderFields(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
     }
 
@@ -241,7 +244,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
                             || !customer.getPerson().getEmail().trim().equals(this.txt_email.getText().trim())) {
 
                         JOptionPane.showMessageDialog(this, CommonConstant.WARN_CUSTOMER_MATCHING, this.getTitle(), JOptionPane.WARNING_MESSAGE);
-                        CustomerModal customerModal = new CustomerModal(null, this, new MainMenuView(CommonSetting.COMPANY), true, customer);
+                        CustomerModal customerModal = new CustomerModal(null, this, null, new MainMenuView(CommonSetting.COMPANY), true, customer);
                         customerModal.setVisible(true);
                         this.hdn_txt_customer_id.setText("");
                         return getOrderDetails;
@@ -255,7 +258,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
                     if (checkCustomer != null) {
                         JOptionPane.showMessageDialog(this, CommonConstant.WARN_EXIST_PERSON, this.getTitle(), JOptionPane.WARNING_MESSAGE);
 
-                        CustomerModal customerModal = new CustomerModal(null, this, new MainMenuView(CommonSetting.COMPANY), true, checkCustomer);
+                        CustomerModal customerModal = new CustomerModal(null, this, null, new MainMenuView(CommonSetting.COMPANY), true, checkCustomer);
                         customerModal.setVisible(true);
 
                         return getOrderDetails;
@@ -1186,11 +1189,21 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
 
                 if (!this.txt_deposit.getText().trim().isEmpty()) {
 
-                    PaymentModal paymentModal = new PaymentModal(updateOrder, this.txt_deposit.getText(), new MainMenuView(CommonSetting.COMPANY), true);
+                    PaymentModal paymentModal = new PaymentModal(updateOrder, null, this.txt_deposit.getText(), _parentFrame, true);
+                    paymentModal.setLocationRelativeTo(this);
                     paymentModal.setVisible(true);
 
+                    // Get the returned object directly from the modal
+                    ServiceOrderPayment selectedPayment = paymentModal.getOrderPayment();
+
+                    if (selectedPayment != null) {
+                        CommonExtension.orderPayment = selectedPayment;
+                    } else {
+                        System.err.println("No payment returned from modal.");
+                    }
+
                     Deposit deposit = new Deposit(updateOrder, updateOrder.getEmployee(), Double.parseDouble(this.txt_deposit.getText()), updateOrder.getCreated());
-                    deposit.setServiceOrderPayment(CommonExtension.orderPayment);
+                    deposit.setServiceOrderPayment(paymentModal.getOrderPayment());
 
                     long idDepositAdded = this._depositController.addDeposit(deposit);
                     if (idDepositAdded > 0) {
@@ -1306,7 +1319,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
 
     private void btn_seacrh_customerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_seacrh_customerActionPerformed
         this.hdn_txt_customer_id.setText("");
-        CustomerModal customerModal = new CustomerModal(null, this, new MainMenuView(CommonSetting.COMPANY), true, null);
+        CustomerModal customerModal = new CustomerModal(null, this, null, new MainMenuView(CommonSetting.COMPANY), true, null);
         customerModal.setVisible(true);
     }//GEN-LAST:event_btn_seacrh_customerActionPerformed
 
@@ -1401,9 +1414,9 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
                         // Sum price column and set into total textField
                         getPriceSum();
 
-                        _orderModel.setTotal(Double.parseDouble(this.lbl_total_field.getText()));
-                        _orderModel.setDue(Double.parseDouble(this.lbl_due_field.getText()));
-                        _orderController.updateOrder(_orderModel);
+                        _servicerderModel.setTotal(Double.parseDouble(this.lbl_total_field.getText()));
+                        _servicerderModel.setDue(Double.parseDouble(this.lbl_due_field.getText()));
+                        _orderController.updateOrder(_servicerderModel);
                     } else {
                         JOptionPane.showMessageDialog(this, CommonConstant.ERROR_DELETE_ITEM, this.getTitle(), JOptionPane.ERROR_MESSAGE);
                     }
@@ -1501,7 +1514,9 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txt_serial_numberKeyPressed
 
     private void btn_notesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_notesActionPerformed
-        NoteModal noteModal = new NoteModal(_orderModel, new MainMenuView(CommonSetting.COMPANY), true);
+
+        NoteModal noteModal = new NoteModal(_servicerderModel, _parentFrame, true);
+        noteModal.setLocationRelativeTo(this);
         noteModal.setVisible(true);
     }//GEN-LAST:event_btn_notesActionPerformed
 
@@ -1515,7 +1530,8 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btn_not_fixActionPerformed
 
     private void btn_depositActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_depositActionPerformed
-        DepositModal depositModal = new DepositModal(_orderModel, new MainMenuView(CommonSetting.COMPANY), true);
+        DepositModal depositModal = new DepositModal(_servicerderModel, _parentFrame, true);
+        depositModal.setLocationRelativeTo(this);
         depositModal.setVisible(true);
     }//GEN-LAST:event_btn_depositActionPerformed
 

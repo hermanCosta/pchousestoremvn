@@ -9,6 +9,7 @@ import com.pchouse.pchousestoremvn.models.Customer;
 import com.pchouse.pchousestoremvn.models.Person;
 import com.pchouse.pchousestoremvn.views.CreatedOrderView;
 import com.pchouse.pchousestoremvn.views.NewOrderView;
+import com.pchouse.pchousestoremvn.views.NewSaleView;
 import java.awt.Color;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
@@ -16,6 +17,7 @@ import java.util.List;
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
+import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
@@ -30,11 +32,13 @@ public class CustomerModal extends javax.swing.JDialog {
     private NewOrderView _newOrderView;
     private CreatedOrderView _createdOrderView;
     public final OrderController _orderController;
+    public final NewSaleView _newSaleView;
     private final DefaultTableModel _dtmCustomer;
     private final CustomerController _customerController;
     private List<Customer> _listCustomer;
 
-    public CustomerModal(NewOrderView newOrderView, CreatedOrderView createdOrderView, java.awt.Frame parent, boolean modal, Customer customer) {
+    public CustomerModal(NewOrderView newOrderView, CreatedOrderView createdOrderView, NewSaleView newSaleView, java.awt.Frame parent, boolean modal, Customer customer) {
+    //public CustomerModal(JInternalFrame newOrderView, CreatedOrderView createdOrderView, java.awt.Frame parent, boolean modal, Customer customer) {
         super(parent, modal);
         initComponents();
 
@@ -42,6 +46,7 @@ public class CustomerModal extends javax.swing.JDialog {
 
         this._newOrderView = newOrderView;
         this._createdOrderView = createdOrderView;
+        this._newSaleView = newSaleView;
         this.txt_contact.setFocusLostBehavior(JFormattedTextField.PERSIST);
 
         this._orderController = new OrderController();
@@ -646,9 +651,12 @@ public class CustomerModal extends javax.swing.JDialog {
             
             if (_newOrderView != null) {
                 _newOrderView.setCustomerFields(useCustomer);
-            } else {
+            } else if(_createdOrderView != null){
                 _createdOrderView.setCustomerFields(useCustomer);
+            } else if(_newSaleView != null){
+                _newSaleView.setCustomerFields(_customer);
             }
+            
             this.dispose();
         }
     }//GEN-LAST:event_btn_selectActionPerformed

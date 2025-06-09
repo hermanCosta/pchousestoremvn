@@ -1,9 +1,11 @@
 package com.pchouse.pchousestoremvn.dao;
 
+import com.pchouse.pchousestoremvn.models.ProductService;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderProdServ;
 import com.pchouse.pchousestoremvn.util.JPAUtil;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 
 import java.util.List;
 
@@ -14,6 +16,16 @@ public class OrderProdServDAO {
         long idOrderProdServAdded = 0;
         try {
             em.getTransaction().begin();
+
+            // Ensure ServiceOrder and ProductService are managed
+            ServiceOrder managedOrder = em.find(ServiceOrder.class, pOrderProdServ.getServiceOrder().getIdServiceOrder());
+            ProductService managedProdServ = em.find(ProductService.class, pOrderProdServ.getProdServ().getIdProductService());
+
+            // Assign managed references
+            pOrderProdServ.setServiceOrder(managedOrder);
+            pOrderProdServ.setProdServ(managedProdServ);
+
+            // Persist the new ServiceOrderProdServ record
             em.persist(pOrderProdServ);
             em.getTransaction().commit();
             idOrderProdServAdded = pOrderProdServ.getIdServiceOrderProdServ();
@@ -31,16 +43,13 @@ public class OrderProdServDAO {
         EntityManager em = JPAUtil.getEntityManager();
         List<ServiceOrderProdServ> listOrderProdServ = null;
         try {
-            em.getTransaction().begin();
-            listOrderProdServ = em.createQuery(
-                    "SELECT o FROM ServiceOrderProdServ o WHERE o.order = :pOrder", ServiceOrderProdServ.class)
-                    .setParameter("pOrder", pOrder)
-                    .getResultList();
-            em.getTransaction().commit();
+            TypedQuery<ServiceOrderProdServ> query = em.createQuery(
+                    "FROM ServiceOrderProdServ o WHERE o.serviceOrder = :pOrder", ServiceOrderProdServ.class);
+            query.setParameter("pOrder", pOrder);
+            listOrderProdServ = query.getResultList();
         } catch (Exception e) {
             System.err.println("Error retrieving OrderProdServ: " + e.getMessage());
             e.printStackTrace();
-            em.getTransaction().rollback();
         } finally {
             em.close();
         }

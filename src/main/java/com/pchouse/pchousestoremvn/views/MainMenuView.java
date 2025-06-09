@@ -87,6 +87,8 @@ public class MainMenuView extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Main Menu");
         setName("Main Menu"); // NOI18N
+        setPreferredSize(new java.awt.Dimension(1280, 720));
+        setSize(new java.awt.Dimension(1280, 720));
 
         desktop_pane_menu.setMaximumSize(new java.awt.Dimension(2147483647, 0));
         desktop_pane_menu.setPreferredSize(new java.awt.Dimension(1050, 649));

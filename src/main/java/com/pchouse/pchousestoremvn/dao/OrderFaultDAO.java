@@ -1,5 +1,6 @@
 package com.pchouse.pchousestoremvn.dao;
 
+import com.pchouse.pchousestoremvn.models.Fault;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderFault;
 import com.pchouse.pchousestoremvn.util.JPAUtil;
@@ -10,23 +11,32 @@ import java.util.List;
 
 public class OrderFaultDAO {
 
-    public long addOrderFaultDAO(ServiceOrderFault pOrderFault) {
-        EntityManager em = JPAUtil.getEntityManager();
-        long idOrderFaultAdded = 0;
-        try {
-            em.getTransaction().begin();
-            em.persist(pOrderFault);
-            em.getTransaction().commit();
-            idOrderFaultAdded = pOrderFault.getIdServiceOrderFault();
-        } catch (Exception e) {
-            System.err.println("Error adding order fault: " + e.getMessage());
-            e.printStackTrace();
-            em.getTransaction().rollback();
-        } finally {
-            em.close();
-        }
-        return idOrderFaultAdded;
+public long addOrderFaultDAO(ServiceOrderFault pOrderFault) {
+    EntityManager em = JPAUtil.getEntityManager();
+    long idOrderFaultAdded = 0;
+    try {
+        em.getTransaction().begin();
+
+        // Ensure ServiceOrder and Fault are managed
+        Fault managedFault = em.find(Fault.class, pOrderFault.getFault().getIdFault());
+        ServiceOrder managedOrder = em.find(ServiceOrder.class, pOrderFault.getServiceOrder().getIdServiceOrder());
+
+        pOrderFault.setFault(managedFault);
+        pOrderFault.setServiceOrder(managedOrder);
+
+        // Now persist the ServiceOrderFault
+        em.persist(pOrderFault);
+        em.getTransaction().commit();
+        idOrderFaultAdded = pOrderFault.getIdServiceOrderFault();
+    } catch (Exception e) {
+        System.err.println("Error adding order fault: " + e.getMessage());
+        e.printStackTrace();
+        em.getTransaction().rollback();
+    } finally {
+        em.close();
     }
+    return idOrderFaultAdded;
+}
 
     public List<ServiceOrderFault> getOrderFaultDAO(ServiceOrder pOrder) {
         EntityManager em = JPAUtil.getEntityManager();

@@ -1,5 +1,6 @@
 package com.pchouse.pchousestoremvn.dao;
 
+import com.pchouse.pchousestoremvn.models.Employee;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderNote;
 import com.pchouse.pchousestoremvn.util.JPAUtil;
@@ -15,6 +16,16 @@ public class OrderNoteDAO {
         long idOrderNoteAdded = 0;
         try {
             em.getTransaction().begin();
+
+            // Ensure ServiceOrde is managed
+            ServiceOrder managedOrder = em.find(ServiceOrder.class, pOrderNote.getServiceOrder().getIdServiceOrder());
+            Employee manageEmployee = em.find(Employee.class, pOrderNote.getEmployee().getIdEmployee());
+
+            // Assign managed references
+            pOrderNote.setServiceOrder(managedOrder);
+            pOrderNote.setEmployee(manageEmployee);
+
+            // Persist the new ServiceOrderNote record
             em.persist(pOrderNote);
             em.getTransaction().commit();
             idOrderNoteAdded = pOrderNote.getIdServiceOrderNote();
@@ -33,7 +44,7 @@ public class OrderNoteDAO {
         List<ServiceOrderNote> listOrderNote = null;
         try {
             TypedQuery<ServiceOrderNote> query = em.createQuery(
-                "FROM ServiceOrderNote n WHERE n.serviceOrder = :pOrder ORDER BY n.created ASC", ServiceOrderNote.class);
+                    "FROM ServiceOrderNote n WHERE n.serviceOrder = :pOrder ORDER BY n.created ASC", ServiceOrderNote.class);
             query.setParameter("pOrder", pOrder);
             listOrderNote = query.getResultList();
         } catch (Exception e) {
@@ -50,7 +61,7 @@ public class OrderNoteDAO {
         Long idOrderNote = null;
         try {
             TypedQuery<Long> query = em.createQuery(
-                "SELECT n.idOrderNote FROM ServiceOrderNote n WHERE n.note = :pNote AND n.serviceOrder = :pOrder", Long.class);
+                    "SELECT n.idOrderNote FROM ServiceOrderNote n WHERE n.note = :pNote AND n.serviceOrder = :pOrder", Long.class);
             query.setParameter("pNote", pNote);
             query.setParameter("pOrder", pOrder);
             idOrderNote = query.getSingleResult();
@@ -68,7 +79,7 @@ public class OrderNoteDAO {
         List<ServiceOrderNote> listOrderNote = null;
         try {
             TypedQuery<ServiceOrderNote> query = em.createQuery(
-                "FROM ServiceOrderNote n WHERE n.serviceOrder = :pOrder AND n.note LIKE :pSearch", ServiceOrderNote.class);
+                    "FROM ServiceOrderNote n WHERE n.serviceOrder = :pOrder AND n.note LIKE :pSearch", ServiceOrderNote.class);
             query.setParameter("pOrder", pOrder);
             query.setParameter("pSearch", "%" + pSearch + "%");
             listOrderNote = query.getResultList();

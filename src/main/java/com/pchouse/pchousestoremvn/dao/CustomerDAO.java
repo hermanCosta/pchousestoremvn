@@ -1,5 +1,6 @@
 package com.pchouse.pchousestoremvn.dao;
 
+import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Company;
 import com.pchouse.pchousestoremvn.models.Customer;
 import com.pchouse.pchousestoremvn.models.Person;
@@ -16,7 +17,7 @@ public class CustomerDAO {
         List<Customer> customers = null;
         try {
             TypedQuery<Customer> query = em.createQuery(
-                "SELECT c FROM Customer c WHERE c.company = :company ORDER BY c.person ASC", Customer.class);
+                    "SELECT c FROM Customer c WHERE c.company = :company ORDER BY c.person ASC", Customer.class);
             query.setParameter("company", company);
             customers = query.setMaxResults(14).getResultList();
         } catch (Exception e) {
@@ -27,15 +28,27 @@ public class CustomerDAO {
         return customers;
     }
 
-    public long addCustomerDAO(Customer customer) {
+    public long addCustomerDAO(Customer customer) throws BusinessException {
         EntityManager em = JPAUtil.getEntityManager();
         long idCustomer = 0;
         try {
             em.getTransaction().begin();
-            em.persist(customer);
+
+            Person person = customer.getPerson();
+            
+            if (person.getIdPerson() == 0) {
+                em.persist(person);
+                em.flush();
+            }
+
+            Customer managedCustomer = em.merge(customer);
             em.getTransaction().commit();
-            idCustomer = customer.getIdCustomer();
+            idCustomer = managedCustomer.getIdCustomer();
+        } catch (Exception e) {
+            e.printStackTrace();
             em.getTransaction().rollback();
+            throw new BusinessException("Failed to add customer: " + e.getMessage(), e);
+
         } finally {
             em.close();
         }
@@ -82,7 +95,7 @@ public class CustomerDAO {
         Customer customer = null;
         try {
             TypedQuery<Customer> query = em.createQuery(
-                "SELECT c FROM Customer c WHERE c.person = :person", Customer.class);
+                    "SELECT c FROM Customer c WHERE c.person = :person", Customer.class);
             query.setParameter("person", person);
             customer = query.getSingleResult();
         } catch (Exception e) {
@@ -111,8 +124,8 @@ public class CustomerDAO {
         Customer customer = null;
         try {
             TypedQuery<Customer> query = em.createQuery(
-                "SELECT c FROM Customer c WHERE c.person.id = (SELECT p.id FROM Person p WHERE p.contactNo = :contactNo)", 
-                Customer.class);
+                    "SELECT c FROM Customer c WHERE c.person.id = (SELECT p.id FROM Person p WHERE p.contactNo = :contactNo)",
+                    Customer.class);
             query.setParameter("contactNo", contactNo);
             customer = query.getSingleResult();
         } catch (Exception e) {

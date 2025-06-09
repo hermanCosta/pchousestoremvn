@@ -5,6 +5,7 @@ import com.pchouse.pchousestoremvn.common.CommonExtension;
 import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.controllers.CustomerController;
 import com.pchouse.pchousestoremvn.controllers.PersonController;
+import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Customer;
 import com.pchouse.pchousestoremvn.models.Person;
 import java.awt.Color;
@@ -150,7 +151,7 @@ public class CustomerView extends javax.swing.JInternalFrame {
         this.txt_contact.setText(pCustomer.getPerson().getContactNo());
         this.txt_email.setText(pCustomer.getPerson().getEmail());
     }
-    
+
     private void clearFields() {
         this.hdn_txt_customer_id.setText("");
         this.hdn_txt_person_id.setText("");
@@ -671,7 +672,7 @@ public class CustomerView extends javax.swing.JInternalFrame {
                 if (confirmEditing == 0) {
                     boolean isUpdated = this._customerController.updateCustomer(updateCustomer);
                     if (isUpdated) {
-                        
+
                         getItemCustomer(updateCustomer.getIdCustomer());
                         clearFields();
                     } else {
@@ -688,23 +689,31 @@ public class CustomerView extends javax.swing.JInternalFrame {
         if (addCustomer != null) {
             if (addCustomer.getIdCustomer() == 0) {
 
-                Customer checkCustomer = _customerController.searchCustomerByContactNo(this.txt_contact.getText().replace("(", "").replace(")", "").replace("-", "").replace(" ", ""));
+                try {
+                    Customer checkCustomer = _customerController.searchCustomerByContactNo(this.txt_contact.getText().replace("(", "").replace(")", "").replace("-", "").replace(" ", ""));
 
-                if (checkCustomer != null) {
-                    JOptionPane.showMessageDialog(this, CommonConstant.WARN_EXIST_PERSON, this.getTitle(), JOptionPane.WARNING_MESSAGE);
+                    if (checkCustomer != null) {
+                        JOptionPane.showMessageDialog(this, CommonConstant.WARN_EXIST_PERSON, this.getTitle(), JOptionPane.WARNING_MESSAGE);
 
-                    getItemCustomer(checkCustomer.getIdCustomer());
-                } else {
-
-                    long idCustomerAdded = this._customerController.addCustomer(addCustomer);
-                    if (idCustomerAdded > 0) {
-                        
-                        getItemCustomer(idCustomerAdded);
-                        clearFields();
+                        getItemCustomer(checkCustomer.getIdCustomer());
                     } else {
-                        JOptionPane.showMessageDialog(this, CommonConstant.ERROR_SAVE, this.getTitle(), JOptionPane.ERROR_MESSAGE);
+
+                        long idCustomerAdded = this._customerController.addCustomer(addCustomer);
+                        if (idCustomerAdded > 0) {
+
+                            getItemCustomer(idCustomerAdded);
+                            clearFields();
+                        } else {
+                            JOptionPane.showMessageDialog(this, CommonConstant.ERROR_SAVE, this.getTitle(), JOptionPane.ERROR_MESSAGE);
+                        }
                     }
+
+                } catch (BusinessException e) {
+                    JOptionPane.showMessageDialog(this, e.getMessage(), this.getTitle(), JOptionPane.ERROR_MESSAGE);
+                    e.printStackTrace();
+                    return;
                 }
+
             }
         }
     }//GEN-LAST:event_btn_addActionPerformed

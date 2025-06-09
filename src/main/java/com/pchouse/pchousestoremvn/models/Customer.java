@@ -3,6 +3,7 @@ package com.pchouse.pchousestoremvn.models;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -20,11 +21,11 @@ public class Customer implements Serializable {
     @Column(name = "ID_CUSTOMER")
     private long idCustomer;
 
-    @ManyToOne(cascade = CascadeType.ALL)  // Alterado para ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "ID_PERSON", referencedColumnName = "ID_PERSON")
     private Person person;
 
-    @ManyToOne(cascade = CascadeType.ALL)  // Mantido o relacionamento ManyToOne com Company
+    @ManyToOne
     @JoinColumn(name = "ID_COMPANY", referencedColumnName = "ID_COMPANY")
     private Company company;
 
@@ -62,17 +63,21 @@ public class Customer implements Serializable {
 
     @Override
     public String toString() {
-        return "Customer{" +
-                "idCustomer=" + idCustomer +
-                ", person=" + person +
-                ", company=" + company +
-                '}';
+        return "Customer{"
+                + "idCustomer=" + idCustomer
+                + ", person=" + person
+                + ", company=" + company
+                + '}';
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
         Customer customer = (Customer) obj;
         return idCustomer == customer.idCustomer;
     }

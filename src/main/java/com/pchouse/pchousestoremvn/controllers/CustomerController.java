@@ -1,6 +1,7 @@
 package com.pchouse.pchousestoremvn.controllers;
 
 import com.pchouse.pchousestoremvn.dao.CustomerDAO;
+import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Company;
 import com.pchouse.pchousestoremvn.models.Customer;
 import com.pchouse.pchousestoremvn.models.Person;
@@ -14,7 +15,7 @@ public class CustomerController {
         return customerDAO.getAllCustomerDAO(company);
     }
 
-    public long addCustomer(Customer customer) {
+    public long addCustomer(Customer customer) throws BusinessException {
         return customerDAO.addCustomerDAO(customer);
     }
 

@@ -7,11 +7,16 @@ import com.pchouse.pchousestoremvn.controllers.OrderController;
 import com.pchouse.pchousestoremvn.controllers.OrderFaultController;
 import com.pchouse.pchousestoremvn.controllers.OrderNoteController;
 import com.pchouse.pchousestoremvn.controllers.OrderProdServController;
+import com.pchouse.pchousestoremvn.enums.OrderStatus;
 import com.pchouse.pchousestoremvn.models.Deposit;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderFault;
 import com.pchouse.pchousestoremvn.models.ServiceOrderProdServ;
+import java.beans.PropertyVetoException;
 import java.util.List;
+import javax.swing.JDesktopPane;
+import javax.swing.JInternalFrame;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 public class OrderListView extends javax.swing.JInternalFrame {
@@ -210,21 +215,47 @@ public class OrderListView extends javax.swing.JInternalFrame {
     private void table_view_order_listMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table_view_order_listMouseClicked
         if (evt.getClickCount() == 2) {
             int selectedRow = table_view_order_list.getSelectedRow();
+            if (selectedRow < 0) {
+                return;
+            }
 
-            ServiceOrder orderModel = _orderController.getItemOrder((long) _dtmOrder.getValueAt(selectedRow, 0));
+            Long orderId = (Long) _dtmOrder.getValueAt(selectedRow, 0);
+
+            ServiceOrder orderModel = _orderController.getItemOrder(orderId);
             List<ServiceOrderFault> listOrderFault = _orderFaultController.getOrderFaults(orderModel);
             List<ServiceOrderProdServ> listOrderProdServ = _orderProdServController.getOrderProdServ(orderModel);
             List<Deposit> listOrderDeposit = _orderDeposit.getOrderDeposit(orderModel);
-            
-            //CommonSetting.MAIN_MENU_DESKTOP_PANE.removeAll();
-            switch (orderModel.getStatus()) {
-                case IN_PROGRESS:
-                    CreatedOrderView createdOrderView = new CreatedOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
-                    
-                    CommonSetting.MAIN_MENU_DESKTOP_PANE.removeAll();
-                    CommonSetting.MAIN_MENU_DESKTOP_PANE.add(createdOrderView).setVisible(true);
-                    CommonSetting.setMaxInternalFrame(createdOrderView);
-                break;
+
+            JDesktopPane desktop = CommonSetting.MAIN_MENU_DESKTOP_PANE;
+
+            for (JInternalFrame frame : desktop.getAllFrames()) {
+                try {
+                    frame.dispose();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (orderModel.getStatus() == OrderStatus.IN_PROGRESS) {
+                CreatedOrderView createdOrderView = new CreatedOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
+                createdOrderView.setTitle("Order: " + orderId);
+                createdOrderView.setClosable(true);
+                createdOrderView.setIconifiable(true);
+                createdOrderView.setMaximizable(true);
+                createdOrderView.setResizable(true);
+
+                desktop.add(createdOrderView);
+                createdOrderView.setVisible(true);
+
+                SwingUtilities.invokeLater(() -> {
+                    try {
+                        createdOrderView.setSelected(true);
+                        createdOrderView.setMaximum(true);
+                    } catch (PropertyVetoException e) {
+                        e.printStackTrace();
+                    }
+                });
+
             }
         }
     }//GEN-LAST:event_table_view_order_listMouseClicked

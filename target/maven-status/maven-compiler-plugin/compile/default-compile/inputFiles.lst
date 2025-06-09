@@ -1,4 +1,4 @@
-/Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/Pchousestoremvn.java
+/Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/MainApp.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/common/Autocomplete.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/common/CommonConstant.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/common/CommonExtension.java
@@ -38,6 +38,7 @@
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/dao/RefurbDAO.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/enums/OrderStatus.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/enums/PayMethod.java
+/Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/exception/BusinessException.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/models/Company.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/models/Customer.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/models/Deposit.java
@@ -61,7 +62,9 @@
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/views/CustomerView.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/views/EmployeeView.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/views/FaultView.java
+/Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/views/LoginView.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/views/MainMenuView.java
+/Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/views/MenuViewTest.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/views/NewOrderView.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/views/OrderListView.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/views/ProductServiceView.java

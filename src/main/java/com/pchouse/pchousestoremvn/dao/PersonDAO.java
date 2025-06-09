@@ -3,6 +3,7 @@ package com.pchouse.pchousestoremvn.dao;
 import com.pchouse.pchousestoremvn.models.Person;
 import com.pchouse.pchousestoremvn.util.JPAUtil;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 
 import java.util.List;
@@ -83,11 +84,11 @@ public class PersonDAO {
         List<Person> persons = null;
         try {
             TypedQuery<Person> query = em.createQuery(
-                    "SELECT p FROM Person p WHERE " +
-                            "LOWER(p.firstName) LIKE LOWER(:pSearch) OR " +
-                            "LOWER(p.lastName) LIKE LOWER(:pSearch) OR " +
-                            "p.contactNo LIKE :pSearch OR " +
-                            "LOWER(p.email) LIKE LOWER(:pSearch)",
+                    "SELECT p FROM Person p WHERE "
+                    + "LOWER(p.firstName) LIKE LOWER(:pSearch) OR "
+                    + "LOWER(p.lastName) LIKE LOWER(:pSearch) OR "
+                    + "p.contactNo LIKE :pSearch OR "
+                    + "LOWER(p.email) LIKE LOWER(:pSearch)",
                     Person.class);
             query.setParameter("pSearch", "%" + pSearch + "%");
             persons = query.getResultList();
@@ -116,4 +117,16 @@ public class PersonDAO {
         }
         return person;
     }
+
+    public Person findPersonByEmailDAO(String email) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            return em.createQuery("SELECT p FROM Person p WHERE p.email = :email", Person.class)
+                    .setParameter("email", email)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
 }

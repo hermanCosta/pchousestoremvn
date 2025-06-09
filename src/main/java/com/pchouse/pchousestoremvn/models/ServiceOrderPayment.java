@@ -18,13 +18,13 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
 @Entity
-@Table(name = "SERVICE_ORDER_PAYMENT")  // Alinhar nome da tabela
+@Table(name = "SERVICE_ORDER_PAYMENT")
 public class ServiceOrderPayment implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID_ORDER_PAYMENT")
-    private long idOrderPayment;
+    @Column(name = "ID_SERVICE_ORDER_PAYMENT")
+    private long idServiceOrderPayment;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ID_SERVICE_ORDER", referencedColumnName = "ID_SERVICE_ORDER")
@@ -32,7 +32,7 @@ public class ServiceOrderPayment implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "PAY_METHOD")
-    private PayMethod payMethod;  // Usar Enum para métodos de pagamento
+    private PayMethod payMethod; 
 
     @Column(name = "AMOUNT_DUE")
     private double amountDue;
@@ -40,7 +40,7 @@ public class ServiceOrderPayment implements Serializable {
     @Column(name = "AMOUNT_PAID")
     private double amountPaid;
 
-    @Column(name = "CHANGE_AMOUNT")  // Alinhando o nome da coluna para maior clareza
+    @Column(name = "CHANGE_AMOUNT")
     private double changeAmount;
 
     @Temporal(TemporalType.DATE)
@@ -62,11 +62,11 @@ public class ServiceOrderPayment implements Serializable {
     // Getters and setters
 
     public long getIdOrderPayment() {
-        return idOrderPayment;
+        return idServiceOrderPayment;
     }
 
     public void setIdOrderPayment(long idOrderPayment) {
-        this.idOrderPayment = idOrderPayment;
+        this.idServiceOrderPayment = idOrderPayment;
     }
 
     public ServiceOrder getServiceOrder() {

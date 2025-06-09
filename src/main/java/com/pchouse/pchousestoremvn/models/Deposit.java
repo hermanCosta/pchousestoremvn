@@ -32,7 +32,7 @@ public class Deposit implements Serializable {
     private Employee employee;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "ID_SERVICE_ORDER_PAYMENT", referencedColumnName = "ID_ORDER_PAYMENT", nullable = true)
+    @JoinColumn(name = "ID_SERVICE_ORDER_PAYMENT", referencedColumnName = "ID_SERVICE_ORDER_PAYMENT", nullable = true)
     private ServiceOrderPayment serviceOrderPayment;
 
     @Column(name = "AMOUNT", nullable = false)

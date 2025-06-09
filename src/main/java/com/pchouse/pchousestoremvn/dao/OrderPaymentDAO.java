@@ -1,9 +1,9 @@
 package com.pchouse.pchousestoremvn.dao;
 
+import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
 import com.pchouse.pchousestoremvn.util.JPAUtil;
 import jakarta.persistence.EntityManager;
-
 
 public class OrderPaymentDAO {
 
@@ -12,6 +12,16 @@ public class OrderPaymentDAO {
         long idOrderPaymentAdded = 0;
         try {
             em.getTransaction().begin();
+
+            // Reattach ServiceOrder
+            if (pOrderPayment.getServiceOrder() != null) {
+                ServiceOrder managedOrder = em.find(
+                        ServiceOrder.class,
+                        pOrderPayment.getServiceOrder().getIdServiceOrder()
+                );
+                pOrderPayment.setServiceOrder(managedOrder);
+            }
+
             em.persist(pOrderPayment);
             em.getTransaction().commit();
             idOrderPaymentAdded = pOrderPayment.getIdOrderPayment();

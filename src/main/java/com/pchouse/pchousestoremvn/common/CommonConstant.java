@@ -43,5 +43,5 @@ public class CommonConstant {
     
     public static final String SUCCESS_ORDER_PAYMENT = "Item Paid Successfully";
     public static final String ERROR_ORDER_PAYMENT = "Error, could not be paid";
-    
+    public static final String ERROR_ORDER_DIVERG_PAYMENT = "Error: The payment value is diverging from the amount to pay";
 }

@@ -15,11 +15,7 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 public class NoteModal extends javax.swing.JDialog {
-
-    /* For invoking this JDialog in a JInternalFrame
-     NoteView noteView = new NoteView(new MainMenuView(CommonSetting.COMPANY), true);
-        noteView.setVisible(true);
-     */
+    
     private final OrderController _orderController;
     private final OrderNoteController _orderNoteController;
     private final EmployeeController _employeeController;

@@ -26,19 +26,19 @@ public class ServiceOrder implements Serializable {
     @Column(name = "ID_SERVICE_ORDER")
     private long idServiceOrder;
     
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "ID_CUSTOMER", referencedColumnName = "ID_CUSTOMER")
     private Customer customer;
     
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "ID_DEVICE", referencedColumnName = "ID_DEVICE")
     private Device device;
     
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "ID_EMPLOYEE", referencedColumnName = "ID_EMPLOYEE")
     private Employee employee;
     
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "ID_COMPANY", referencedColumnName = "ID_COMPANY")
     private Company company;
     

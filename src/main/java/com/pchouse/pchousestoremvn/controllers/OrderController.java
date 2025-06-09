@@ -1,6 +1,7 @@
 package com.pchouse.pchousestoremvn.controllers;
 
 import com.pchouse.pchousestoremvn.dao.OrderDAO;
+import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Company;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import java.util.List;
@@ -15,7 +16,7 @@ public class OrderController {
     }
 
     // Add a new order to the database
-    public long addOrder(ServiceOrder pOrder) {
+    public long addOrder(ServiceOrder pOrder) throws BusinessException {
         return ORDER_DAO.addOrderDAO(pOrder);
     }
 

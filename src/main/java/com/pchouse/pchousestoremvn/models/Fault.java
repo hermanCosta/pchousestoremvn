@@ -49,9 +49,13 @@ public class Fault implements Serializable {
 
     @Override
     public String toString() {
-        return "Fault{" +
-                "idFault=" + idFault +
-                ", description='" + description + '\'' +
-                '}';
+        return description;
     }
+//    @Override
+//    public String toString() {
+//        return "Fault{" +
+//                "idFault=" + idFault +
+//                ", description='" + description + '\'' +
+//                '}';
+//    }
 }

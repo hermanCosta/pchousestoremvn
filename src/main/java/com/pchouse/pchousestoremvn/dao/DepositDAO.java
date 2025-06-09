@@ -1,7 +1,9 @@
 package com.pchouse.pchousestoremvn.dao;
 
 import com.pchouse.pchousestoremvn.models.Deposit;
+import com.pchouse.pchousestoremvn.models.Employee;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
+import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
 import com.pchouse.pchousestoremvn.util.JPAUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
@@ -15,9 +17,37 @@ public class DepositDAO {
         long idDepositAdded = 0;
         try {
             em.getTransaction().begin();
+
+            // Attach associated ServiceOrder
+            if (deposit.getServiceOrder() != null) {
+                ServiceOrder managedOrder = em.find(
+                        ServiceOrder.class,
+                        deposit.getServiceOrder().getIdServiceOrder()
+                );
+                deposit.setServiceOrder(managedOrder);
+            }
+
+            // Attach associated ServiceOrderPayment
+            if (deposit.getServiceOrderPayment() != null) {
+                ServiceOrderPayment managedOrderPayment = em.find(
+                        ServiceOrderPayment.class,
+                        deposit.getServiceOrderPayment().getIdOrderPayment()
+                );
+                deposit.setServiceOrderPayment(managedOrderPayment);
+            }
+
+            // Attach associated Employee
+            if (deposit.getEmployee() != null) {
+                Employee managedEmployee = em.find(
+                        Employee.class,
+                        deposit.getEmployee().getIdEmployee()
+                );
+                deposit.setEmployee(managedEmployee);
+            }
+
             em.persist(deposit);
             em.getTransaction().commit();
-            idDepositAdded = deposit.getIdDeposit(); // Ajuste conforme sua entidade
+            idDepositAdded = deposit.getIdDeposit();
         } catch (Exception e) {
             e.printStackTrace();
             em.getTransaction().rollback();
@@ -32,8 +62,8 @@ public class DepositDAO {
         List<Deposit> orderDeposits = null;
         try {
             TypedQuery<Deposit> query = em.createQuery(
-                "SELECT d FROM Deposit d WHERE d.order = :order", Deposit.class);
-            query.setParameter("order", order);
+                    "SELECT d FROM Deposit d WHERE d.serviceOrder.idServiceOrder = :serviceOrderId", Deposit.class);
+            query.setParameter("serviceOrderId", order.getIdServiceOrder());
             orderDeposits = query.getResultList();
         } catch (Exception e) {
             e.printStackTrace();
@@ -42,4 +72,5 @@ public class DepositDAO {
         }
         return orderDeposits;
     }
+
 }

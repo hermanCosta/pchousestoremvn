@@ -24,7 +24,7 @@ public class ServiceOrderFault implements Serializable {
     @JoinColumn(name = "ID_SERVICE_ORDER", referencedColumnName = "ID_SERVICE_ORDER")
     private ServiceOrder serviceOrder;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "ID_FAULT", referencedColumnName = "ID_FAULT")
     private Fault fault;
 

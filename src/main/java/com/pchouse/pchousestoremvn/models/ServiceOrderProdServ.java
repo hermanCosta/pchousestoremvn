@@ -20,11 +20,11 @@ public class ServiceOrderProdServ implements Serializable {
     @Column(name = "ID_SERVICE_ORDER_PROD_SERV")
     private long idServiceOrderProdServ;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "ID_SERVICE_ORDER", referencedColumnName = "ID_SERVICE_ORDER")
     private ServiceOrder serviceOrder;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "ID_PROD_SERV", referencedColumnName = "ID_PROD_SERV")
     private ProductService prodServ;
 

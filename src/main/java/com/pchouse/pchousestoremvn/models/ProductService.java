@@ -77,7 +77,7 @@ public class ProductService implements Serializable {
         if (qty >= 0) {
             this.qty = qty;
         } else {
-            throw new IllegalArgumentException("Quantity cannot be negative.");
+            throw new IllegalArgumentException("Qty cannot be negative.");
         }
     }
 
@@ -101,7 +101,7 @@ public class ProductService implements Serializable {
         if (minQty >= 0) {
             this.minQty = minQty;
         } else {
-            throw new IllegalArgumentException("Minimum quantity cannot be negative.");
+            throw new IllegalArgumentException("Minimum qty cannot be negative.");
         }
     }
     
@@ -131,10 +131,15 @@ public class ProductService implements Serializable {
 
     @Override
     public String toString() {
-        return "ProductService{" +
-                "idProductService=" + idProductService +
-                ", prodServName='" + prodServName + '\'' +
-                ", price=" + price + " €" +  // Adicionando o símbolo do euro
-                '}';
+        return prodServName; 
     }
+    
+//    @Override
+//    public String toString() {
+//        return "ProductService{" +
+//                "idProductService=" + idProductService +
+//                ", prodServName='" + prodServName + '\'' +
+//                ", price=" + price + " €" +  // Adicionando o símbolo do euro
+//                '}';
+//    }
 }

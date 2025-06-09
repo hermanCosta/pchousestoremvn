@@ -7,28 +7,23 @@ import com.pchouse.pchousestoremvn.controllers.EmployeeController;
 import com.pchouse.pchousestoremvn.controllers.OrderController;
 import com.pchouse.pchousestoremvn.controllers.OrderPaymentController;
 import com.pchouse.pchousestoremvn.enums.PayMethod;
+import com.pchouse.pchousestoremvn.models.Sale;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 
 public class PaymentModal extends javax.swing.JDialog {
-
-    /* For invoking this JDialog in a JInternalFrame
-     NoteView noteView = new NoteView(new MainMenuView(CommonSetting.COMPANY), true);
-        noteView.setVisible(true);
-     */
     private final OrderController _orderController;
     private final DepositController _depositController;
     private final EmployeeController _employeeController;
-    private ServiceOrder _orderModel;
-    //private String _orderNo, _depositAmount;
-
-    //private NewOrderView _newOrderView;
-    //private CreatedOrderView _createdOrderView;
+    private ServiceOrder _serviceOrderModel;
+    private Sale sale;
     private final OrderPaymentController _orderPaymentController;
+    private ServiceOrderPayment _orderPayment;
+    private String _amountToPay;
 
-    public PaymentModal(ServiceOrder order, String depositAmount, java.awt.Frame parent, boolean modal) {
+    public PaymentModal(ServiceOrder serviceOrder, Sale sale, String amountToPay, java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
 
@@ -36,14 +31,18 @@ public class PaymentModal extends javax.swing.JDialog {
         this._orderController = new OrderController();
         this._depositController = new DepositController();
         this._employeeController = new EmployeeController();
-        this._orderModel = order;
-        //this._orderNo = orderNo;
-        //this._depositAmount = depositAmount;
+        this._serviceOrderModel = serviceOrder;
+        this.sale = sale;
+        this._amountToPay = amountToPay;
 
         //this._newOrderView = newOrderView;
         //this._createdOrderView = createdOrderView;
         this._orderPaymentController = new OrderPaymentController();
-        loadOrderPaymentFields(order, depositAmount);
+        loadOrderPaymentFields(serviceOrder, amountToPay);
+    }
+
+    public ServiceOrderPayment getOrderPayment() {
+        return _orderPayment;
     }
 
     private void loadOrderPaymentFields(ServiceOrder pOrderNo, String pDepositAmount) {
@@ -56,16 +55,39 @@ public class PaymentModal extends javax.swing.JDialog {
     private ServiceOrderPayment getOrderPaymentFields() {
         ServiceOrderPayment orderPayment = null;
 
-        if (this.combo_box_pay_method.getSelectedItem().toString().trim().isEmpty() || this.txt_payment_value.getText().trim().isEmpty()) {
-            return orderPayment;
-        } else {
-            PayMethod selectedPayMethod = (PayMethod) combo_box_pay_method.getSelectedItem();
+        String paymentValueText = this.txt_payment_value.getText().trim();
+        Object selectedItem = this.combo_box_pay_method.getSelectedItem();
 
-            orderPayment = new ServiceOrderPayment(_orderModel, selectedPayMethod,
-                    CommonExtension.formatEuroToDouble(this.lbl_amount_value.getText()),
-                    Double.parseDouble(this.txt_payment_value.getText()),
-                    CommonExtension.formatEuroToDouble(this.lbl_change_value.getText()), _orderModel.getCreated());
+        if (selectedItem == null || selectedItem.toString().isEmpty() || paymentValueText.isEmpty()) {
+            return null;
         }
+
+        double paymentValue;
+        double amountToPay;
+
+        try {
+            paymentValue = Double.parseDouble(paymentValueText);
+            amountToPay = Double.parseDouble(_amountToPay);
+        } catch (NumberFormatException e) {
+            // Handle invalid input gracefully
+            return null;
+        }
+
+        if (paymentValue < amountToPay) {
+            JOptionPane.showMessageDialog(this, CommonConstant.ERROR_ORDER_DIVERG_PAYMENT);
+            return null;
+        }
+
+        PayMethod selectedPayMethod = (PayMethod) selectedItem;
+
+        orderPayment = new ServiceOrderPayment(
+                _serviceOrderModel,
+                selectedPayMethod,
+                CommonExtension.formatEuroToDouble(this.lbl_amount_value.getText()),
+                paymentValue,
+                CommonExtension.formatEuroToDouble(this.lbl_change_value.getText()),
+                _serviceOrderModel.getCreated()
+        );
 
         return orderPayment;
     }
@@ -81,7 +103,7 @@ public class PaymentModal extends javax.swing.JDialog {
         lbl_order_no = new javax.swing.JLabel();
         lbl_order_value = new javax.swing.JLabel();
         lbl_pay_method = new javax.swing.JLabel();
-        combo_box_pay_method = new javax.swing.JComboBox<>();
+        combo_box_pay_method = new javax.swing.JComboBox<PayMethod>();
         lbl_amount = new javax.swing.JLabel();
         lbl_amount_value = new javax.swing.JLabel();
         lbl_payment = new javax.swing.JLabel();
@@ -136,11 +158,7 @@ public class PaymentModal extends javax.swing.JDialog {
         lbl_pay_method.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         lbl_pay_method.setText("Pay Method:");
 
-        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
-        for (PayMethod method : PayMethod.values()) {
-            model.addElement(method.name()); // Adiciona como String
-        }
-        combo_box_pay_method.setModel(model);
+        combo_box_pay_method.setModel(new DefaultComboBoxModel<>(PayMethod.values()));
 
         lbl_amount.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         lbl_amount.setText("Amount to pay");
@@ -300,11 +318,12 @@ public class PaymentModal extends javax.swing.JDialog {
                 if (idOrderPaymentAdded > 0) {
                     //JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_ORDER_PAYMENT);
                     addOrderPayment.setIdOrderPayment(idOrderPaymentAdded);
-                    
+
 //                    if (_newOrderView != null) {
 //                        _newOrderView._ord = addOrderPayment;
 //                    }
-                    CommonExtension.orderPayment = addOrderPayment;
+                    //CommonExtension.orderPayment = addOrderPayment;
+                    this._orderPayment = addOrderPayment;
                     this.dispose();
                 } else {
                     JOptionPane.showMessageDialog(this, CommonConstant.ERROR_ORDER_PAYMENT, null, JOptionPane.ERROR_MESSAGE);
@@ -340,7 +359,7 @@ public class PaymentModal extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_cancel;
     private javax.swing.JButton btn_pay;
-    private javax.swing.JComboBox<String> combo_box_pay_method;
+    private javax.swing.JComboBox<PayMethod> combo_box_pay_method;
     private javax.swing.JLabel lbl_amount;
     private javax.swing.JLabel lbl_amount_value;
     private javax.swing.JLabel lbl_change;
