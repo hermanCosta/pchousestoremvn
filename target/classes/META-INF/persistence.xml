@@ -16,6 +16,7 @@
         <class>com.pchouse.pchousestoremvn.models.Refund</class>
         <class>com.pchouse.pchousestoremvn.models.Refurb</class>
         <class>com.pchouse.pchousestoremvn.models.Sale</class>
+        <class>com.pchouse.pchousestoremvn.models.SalePayment</class>
         <class>com.pchouse.pchousestoremvn.models.SaleProdServ</class>
         <class>com.pchouse.pchousestoremvn.models.ServiceOrder</class>
         <class>com.pchouse.pchousestoremvn.models.ServiceOrderFault</class>

@@ -66,11 +66,11 @@ public class SaleProdServ implements Serializable {
         this.sale = sale;
     }
 
-    public ProductService getProductService() {
+    public ProductService getProdServ() {
         return productService;
     }
 
-    public void setProductService(ProductService productService) {
+    public void setProdServ(ProductService productService) {
         this.productService = productService;
     }
 

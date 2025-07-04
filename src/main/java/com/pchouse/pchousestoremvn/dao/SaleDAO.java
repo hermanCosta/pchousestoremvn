@@ -3,7 +3,6 @@ package com.pchouse.pchousestoremvn.dao;
 import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Company;
 import com.pchouse.pchousestoremvn.models.Customer;
-import com.pchouse.pchousestoremvn.models.Device;
 import com.pchouse.pchousestoremvn.models.Employee;
 import com.pchouse.pchousestoremvn.models.Person;
 import com.pchouse.pchousestoremvn.models.Sale;
@@ -19,7 +18,7 @@ public class SaleDAO {
         EntityManager em = JPAUtil.getEntityManager();
         long orderId = 0;
         try {
-            TypedQuery<Long> query = em.createQuery("SELECT MAX(o.idSale) FROM Sale o", Long.class);
+            TypedQuery<Long> query = em.createQuery("SELECT MAX(s.idSale) FROM Sale s", Long.class);
             Long result = query.getSingleResult();
             orderId = (result != null) ? result : 0;
         } catch (Exception e) {
@@ -68,7 +67,7 @@ public class SaleDAO {
         } catch (Exception e) {
             e.printStackTrace();
             em.getTransaction().rollback();
-            throw new BusinessException("Failed to add order: " + e.getMessage(), e);
+            throw new BusinessException("Failed to add sale: " + e.getMessage(), e);
 
         } finally {
             em.close();
@@ -82,7 +81,7 @@ public class SaleDAO {
         try {
             itemSale = em.find(Sale.class, pIdSale);
         } catch (Exception e) {
-            System.err.println("Error retrieving order by ID: " + e.getMessage());
+            System.err.println("Error retrieving sale by ID: " + e.getMessage());
             e.printStackTrace();
         } finally {
             em.close();
@@ -95,7 +94,7 @@ public class SaleDAO {
         List<Sale> listSale = null;
         try {
             TypedQuery<Sale> query = em.createQuery(
-                    "FROM Sale o WHERE o.company = :pCompany SALE BY o.created DESC", Sale.class);
+                    "FROM Sale s WHERE s.company = :pCompany SALE BY s.created DESC", Sale.class);
             query.setParameter("pCompany", pCompany);
             listSale = query.getResultList();
         } catch (Exception e) {
@@ -114,16 +113,15 @@ public class SaleDAO {
             TypedQuery<Sale> query = em.createQuery(
                     "SELECT DISTINCT o FROM Sale o "
                     + "JOIN o.customer c JOIN c.person p "
-                    + "LEFT JOIN o.device d "
                     + "WHERE o.company = :pCompany AND "
-                    + "(p.firstName LIKE :pSearch OR p.lastName LIKE :pSearch OR p.contactNo LIKE :pSearch OR "
-                    + "p.email LIKE :pSearch OR d.brand LIKE :pSearch OR d.model LIKE :pSearch OR "
-                    + "d.serialNumber LIKE :pSearch OR CAST(o.idSale AS string) LIKE :pSearch)", Sale.class);
+                    + "(p.firstName LIKE :pSearch OR p.lastName LIKE :pSearch OR "
+                    + "p.contactNo LIKE :pSearch OR p.email LIKE :pSearch OR "
+                    + "CAST(o.idSale AS string) LIKE :pSearch)", Sale.class);
             query.setParameter("pCompany", pCompany);
             query.setParameter("pSearch", "%" + pSearch + "%");
             listSale = query.getResultList();
         } catch (Exception e) {
-            System.err.println("Error searching orders: " + e.getMessage());
+            System.err.println("Error searching sales: " + e.getMessage());
             e.printStackTrace();
         } finally {
             em.close();
@@ -174,7 +172,7 @@ public class SaleDAO {
             success = true;
 
         } catch (Exception e) {
-            System.err.println("Error updating order: " + e.getMessage());
+            System.err.println("Error updating sale: " + e.getMessage());
             e.printStackTrace();
             em.getTransaction().rollback();
         } finally {

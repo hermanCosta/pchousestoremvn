@@ -1,5 +1,6 @@
 package com.pchouse.pchousestoremvn.common;
 
+import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
 import java.awt.Color;
@@ -25,6 +26,7 @@ public class CommonExtension {
 
     public static ServiceOrderPayment orderPayment = null;
     public static ServiceOrder orderModel = null;
+    public static SalePayment salePayment = null;
     
     public static int setIdExtension(JTextField jTextField) {
         if (jTextField.getText().trim().isEmpty()) {

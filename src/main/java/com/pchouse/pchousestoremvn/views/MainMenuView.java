@@ -358,7 +358,10 @@ public class MainMenuView extends javax.swing.JFrame {
     }//GEN-LAST:event_menu_item_new_orderActionPerformed
 
     private void menu_item_new_saleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menu_item_new_saleActionPerformed
-
+        NewSaleView newSaleView = new NewSaleView();
+        this.desktop_pane_menu.removeAll();
+        this.desktop_pane_menu.add(newSaleView).setVisible(true);
+        CommonSetting.setMaxInternalFrame(newSaleView);
     }//GEN-LAST:event_menu_item_new_saleActionPerformed
 
     private void menu_item_refurbsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menu_item_refurbsActionPerformed

@@ -5,27 +5,22 @@ import com.pchouse.pchousestoremvn.common.CommonExtension;
 import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.controllers.CustomerController;
 import com.pchouse.pchousestoremvn.controllers.DepositController;
-import com.pchouse.pchousestoremvn.controllers.DeviceController;
 import com.pchouse.pchousestoremvn.controllers.EmployeeController;
-import com.pchouse.pchousestoremvn.controllers.FaultController;
 import com.pchouse.pchousestoremvn.controllers.SaleController;
-import com.pchouse.pchousestoremvn.controllers.OrderFaultController;
 import com.pchouse.pchousestoremvn.controllers.OrderNoteController;
-import com.pchouse.pchousestoremvn.controllers.OrderProdServController;
+import com.pchouse.pchousestoremvn.controllers.SaleProdServController;
 import com.pchouse.pchousestoremvn.controllers.ProductServiceController;
 import com.pchouse.pchousestoremvn.enums.OrderStatus;
 import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Customer;
 import com.pchouse.pchousestoremvn.models.Deposit;
 import com.pchouse.pchousestoremvn.models.Employee;
-import com.pchouse.pchousestoremvn.models.Fault;
 import com.pchouse.pchousestoremvn.models.Person;
 import com.pchouse.pchousestoremvn.models.ProductService;
 import com.pchouse.pchousestoremvn.models.Sale;
-import com.pchouse.pchousestoremvn.models.ServiceOrder;
+import com.pchouse.pchousestoremvn.models.SaleProdServ;
 import com.pchouse.pchousestoremvn.models.ServiceOrderNote;
 import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
-import com.pchouse.pchousestoremvn.models.ServiceOrderProdServ;
 import com.pchouse.pchousestoremvn.views.modals.CustomerModal;
 import com.pchouse.pchousestoremvn.views.modals.PaymentModal;
 import java.awt.Frame;
@@ -47,21 +42,16 @@ public class NewSaleView extends javax.swing.JInternalFrame {
 
     private long hdnCustomerId;
     private List<ProductService> _listProdServ;
-    private List<Fault> _listFault;
     public ServiceOrderPayment _orderPayment = null;
     private final SaleController _saleController;
     private final ProductServiceController _productServiceController;
-    private final FaultController _faultController;
     private final CustomerController _customerController;
     private final DepositController _depositController;
     private final EmployeeController _employeeController;
-    private final OrderProdServController _orderProdServController;
-    private final OrderFaultController _orderFaultController;
-    private final OrderNoteController _orderNoteController;
-    private final DeviceController _deviceController;
+    private final SaleProdServController _saleProdServController;
+    private final OrderNoteController _saleNoteController;
     private final DefaultTableModel _dtmProdServ;
     private final DefaultListModel _defaultListModelProdServ;
-    private final DefaultListModel _defaultListModelFault;
     Frame _parentFrame = JOptionPane.getFrameForComponent(this);
 
     public NewSaleView() {
@@ -76,17 +66,13 @@ public class NewSaleView extends javax.swing.JInternalFrame {
 
         this._saleController = new SaleController();
         this._productServiceController = new ProductServiceController();
-        this._faultController = new FaultController();
         this._customerController = new CustomerController();
         this._depositController = new DepositController();
         this._employeeController = new EmployeeController();
-        this._orderProdServController = new OrderProdServController();
-        this._orderFaultController = new OrderFaultController();
-        this._orderNoteController = new OrderNoteController();
-        this._deviceController = new DeviceController();
+        this._saleProdServController = new SaleProdServController();
+        this._saleNoteController = new OrderNoteController();
         this._dtmProdServ = (DefaultTableModel) this.table_view_products.getModel();
         this._defaultListModelProdServ = new DefaultListModel();
-        this._defaultListModelFault = new DefaultListModel();
         this.list_prod_serv_search.setModel(_defaultListModelProdServ);
 
         list_prod_serv_search.addKeyListener(new KeyAdapter() {
@@ -190,7 +176,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
                             || !customer.getPerson().getEmail().equals(this.txt_email.getText())) {
 
                         JOptionPane.showMessageDialog(this, CommonConstant.WARN_CUSTOMER_MATCHING, this.getTitle(), JOptionPane.WARNING_MESSAGE);
-                        CustomerModal customerModal = new CustomerModal(null, null, this, new MainMenuView(CommonSetting.COMPANY), true, customer);
+                        CustomerModal customerModal = new CustomerModal(this, new MainMenuView(CommonSetting.COMPANY), true, customer);
                         customerModal.setVisible(true);
                         this.hdn_txt_customer_id.setText("");
                         return saleDetails;
@@ -203,7 +189,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
                     if (checkCustomer != null) {
                         JOptionPane.showMessageDialog(this, CommonConstant.WARN_EXIST_PERSON, this.getTitle(), JOptionPane.WARNING_MESSAGE);
 
-                        CustomerModal customerModal = new CustomerModal(null, null, this, _parentFrame, true, checkCustomer);
+                        CustomerModal customerModal = new CustomerModal(this, _parentFrame, true, checkCustomer);
                         customerModal.setLocationRelativeTo(this);
                         customerModal.setVisible(true);
 
@@ -238,31 +224,31 @@ public class NewSaleView extends javax.swing.JInternalFrame {
         return saleDetails;
     }
 
-    private List<ServiceOrderProdServ> getOrderProdServ(ServiceOrder order) {
-        List<ServiceOrderProdServ> listOrderProdServ = new ArrayList<>();
+    private List<SaleProdServ> getSaleProdServ(Sale sale) {
+        List<SaleProdServ> listSaleProdServ = new ArrayList<>();
 
         if (this.table_view_products.getRowCount() == 0) {
             JOptionPane.showMessageDialog(this, CommonConstant.WARN_ADD_ITEM + "product|service", this.getTitle(), JOptionPane.WARNING_MESSAGE);
 
-            return listOrderProdServ;
+            return listSaleProdServ;
         } else {
 
             for (int i = 0; i < _dtmProdServ.getRowCount(); i++) {
                 ProductService prodServItem = new ProductService();
-                ServiceOrderProdServ orderProdServItem = new ServiceOrderProdServ();
+                SaleProdServ saleProdServItem = new SaleProdServ();
 
                 prodServItem = _productServiceController.getProductServiceById(Integer.parseInt(_dtmProdServ.getValueAt(i, 0).toString()));
 
-                orderProdServItem.setServiceOrder(order);
-                orderProdServItem.setProdServ(prodServItem);
-                orderProdServItem.setQty(Integer.parseInt(_dtmProdServ.getValueAt(i, 2).toString()));
-                orderProdServItem.setTotal(Double.parseDouble(_dtmProdServ.getValueAt(i, 3).toString()));
+                saleProdServItem.setSale(sale);
+                saleProdServItem.setProdServ(prodServItem);
+                saleProdServItem.setQty(Integer.parseInt(_dtmProdServ.getValueAt(i, 2).toString()));
+                saleProdServItem.setTotal(Double.parseDouble(_dtmProdServ.getValueAt(i, 3).toString()));
 
-                listOrderProdServ.add(orderProdServItem);
+                listSaleProdServ.add(saleProdServItem);
             }
 
         }
-        return listOrderProdServ;
+        return listSaleProdServ;
     }
 
     private void addProductService(ProductService prodServ) {
@@ -326,7 +312,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
         lbl_total_field = new javax.swing.JLabel();
         lbl_due_field = new javax.swing.JLabel();
         panel_sale_buttons = new javax.swing.JPanel();
-        btn_save_order = new javax.swing.JButton();
+        btn_save_sale = new javax.swing.JButton();
         btn_cancel = new javax.swing.JButton();
         txt_search_prod_serv = new javax.swing.JTextField();
         lbl_search_prod_serv_icon = new javax.swing.JLabel();
@@ -506,7 +492,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
 
         txt_deposit.setFont(new java.awt.Font("sansserif", 0, 13)); // NOI18N
         txt_deposit.setForeground(new java.awt.Color(51, 51, 255));
-        txt_deposit.setNextFocusableComponent(btn_save_order);
+        txt_deposit.setNextFocusableComponent(btn_save_sale);
         txt_deposit.setPreferredSize(new java.awt.Dimension(100, 25));
         txt_deposit.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
@@ -565,14 +551,14 @@ public class NewSaleView extends javax.swing.JInternalFrame {
 
         panel_sale_buttons.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        btn_save_order.setBackground(new java.awt.Color(21, 76, 121));
-        btn_save_order.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        btn_save_order.setForeground(new java.awt.Color(255, 255, 255));
-        btn_save_order.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_save.png"))); // NOI18N
-        btn_save_order.setText("Save");
-        btn_save_order.addActionListener(new java.awt.event.ActionListener() {
+        btn_save_sale.setBackground(new java.awt.Color(21, 76, 121));
+        btn_save_sale.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+        btn_save_sale.setForeground(new java.awt.Color(255, 255, 255));
+        btn_save_sale.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_save.png"))); // NOI18N
+        btn_save_sale.setText("Save");
+        btn_save_sale.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_save_orderActionPerformed(evt);
+                btn_save_saleActionPerformed(evt);
             }
         });
 
@@ -594,7 +580,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
             panel_sale_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_sale_buttonsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(btn_save_order)
+                .addComponent(btn_save_sale)
                 .addGap(18, 18, 18)
                 .addComponent(btn_cancel)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -604,7 +590,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
             .addGroup(panel_sale_buttonsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panel_sale_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btn_save_order)
+                    .addComponent(btn_save_sale)
                     .addComponent(btn_cancel))
                 .addContainerGap())
         );
@@ -732,7 +718,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(panel_sale_details, javax.swing.GroupLayout.DEFAULT_SIZE, 1030, Short.MAX_VALUE)
+                .addComponent(panel_sale_details, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -746,7 +732,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btn_save_orderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_save_orderActionPerformed
+    private void btn_save_saleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_save_saleActionPerformed
         Sale addSale = getSaleFields();
         boolean isAdded = false;
 
@@ -758,13 +744,13 @@ public class NewSaleView extends javax.swing.JInternalFrame {
                 if (idOrderAdded > 0) {
                     addSale.setIdSale(idOrderAdded);
 
-                    List<ServiceOrderProdServ> listOrderProdServ = getOrderProdServ(addSale);
-                    if (listOrderProdServ != null) {
-                        for (ServiceOrderProdServ prodServItem : listOrderProdServ) {
-                            long idOrderProdServAdded = _orderProdServController.addOrderProdServ(prodServItem);
-                            System.out.println("ProdServ Added: " + idOrderProdServAdded);
+                    List<SaleProdServ> listSaleProdServ = getSaleProdServ(addSale);
+                    if (listSaleProdServ != null) {
+                        for (SaleProdServ prodServItem : listSaleProdServ) {
+                            long idSaleProdServAdded = _saleProdServController.addSaleProdServ(prodServItem);
+                            System.out.println("ProdServ Added: " + idSaleProdServAdded);
 
-                            if (idOrderProdServAdded > 0) {
+                            if (idSaleProdServAdded > 0) {
                                 isAdded = true;
                             } else {
                                 isAdded = false;
@@ -779,15 +765,14 @@ public class NewSaleView extends javax.swing.JInternalFrame {
                         PaymentModal paymentModal = new PaymentModal(null, addSale, this.txt_deposit.getText(), new MainMenuView(CommonSetting.COMPANY), true);
                         paymentModal.setVisible(true);
 
-                        Deposit deposit = new Deposit(addSale, addSale.getEmployee(), Double.parseDouble(this.txt_deposit.getText()), addSale.getCreated());
-                        deposit.setServiceOrderPayment(CommonExtension.orderPayment);
+                        Deposit deposit = new Deposit(addSale, addSale.getEmployee(), CommonExtension.salePayment, Double.parseDouble(this.txt_deposit.getText()), addSale.getCreated());
 
                         long idDepositAdded = this._depositController.addDeposit(deposit);
                         if (idDepositAdded > 0) {
 
 //                        // Add deposit note
-//                        OrderNote orderNote = new OrderNote(addOrder, addOrder.getEmployee(), CommonExtension.setDepositPayNote(Double.parseDouble(this.txt_deposit.getText())), new Date());
-//                        _orderNoteController.addOrderNoteController(orderNote);
+//                        OrderNote saleNote = new OrderNote(addOrder, addOrder.getEmployee(), CommonExtension.setDepositPayNote(Double.parseDouble(this.txt_deposit.getText())), new Date());
+//                        _saleNoteController.addOrderNoteController(saleNote);
                             isAdded = true;
                         } else {
                             JOptionPane.showMessageDialog(this, CommonConstant.ERROR_ADD_DEPOSIT, this.getTitle(), JOptionPane.ERROR_MESSAGE);
@@ -798,8 +783,9 @@ public class NewSaleView extends javax.swing.JInternalFrame {
 
                 if (isAdded) {
                     // Add creating note
-                    ServiceOrderNote orderNote = new ServiceOrderNote(addSale, addSale.getEmployee(), CommonConstant.ORDER_CREATED_NOTE, new Date());
-                    _orderNoteController.addOrderNote(orderNote);
+                    ServiceOrderNote saleNote = new ServiceOrderNote(addSale, addSale.getEmployee(), CommonConstant.ORDER_CREATED_NOTE, new Date());
+
+                    _saleNoteController.addOrderNote(saleNote);
 
                     JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_SAVE);
                     clearFields();
@@ -811,7 +797,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
                 return;
             }
         }
-    }//GEN-LAST:event_btn_save_orderActionPerformed
+    }//GEN-LAST:event_btn_save_saleActionPerformed
 
     private void txt_depositKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_depositKeyReleased
         double totalPrice = CommonExtension.formatEuroToDouble(this.lbl_total_field.getText());
@@ -845,7 +831,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
 
     private void btn_seacrh_customerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_seacrh_customerActionPerformed
         this.hdn_txt_customer_id.setText("");
-        CustomerModal customerModal = new CustomerModal(null, null, this, new MainMenuView(CommonSetting.COMPANY), true, null);
+        CustomerModal customerModal = new CustomerModal(this, new MainMenuView(CommonSetting.COMPANY), true, null);
         customerModal.setVisible(true);
     }//GEN-LAST:event_btn_seacrh_customerActionPerformed
 
@@ -990,7 +976,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
     private javax.swing.JButton btn_cancel;
     private javax.swing.JButton btn_copy;
     private javax.swing.JButton btn_international_number1;
-    private javax.swing.JButton btn_save_order;
+    private javax.swing.JButton btn_save_sale;
     private javax.swing.JButton btn_seacrh_customer;
     private javax.swing.JTextField hdn_txt_customer_id;
     private javax.swing.JLayeredPane layered_pane_list_prod_serv;

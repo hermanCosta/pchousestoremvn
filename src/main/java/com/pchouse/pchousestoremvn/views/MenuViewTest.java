@@ -188,7 +188,7 @@ public class MenuViewTest extends JFrame {
     }
 
     private void menuItemNewSaleActionPerformed(ActionEvent evt) {
-        // Implementação futura
+        openInternalFrame(new NewSaleView());
     }
 
     private void menuItemCustomerActionPerformed(ActionEvent evt) {

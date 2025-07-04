@@ -11,13 +11,13 @@ import com.pchouse.pchousestoremvn.views.CreatedOrderView;
 import com.pchouse.pchousestoremvn.views.NewOrderView;
 import com.pchouse.pchousestoremvn.views.NewSaleView;
 import java.awt.Color;
+import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.util.List;
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
-import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
@@ -31,33 +31,62 @@ public class CustomerModal extends javax.swing.JDialog {
     private Customer _customer;
     private NewOrderView _newOrderView;
     private CreatedOrderView _createdOrderView;
+    private NewSaleView _newSaleView;
     public final OrderController _orderController;
-    public final NewSaleView _newSaleView;
     private final DefaultTableModel _dtmCustomer;
     private final CustomerController _customerController;
     private List<Customer> _listCustomer;
 
-    public CustomerModal(NewOrderView newOrderView, CreatedOrderView createdOrderView, NewSaleView newSaleView, java.awt.Frame parent, boolean modal, Customer customer) {
-    //public CustomerModal(JInternalFrame newOrderView, CreatedOrderView createdOrderView, java.awt.Frame parent, boolean modal, Customer customer) {
+    public CustomerModal(NewOrderView newOrderView, Frame parent, boolean modal, Customer customer) {
+        this(parent, modal, customer);
+        this._newOrderView = newOrderView;
+    }
+
+    public CustomerModal(CreatedOrderView createdOrderView, Frame parent, boolean modal, Customer customer) {
+        this(parent, modal, customer);
+        this._createdOrderView = createdOrderView;
+    }
+
+    public CustomerModal(NewSaleView newSaleView, Frame parent, boolean modal, Customer customer) {
+        this(parent, modal, customer);
+        this._newSaleView = newSaleView;
+    }
+
+    // Construtor base privado
+    private CustomerModal(Frame parent, boolean modal, Customer customer) {
         super(parent, modal);
         initComponents();
 
         CommonSetting.tableSettings(this.table_view_customers);
-
-        this._newOrderView = newOrderView;
-        this._createdOrderView = createdOrderView;
-        this._newSaleView = newSaleView;
-        this.txt_contact.setFocusLostBehavior(JFormattedTextField.PERSIST);
-
         this._orderController = new OrderController();
         this._customerController = new CustomerController();
         this._dtmCustomer = (DefaultTableModel) this.table_view_customers.getModel();
         this._customer = customer;
+        this.txt_contact.setFocusLostBehavior(JFormattedTextField.PERSIST);
 
-        //checkEmailFormat();
         loadCustomerListTable();
     }
 
+//    public CustomerModal(NewOrderView newOrderView, CreatedOrderView createdOrderView, NewSaleView newSaleView, java.awt.Frame parent, boolean modal, Customer customer) {
+//    //public CustomerModal(JInternalFrame newOrderView, CreatedOrderView createdOrderView, java.awt.Frame parent, boolean modal, Customer customer) {
+//        super(parent, modal);
+//        initComponents();
+//
+//        CommonSetting.tableSettings(this.table_view_customers);
+//
+//        this._newOrderView = newOrderView;
+//        this._createdOrderView = createdOrderView;
+//        this._newSaleView = newSaleView;
+//        this.txt_contact.setFocusLostBehavior(JFormattedTextField.PERSIST);
+//
+//        this._orderController = new OrderController();
+//        this._customerController = new CustomerController();
+//        this._dtmCustomer = (DefaultTableModel) this.table_view_customers.getModel();
+//        this._customer = customer;
+//
+//        //checkEmailFormat();
+//        loadCustomerListTable();
+//    }
     private void loadCustomerListTable() {
         this._dtmCustomer.setRowCount(0);
 
@@ -110,7 +139,7 @@ public class CustomerModal extends javax.swing.JDialog {
                     this.txt_email.getText().toLowerCase());
 
             person.setIdPerson(CommonExtension.setIdExtension(this.hdn_txt_person_id));
-            
+
             getCustomer = new Customer(person, CommonSetting.COMPANY);
 
             int idCustomer = CommonExtension.setIdExtension(this.hdn_txt_customer_id);
@@ -601,9 +630,9 @@ public class CustomerModal extends javax.swing.JDialog {
                     this._dtmCustomer.getValueAt(selectedRow, 2).toString(),
                     this._dtmCustomer.getValueAt(selectedRow, 3).toString(),
                     this._dtmCustomer.getValueAt(selectedRow, 4).toString());
-            
+
             updatePerson.setIdPerson((long) this._dtmCustomer.getValueAt(selectedRow, 5));
-            
+
             Customer updateCustomer = new Customer(updatePerson, CommonSetting.COMPANY);
             updateCustomer.setIdCustomer((long) this._dtmCustomer.getValueAt(selectedRow, 0));
 
@@ -648,15 +677,15 @@ public class CustomerModal extends javax.swing.JDialog {
 
             Customer useCustomer = new Customer(usePerson, CommonSetting.COMPANY);
             useCustomer.setIdCustomer((long) this._dtmCustomer.getValueAt(selectedRow, 0));
-            
+
             if (_newOrderView != null) {
                 _newOrderView.setCustomerFields(useCustomer);
-            } else if(_createdOrderView != null){
+            } else if (_createdOrderView != null) {
                 _createdOrderView.setCustomerFields(useCustomer);
-            } else if(_newSaleView != null){
-                _newSaleView.setCustomerFields(_customer);
+            } else if (_newSaleView != null) {
+                _newSaleView.setCustomerFields(useCustomer);
             }
-            
+
             this.dispose();
         }
     }//GEN-LAST:event_btn_selectActionPerformed

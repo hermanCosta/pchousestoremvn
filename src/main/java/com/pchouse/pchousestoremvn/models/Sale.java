@@ -49,7 +49,7 @@ public class Sale implements Serializable {
     private Double card;
 
     @Column(name = "AMOUNT_PAID", insertable = false, updatable = false)
-    private double amountPaid;
+    private Double amountPaid;
 
     @Column(name = "STATUS", nullable = false)
     private String status;

@@ -28,6 +28,10 @@ public class ServiceOrderNote implements Serializable {
     private ServiceOrder serviceOrder;
 
     @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "ID_SALE", referencedColumnName = "ID_SALE")
+    private Sale sale;
+
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ID_EMPLOYEE", referencedColumnName = "ID_EMPLOYEE")
     private Employee employee;
 
@@ -41,8 +45,17 @@ public class ServiceOrderNote implements Serializable {
     public ServiceOrderNote() {
     }
 
+    // Constructor for Order Note
     public ServiceOrderNote(ServiceOrder serviceOrder, Employee employee, String note, Date created) {
         this.serviceOrder = serviceOrder;
+        this.employee = employee;
+        this.note = note;
+        this.created = created;
+    }
+
+    // Constructor for Sale Note
+    public ServiceOrderNote(Sale sale, Employee employee, String note, Date created) {
+        this.sale = sale;
         this.employee = employee;
         this.note = note;
         this.created = created;
@@ -62,6 +75,14 @@ public class ServiceOrderNote implements Serializable {
 
     public void setServiceOrder(ServiceOrder serviceOrder) {
         this.serviceOrder = serviceOrder;
+    }
+
+    public Sale getSale() {
+        return sale;
+    }
+
+    public void setSale(Sale sale) {
+        this.sale = sale;
     }
 
     public Employee getEmployee() {
@@ -90,12 +111,12 @@ public class ServiceOrderNote implements Serializable {
 
     @Override
     public String toString() {
-        return "ServiceOrderNote{" +
-                "idServiceOrderNote=" + idServiceOrderNote +
-                ", serviceOrder=" + serviceOrder +
-                ", employee=" + employee +
-                ", note='" + note + '\'' +
-                ", created=" + created +
-                '}';
+        return "ServiceOrderNote{"
+                + "idServiceOrderNote=" + idServiceOrderNote
+                + ", serviceOrder=" + serviceOrder
+                + ", employee=" + employee
+                + ", note='" + note + '\''
+                + ", created=" + created
+                + '}';
     }
 }

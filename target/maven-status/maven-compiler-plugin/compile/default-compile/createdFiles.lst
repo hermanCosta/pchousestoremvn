@@ -1,6 +1,7 @@
 com/pchouse/pchousestoremvn/views/RefurbComputerView$7.class
 com/pchouse/pchousestoremvn/views/RefurbCustomView$19.class
 com/pchouse/pchousestoremvn/views/modals/NoteModal.class
+com/pchouse/pchousestoremvn/models/SalePayment.class
 com/pchouse/pchousestoremvn/views/NewOrderView$14.class
 com/pchouse/pchousestoremvn/views/modals/CustomerModal$9.class
 com/pchouse/pchousestoremvn/views/EmployeeView$6.class
@@ -11,6 +12,7 @@ com/pchouse/pchousestoremvn/views/CreatedOrderView$24.class
 com/pchouse/pchousestoremvn/controllers/OrderNoteController.class
 com/pchouse/pchousestoremvn/views/CreatedOrderView$2.class
 com/pchouse/pchousestoremvn/controllers/CustomerController.class
+com/pchouse/pchousestoremvn/views/NewSaleView$12.class
 com/pchouse/pchousestoremvn/common/Printer.class
 com/pchouse/pchousestoremvn/views/RefurbMonitorView$5.class
 com/pchouse/pchousestoremvn/views/MainMenuView$12.class
@@ -20,6 +22,7 @@ com/pchouse/pchousestoremvn/views/NewOrderView$19.class
 com/pchouse/pchousestoremvn/views/modals/CustomerModal$4.class
 com/pchouse/pchousestoremvn/util/JPAUtil.class
 com/pchouse/pchousestoremvn/dao/OrderNoteDAO.class
+com/pchouse/pchousestoremvn/views/NewSaleView$6.class
 com/pchouse/pchousestoremvn/dao/OrderFaultDAO.class
 com/pchouse/pchousestoremvn/common/Java2sAutoComboBox$1.class
 com/pchouse/pchousestoremvn/views/NewOrderView$22.class
@@ -61,6 +64,7 @@ com/pchouse/pchousestoremvn/views/RefurbComputerView$5.class
 com/pchouse/pchousestoremvn/views/MainMenuView$6.class
 com/pchouse/pchousestoremvn/views/CreatedOrderView$18.class
 com/pchouse/pchousestoremvn/views/RefurbView$6.class
+com/pchouse/pchousestoremvn/views/NewSaleView$9.class
 com/pchouse/pchousestoremvn/views/CreatedOrderView$21.class
 com/pchouse/pchousestoremvn/views/RefurbConsoleView$1.class
 com/pchouse/pchousestoremvn/views/RefurbTelevisionView$15.class
@@ -81,6 +85,7 @@ com/pchouse/pchousestoremvn/views/ProductServiceView$1.class
 com/pchouse/pchousestoremvn/controllers/DepositController.class
 com/pchouse/pchousestoremvn/views/RefurbTelevisionView$16.class
 com/pchouse/pchousestoremvn/views/RefurbMonitorView$14.class
+com/pchouse/pchousestoremvn/views/NewSaleView$8.class
 com/pchouse/pchousestoremvn/views/EmployeeView.class
 com/pchouse/pchousestoremvn/views/RefurbTelevisionView$5.class
 com/pchouse/pchousestoremvn/views/RefurbMonitorView$10.class
@@ -116,6 +121,7 @@ com/pchouse/pchousestoremvn/views/RefurbView$12.class
 com/pchouse/pchousestoremvn/views/EmployeeView$9.class
 com/pchouse/pchousestoremvn/models/Person.class
 com/pchouse/pchousestoremvn/views/NewOrderView$7.class
+com/pchouse/pchousestoremvn/dao/SaleDAO.class
 com/pchouse/pchousestoremvn/views/CreatedOrderView$4.class
 com/pchouse/pchousestoremvn/dao/ProductServiceDAO.class
 com/pchouse/pchousestoremvn/views/RefurbMonitorView$11.class
@@ -184,6 +190,7 @@ com/pchouse/pchousestoremvn/views/modals/ProductServiceModal$3.class
 com/pchouse/pchousestoremvn/views/CreatedOrderView$8.class
 com/pchouse/pchousestoremvn/views/RefurbConsoleView$2.class
 com/pchouse/pchousestoremvn/views/modals/PaymentModal$1.class
+com/pchouse/pchousestoremvn/controllers/SaleProdServController.class
 com/pchouse/pchousestoremvn/views/RefurbTelevisionView$12.class
 com/pchouse/pchousestoremvn/views/modals/DepositModal.class
 com/pchouse/pchousestoremvn/models/Deposit.class
@@ -196,6 +203,7 @@ com/pchouse/pchousestoremvn/views/ProductServiceView$10.class
 com/pchouse/pchousestoremvn/views/MainMenuView$13.class
 com/pchouse/pchousestoremvn/views/RefurbMonitorView$4.class
 com/pchouse/pchousestoremvn/views/RefurbCustomView$18.class
+com/pchouse/pchousestoremvn/views/NewSaleView$5.class
 com/pchouse/pchousestoremvn/models/Fault.class
 com/pchouse/pchousestoremvn/views/RefurbMonitorView$18.class
 com/pchouse/pchousestoremvn/views/EmployeeView$10.class
@@ -213,9 +221,12 @@ com/pchouse/pchousestoremvn/models/ServiceOrderPayment.class
 com/pchouse/pchousestoremvn/views/FaultView$4.class
 com/pchouse/pchousestoremvn/views/MainMenuView$11.class
 com/pchouse/pchousestoremvn/models/Device.class
+com/pchouse/pchousestoremvn/dao/SaleProdServDAO.class
 com/pchouse/pchousestoremvn/views/RefurbComputerView$3.class
 com/pchouse/pchousestoremvn/views/CreatedOrderView$19.class
 com/pchouse/pchousestoremvn/views/MainMenuView$7.class
+com/pchouse/pchousestoremvn/views/NewSaleView$7.class
+com/pchouse/pchousestoremvn/controllers/SaleController.class
 com/pchouse/pchousestoremvn/views/EmployeeView$7.class
 com/pchouse/pchousestoremvn/views/CreatedOrderView$20.class
 com/pchouse/pchousestoremvn/views/RefurbTelevisionView$14.class
@@ -232,6 +243,7 @@ com/pchouse/pchousestoremvn/views/RefurbTelevisionView$4.class
 com/pchouse/pchousestoremvn/views/RefurbConsoleView$15.class
 com/pchouse/pchousestoremvn/views/RefurbMonitorView$15.class
 com/pchouse/pchousestoremvn/views/modals/CustomerModal$1.class
+com/pchouse/pchousestoremvn/views/NewSaleView.class
 com/pchouse/pchousestoremvn/views/RefurbComputerView$6.class
 com/pchouse/pchousestoremvn/views/MainMenuView$5.class
 com/pchouse/pchousestoremvn/views/modals/PaymentModal$3.class
@@ -252,6 +264,7 @@ com/pchouse/pchousestoremvn/controllers/OrderPaymentController.class
 com/pchouse/pchousestoremvn/common/CommonStrings.class
 com/pchouse/pchousestoremvn/views/RefurbMonitorView$16.class
 com/pchouse/pchousestoremvn/views/RefurbComputerView$4.class
+com/pchouse/pchousestoremvn/views/NewSaleView$3.class
 com/pchouse/pchousestoremvn/views/RefurbTelevisionView$3.class
 com/pchouse/pchousestoremvn/views/ProductServiceView$6.class
 com/pchouse/pchousestoremvn/views/RefurbConsoleView$5.class
@@ -263,6 +276,7 @@ com/pchouse/pchousestoremvn/views/OrderListView$3.class
 com/pchouse/pchousestoremvn/exception/BusinessException.class
 com/pchouse/pchousestoremvn/views/RefurbView$9.class
 com/pchouse/pchousestoremvn/dao/PersonDAO.class
+com/pchouse/pchousestoremvn/views/NewSaleView$10.class
 com/pchouse/pchousestoremvn/views/RefurbCustomView$5.class
 com/pchouse/pchousestoremvn/views/RefurbConsoleView.class
 com/pchouse/pchousestoremvn/views/NewOrderView$12.class
@@ -279,6 +293,7 @@ com/pchouse/pchousestoremvn/views/MainMenuView$9.class
 com/pchouse/pchousestoremvn/views/NewOrderView$23.class
 com/pchouse/pchousestoremvn/views/EmployeeView$2.class
 com/pchouse/pchousestoremvn/views/RefurbTelevisionView.class
+com/pchouse/pchousestoremvn/views/NewSaleView$1.class
 com/pchouse/pchousestoremvn/views/RefurbComputerView$11.class
 com/pchouse/pchousestoremvn/dao/CompanyDAO.class
 com/pchouse/pchousestoremvn/views/OrderListView$1.class
@@ -286,8 +301,10 @@ com/pchouse/pchousestoremvn/views/MainMenuView.class
 com/pchouse/pchousestoremvn/views/NewOrderView$20.class
 com/pchouse/pchousestoremvn/views/RefurbConsoleView$6.class
 com/pchouse/pchousestoremvn/views/CreatedOrderView$26.class
+com/pchouse/pchousestoremvn/views/NewSaleView$11.class
 com/pchouse/pchousestoremvn/models/ServiceOrderProdServ.class
 com/pchouse/pchousestoremvn/views/RefurbMonitorView$6.class
+com/pchouse/pchousestoremvn/views/NewSaleView$4.class
 com/pchouse/pchousestoremvn/views/ProductServiceView$7.class
 com/pchouse/pchousestoremvn/models/Employee.class
 com/pchouse/pchousestoremvn/views/RefurbConsoleView$9.class
@@ -298,6 +315,7 @@ com/pchouse/pchousestoremvn/controllers/OrderController.class
 com/pchouse/pchousestoremvn/views/NewOrderView$16.class
 com/pchouse/pchousestoremvn/views/NewOrderView$13.class
 com/pchouse/pchousestoremvn/views/modals/CustomerModal$5.class
+com/pchouse/pchousestoremvn/views/NewSaleView$13.class
 com/pchouse/pchousestoremvn/reports/PrintRefurbLabel.class
 com/pchouse/pchousestoremvn/views/ProductServiceView.class
 com/pchouse/pchousestoremvn/common/CommonConstant.class
@@ -311,9 +329,11 @@ com/pchouse/pchousestoremvn/views/NewOrderView$15.class
 com/pchouse/pchousestoremvn/enums/OrderStatus.class
 com/pchouse/pchousestoremvn/models/Sale.class
 com/pchouse/pchousestoremvn/views/RefurbCustomView$2.class
+com/pchouse/pchousestoremvn/views/NewSaleView$14.class
 com/pchouse/pchousestoremvn/views/RefurbCustomView$1.class
 com/pchouse/pchousestoremvn/views/modals/CustomerModal$7.class
 com/pchouse/pchousestoremvn/views/ProductServiceView$8.class
+com/pchouse/pchousestoremvn/views/NewSaleView$2.class
 com/pchouse/pchousestoremvn/controllers/RefurbController.class
 com/pchouse/pchousestoremvn/views/RefurbConsoleView$7.class
 com/pchouse/pchousestoremvn/views/RefurbMonitorView$7.class

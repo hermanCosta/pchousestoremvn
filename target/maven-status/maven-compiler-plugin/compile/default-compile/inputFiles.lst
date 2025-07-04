@@ -22,6 +22,8 @@
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/controllers/PersonController.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/controllers/ProductServiceController.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/controllers/RefurbController.java
+/Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/controllers/SaleController.java
+/Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/controllers/SaleProdServController.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/dao/CompanyDAO.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/dao/CustomerDAO.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/dao/DepositDAO.java
@@ -36,6 +38,8 @@
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/dao/PersonDAO.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/dao/ProductServiceDAO.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/dao/RefurbDAO.java
+/Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/dao/SaleDAO.java
+/Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/dao/SaleProdServDAO.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/enums/OrderStatus.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/enums/PayMethod.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/exception/BusinessException.java
@@ -50,6 +54,7 @@
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/models/Refund.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/models/Refurb.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/models/Sale.java
+/Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/models/SalePayment.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/models/SaleProdServ.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/models/ServiceOrder.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/models/ServiceOrderFault.java
@@ -66,6 +71,7 @@
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/views/MainMenuView.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/views/MenuViewTest.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/views/NewOrderView.java
+/Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/views/NewSaleView.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/views/OrderListView.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/views/ProductServiceView.java
 /Users/HermanCosta/NetBeansProjects/pchousestoremvn/src/main/java/com/pchouse/pchousestoremvn/views/RefurbComputerView.java

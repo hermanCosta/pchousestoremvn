@@ -218,7 +218,7 @@ public class NewOrderView extends javax.swing.JInternalFrame {
                             || !customer.getPerson().getEmail().equals(this.txt_email.getText())) {
 
                         JOptionPane.showMessageDialog(this, CommonConstant.WARN_CUSTOMER_MATCHING, this.getTitle(), JOptionPane.WARNING_MESSAGE);
-                        CustomerModal customerModal = new CustomerModal(this, null, null, new MainMenuView(CommonSetting.COMPANY), true, customer);
+                        CustomerModal customerModal = new CustomerModal(this, new MainMenuView(CommonSetting.COMPANY), true, customer);
                         customerModal.setVisible(true);
                         this.hdn_txt_customer_id.setText("");
                         return getOrderDetails;
@@ -231,7 +231,7 @@ public class NewOrderView extends javax.swing.JInternalFrame {
                     if (checkCustomer != null) {
                         JOptionPane.showMessageDialog(this, CommonConstant.WARN_EXIST_PERSON, this.getTitle(), JOptionPane.WARNING_MESSAGE);
 
-                        CustomerModal customerModal = new CustomerModal(this, null, null, _parentFrame, true, checkCustomer);
+                        CustomerModal customerModal = new CustomerModal(this, _parentFrame, true, checkCustomer);
                         customerModal.setLocationRelativeTo(this);
                         customerModal.setVisible(true);
 
@@ -1075,7 +1075,7 @@ public class NewOrderView extends javax.swing.JInternalFrame {
 
                     if (!this.txt_deposit.getText().trim().isEmpty()) {
 
-                        PaymentModal paymentModal = new PaymentModal(addOrder, this.txt_deposit.getText(), new MainMenuView(CommonSetting.COMPANY), true);
+                        PaymentModal paymentModal = new PaymentModal(addOrder, null, this.txt_deposit.getText(), new MainMenuView(CommonSetting.COMPANY), true);
                         paymentModal.setVisible(true);
 
                         Deposit deposit = new Deposit(addOrder, addOrder.getEmployee(), Double.parseDouble(this.txt_deposit.getText()), addOrder.getCreated());
@@ -1219,7 +1219,7 @@ public class NewOrderView extends javax.swing.JInternalFrame {
 
     private void btn_seacrh_customerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_seacrh_customerActionPerformed
         this.hdn_txt_customer_id.setText("");
-        CustomerModal customerModal = new CustomerModal(this, null, null, new MainMenuView(CommonSetting.COMPANY), true, null);
+        CustomerModal customerModal = new CustomerModal(this, new MainMenuView(CommonSetting.COMPANY), true, null);
         customerModal.setVisible(true);
     }//GEN-LAST:event_btn_seacrh_customerActionPerformed
 
