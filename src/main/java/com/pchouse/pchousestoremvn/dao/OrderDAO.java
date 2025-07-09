@@ -21,7 +21,7 @@ public class OrderDAO {
         EntityManager em = JPAUtil.getEntityManager();
         long orderId = 0;
         try {
-            TypedQuery<Long> query = em.createQuery("SELECT MAX(o.idOrder) FROM ServiceOrder o", Long.class);
+            TypedQuery<Long> query = em.createQuery("SELECT MAX(o.idServiceOrder) FROM ServiceOrder o", Long.class);
             Long result = query.getSingleResult();
             orderId = (result != null) ? result : 0;
         } catch (Exception e) {
@@ -35,7 +35,7 @@ public class OrderDAO {
 
     public long addOrderDAO(ServiceOrder pOrderModel) throws BusinessException {
         EntityManager em = JPAUtil.getEntityManager();
-        long idOrderAdded = 0;
+        long idServiceOrderAdded = 0;
         try {
             em.getTransaction().begin();
 
@@ -72,7 +72,7 @@ public class OrderDAO {
             // Persistir a ordem com suas associações gerenciadas
             ServiceOrder managedOrder = em.merge(pOrderModel);
             em.getTransaction().commit();
-            idOrderAdded = managedOrder.getIdServiceOrder();
+            idServiceOrderAdded = managedOrder.getIdServiceOrder();
         } catch (Exception e) {
             e.printStackTrace();
             em.getTransaction().rollback();
@@ -81,7 +81,7 @@ public class OrderDAO {
         } finally {
             em.close();
         }
-        return idOrderAdded;
+        return idServiceOrderAdded;
     }
 
     public ServiceOrder getItemOrderDAO(long pIdOrder) {
@@ -126,7 +126,7 @@ public class OrderDAO {
                     + "WHERE o.company = :pCompany AND "
                     + "(p.firstName LIKE :pSearch OR p.lastName LIKE :pSearch OR p.contactNo LIKE :pSearch OR "
                     + "p.email LIKE :pSearch OR d.brand LIKE :pSearch OR d.model LIKE :pSearch OR "
-                    + "d.serialNumber LIKE :pSearch OR CAST(o.idOrder AS string) LIKE :pSearch)", ServiceOrder.class);
+                    + "d.serialNumber LIKE :pSearch OR CAST(o.idServiceOrder AS string) LIKE :pSearch)", ServiceOrder.class);
             query.setParameter("pCompany", pCompany);
             query.setParameter("pSearch", "%" + pSearch + "%");
             listOrder = query.getResultList();

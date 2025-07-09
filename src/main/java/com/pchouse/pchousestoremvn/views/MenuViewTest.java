@@ -63,13 +63,13 @@ public class MenuViewTest extends JFrame {
 
 // Ícone do logo
         JLabel lblLogo = new JLabel();
-        lblLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/logo_header.png"))); // Ícone do logo
+        lblLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/logo_header.png"))); // Ícone do logo
         logoPanel.add(lblLogo, BorderLayout.CENTER);
         sidePanel.add(logoPanel);
 
 // Informações da loja com ícones
         JLabel lblShopAddress = new JLabel();
-        lblShopAddress.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_address.png"))); // Ícone de endereço
+        lblShopAddress.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_address.png"))); // Ícone de endereço
         lblShopAddress.setText(_company.getAddress());
         lblShopAddress.setForeground(Color.WHITE);
         lblShopAddress.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -77,7 +77,7 @@ public class MenuViewTest extends JFrame {
         sidePanel.add(lblShopAddress);
 
         JLabel lblShopTel = new JLabel();
-        lblShopTel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_phone_number.png"))); // Ícone de contato
+        lblShopTel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_phone_number.png"))); // Ícone de contato
         lblShopTel.setText(_company.getContactOne());
         lblShopTel.setForeground(Color.WHITE);
         lblShopTel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -232,6 +232,7 @@ public class MenuViewTest extends JFrame {
     }
 
     private void menuItemOrdersActionPerformed(ActionEvent evt) {
-        openInternalFrame(new OrderListView());
+        //openInternalFrame(new OrderListView());
+        openInternalFrame(new OrderSaleListView());
     }
 }

@@ -3,7 +3,7 @@ package com.pchouse.pchousestoremvn.views.modals;
 import com.pchouse.pchousestoremvn.common.CommonExtension;
 import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.controllers.CustomerController;
-import com.pchouse.pchousestoremvn.controllers.OrderController;
+import com.pchouse.pchousestoremvn.controllers.ServiceOrderController;
 import com.pchouse.pchousestoremvn.controllers.PersonController;
 import com.pchouse.pchousestoremvn.models.Customer;
 import com.pchouse.pchousestoremvn.models.Person;
@@ -32,7 +32,7 @@ public class CustomerModal extends javax.swing.JDialog {
     private NewOrderView _newOrderView;
     private CreatedOrderView _createdOrderView;
     private NewSaleView _newSaleView;
-    public final OrderController _orderController;
+    public final ServiceOrderController _orderController;
     private final DefaultTableModel _dtmCustomer;
     private final CustomerController _customerController;
     private List<Customer> _listCustomer;
@@ -58,7 +58,7 @@ public class CustomerModal extends javax.swing.JDialog {
         initComponents();
 
         CommonSetting.tableSettings(this.table_view_customers);
-        this._orderController = new OrderController();
+        this._orderController = new ServiceOrderController();
         this._customerController = new CustomerController();
         this._dtmCustomer = (DefaultTableModel) this.table_view_customers.getModel();
         this._customer = customer;
@@ -305,7 +305,7 @@ public class CustomerModal extends javax.swing.JDialog {
 
         panel_customers.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        lbl_search_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_search_black.png"))); // NOI18N
+        lbl_search_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_search_black.png"))); // NOI18N
 
         txt_search_customer.setFont(new java.awt.Font("sansserif", 0, 14)); // NOI18N
         txt_search_customer.setMinimumSize(new java.awt.Dimension(80, 32));
@@ -353,7 +353,7 @@ public class CustomerModal extends javax.swing.JDialog {
         panel_customer_input.setPreferredSize(new java.awt.Dimension(1000, 141));
 
         btn_international_number.setBackground(new java.awt.Color(0, 0, 0));
-        btn_international_number.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_international_number.png"))); // NOI18N
+        btn_international_number.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_international_number.png"))); // NOI18N
         btn_international_number.setPreferredSize(new java.awt.Dimension(40, 35));
         btn_international_number.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -390,7 +390,7 @@ public class CustomerModal extends javax.swing.JDialog {
         txt_first_name.setPreferredSize(new java.awt.Dimension(300, 25));
 
         btn_copy.setBackground(new java.awt.Color(0, 0, 0));
-        btn_copy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_copy.png"))); // NOI18N
+        btn_copy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_copy.png"))); // NOI18N
         btn_copy.setToolTipText("Copy to clipboard");
         btn_copy.setPreferredSize(new java.awt.Dimension(40, 35));
         btn_copy.addActionListener(new java.awt.event.ActionListener() {
@@ -510,7 +510,7 @@ public class CustomerModal extends javax.swing.JDialog {
         btn_select.setBackground(new java.awt.Color(21, 76, 121));
         btn_select.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_select.setForeground(new java.awt.Color(255, 255, 255));
-        btn_select.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_select_customer.png"))); // NOI18N
+        btn_select.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_select_customer.png"))); // NOI18N
         btn_select.setText("Select");
         btn_select.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -521,7 +521,7 @@ public class CustomerModal extends javax.swing.JDialog {
         btn_update.setBackground(new java.awt.Color(21, 76, 121));
         btn_update.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_update.setForeground(new java.awt.Color(255, 255, 255));
-        btn_update.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_save_changes.png"))); // NOI18N
+        btn_update.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_save_changes.png"))); // NOI18N
         btn_update.setText("Update");
         btn_update.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -532,7 +532,7 @@ public class CustomerModal extends javax.swing.JDialog {
         btn_clear_fields.setBackground(new java.awt.Color(21, 76, 121));
         btn_clear_fields.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_clear_fields.setForeground(new java.awt.Color(255, 255, 255));
-        btn_clear_fields.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_clear.png"))); // NOI18N
+        btn_clear_fields.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_clear.png"))); // NOI18N
         btn_clear_fields.setText("Clear");
         btn_clear_fields.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

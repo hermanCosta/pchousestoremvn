@@ -9,10 +9,10 @@ import com.pchouse.pchousestoremvn.controllers.DepositController;
 import com.pchouse.pchousestoremvn.controllers.DeviceController;
 import com.pchouse.pchousestoremvn.controllers.EmployeeController;
 import com.pchouse.pchousestoremvn.controllers.FaultController;
-import com.pchouse.pchousestoremvn.controllers.OrderController;
-import com.pchouse.pchousestoremvn.controllers.OrderFaultController;
+import com.pchouse.pchousestoremvn.controllers.ServiceOrderController;
+import com.pchouse.pchousestoremvn.controllers.ServiceOrderFaultController;
 import com.pchouse.pchousestoremvn.controllers.OrderNoteController;
-import com.pchouse.pchousestoremvn.controllers.OrderProdServController;
+import com.pchouse.pchousestoremvn.controllers.ServiceOrderProdServController;
 import com.pchouse.pchousestoremvn.controllers.ProductServiceController;
 import com.pchouse.pchousestoremvn.enums.OrderStatus;
 import com.pchouse.pchousestoremvn.models.Customer;
@@ -24,7 +24,7 @@ import com.pchouse.pchousestoremvn.models.Person;
 import com.pchouse.pchousestoremvn.models.ProductService;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderFault;
-import com.pchouse.pchousestoremvn.models.ServiceOrderNote;
+import com.pchouse.pchousestoremvn.models.OrderNote;
 import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrderProdServ;
 import com.pchouse.pchousestoremvn.views.modals.CustomerModal;
@@ -51,14 +51,14 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
 
     private List<ProductService> _listProdServ;
     private List<Fault> _listFault;
-    private final OrderController _orderController;
+    private final ServiceOrderController _orderController;
     private final ProductServiceController _productServiceController;
     private final FaultController _faultController;
     private final CustomerController _customerController;
     private final DepositController _depositController;
     private final EmployeeController _employeeController;
-    private final OrderProdServController _orderProdServController;
-    private final OrderFaultController _orderFaultController;
+    private final ServiceOrderProdServController _orderProdServController;
+    private final ServiceOrderFaultController _orderFaultController;
     private final OrderNoteController _orderNoteController;
     private final DeviceController _deviceController;
     private final DefaultTableModel _dtmProdServ;
@@ -67,7 +67,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
     private final DefaultListModel _defaultListModelFault;
     Frame _parentFrame = JOptionPane.getFrameForComponent(this);
 
-    private ServiceOrder _servicerderModel;
+    private ServiceOrder _serviceOrderModel;
     // public OrderPayment _orderPayment = null;
 
     public CreatedOrderView(ServiceOrder orderModel, List<ServiceOrderFault> listOrderFault, List<ServiceOrderProdServ> listOrderProdServ, List<Deposit> listOrderDeposit) {
@@ -81,14 +81,14 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
         CommonSetting.tableSettings(table_view_faults);
         CommonSetting.tableSettings(table_view_products);
 
-        this._orderController = new OrderController();
+        this._orderController = new ServiceOrderController();
         this._productServiceController = new ProductServiceController();
         this._faultController = new FaultController();
         this._customerController = new CustomerController();
         this._depositController = new DepositController();
         this._employeeController = new EmployeeController();
-        this._orderProdServController = new OrderProdServController();
-        this._orderFaultController = new OrderFaultController();
+        this._orderProdServController = new ServiceOrderProdServController();
+        this._orderFaultController = new ServiceOrderFaultController();
         this._orderNoteController = new OrderNoteController();
         this._deviceController = new DeviceController();
         this._dtmProdServ = (DefaultTableModel) this.table_view_products.getModel();
@@ -98,7 +98,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
         this.list_prod_serv_search.setModel(_defaultListModelProdServ);
         this.list_fault_search.setModel(_defaultListModelFault);
 
-        this._servicerderModel = orderModel;
+        this._serviceOrderModel = orderModel;
         loadOrderFields(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
     }
 
@@ -354,8 +354,8 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
         return listOrderFault;
     }
 
-    private ServiceOrderNote getOrderNote(ServiceOrder order) {
-        ServiceOrderNote orderNote = null;
+    private OrderNote getOrderNote(ServiceOrder order) {
+        OrderNote orderNote = null;
         Employee employee = this._employeeController.getItemEmployee(2);
         Date date = new Date();
         Date createdDate = new Timestamp(date.getTime());
@@ -363,7 +363,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
         if (this.editor_pane_notes.getText().trim().isEmpty()) {
             return orderNote;
         } else {
-            orderNote = new ServiceOrderNote(order, employee, this.editor_pane_notes.getText(), createdDate);
+            orderNote = new OrderNote(order, employee, this.editor_pane_notes.getText(), createdDate);
         }
         return orderNote;
     }
@@ -839,7 +839,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
         btn_notes.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_notes.setForeground(new java.awt.Color(255, 255, 255));
         btn_notes.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_notes.png"))); // NOI18N
-        btn_notes.setText("Notes");
+        btn_notes.setText("History");
         btn_notes.setNextFocusableComponent(txt_first_name);
         btn_notes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1189,7 +1189,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
 
                 if (!this.txt_deposit.getText().trim().isEmpty()) {
 
-                    PaymentModal paymentModal = new PaymentModal(updateOrder, null, this.txt_deposit.getText(), _parentFrame, true);
+                    PaymentModal paymentModal = new PaymentModal(updateOrder, this.txt_deposit.getText(), _parentFrame, true);
                     paymentModal.setLocationRelativeTo(this);
                     paymentModal.setVisible(true);
 
@@ -1213,7 +1213,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
             }
 
             if (isUpdated) {
-                ServiceOrderNote orderNote = new ServiceOrderNote(updateOrder, updateOrder.getEmployee(), CommonConstant.ORDER_UPDATED_NOTE, new Date());
+                OrderNote orderNote = new OrderNote(updateOrder, updateOrder.getEmployee(), CommonConstant.ORDER_UPDATED_NOTE, new Date());
                 long idOrderNote = _orderNoteController.addOrderNote(orderNote);
 
                 if (idOrderNote > 0) {
@@ -1414,9 +1414,9 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
                         // Sum price column and set into total textField
                         getPriceSum();
 
-                        _servicerderModel.setTotal(Double.parseDouble(this.lbl_total_field.getText()));
-                        _servicerderModel.setDue(Double.parseDouble(this.lbl_due_field.getText()));
-                        _orderController.updateOrder(_servicerderModel);
+                        _serviceOrderModel.setTotal(Double.parseDouble(this.lbl_total_field.getText()));
+                        _serviceOrderModel.setDue(Double.parseDouble(this.lbl_due_field.getText()));
+                        _orderController.updateOrder(_serviceOrderModel);
                     } else {
                         JOptionPane.showMessageDialog(this, CommonConstant.ERROR_DELETE_ITEM, this.getTitle(), JOptionPane.ERROR_MESSAGE);
                     }
@@ -1515,7 +1515,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
 
     private void btn_notesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_notesActionPerformed
 
-        NoteModal noteModal = new NoteModal(_servicerderModel, _parentFrame, true);
+        NoteModal noteModal = new NoteModal(_serviceOrderModel, _parentFrame, true);
         noteModal.setLocationRelativeTo(this);
         noteModal.setVisible(true);
     }//GEN-LAST:event_btn_notesActionPerformed
@@ -1530,7 +1530,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btn_not_fixActionPerformed
 
     private void btn_depositActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_depositActionPerformed
-        DepositModal depositModal = new DepositModal(_servicerderModel, _parentFrame, true);
+        DepositModal depositModal = new DepositModal(_serviceOrderModel, _parentFrame, true);
         depositModal.setLocationRelativeTo(this);
         depositModal.setVisible(true);
     }//GEN-LAST:event_btn_depositActionPerformed

@@ -2,64 +2,71 @@ package com.pchouse.pchousestoremvn.views.modals;
 
 import com.pchouse.pchousestoremvn.common.CommonConstant;
 import com.pchouse.pchousestoremvn.common.CommonExtension;
-import com.pchouse.pchousestoremvn.controllers.DepositController;
-import com.pchouse.pchousestoremvn.controllers.EmployeeController;
-import com.pchouse.pchousestoremvn.controllers.OrderController;
-import com.pchouse.pchousestoremvn.controllers.OrderPaymentController;
+import com.pchouse.pchousestoremvn.controllers.ServiceOrderPaymentController;
+import com.pchouse.pchousestoremvn.controllers.SalePaymentController;
 import com.pchouse.pchousestoremvn.enums.PayMethod;
 import com.pchouse.pchousestoremvn.models.Sale;
+import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 
 public class PaymentModal extends javax.swing.JDialog {
-    private final OrderController _orderController;
-    private final DepositController _depositController;
-    private final EmployeeController _employeeController;
+
     private ServiceOrder _serviceOrderModel;
-    private Sale sale;
-    private final OrderPaymentController _orderPaymentController;
+    private Sale _saleModel;
+    private final ServiceOrderPaymentController _orderPaymentController;
+    private final SalePaymentController _salePaymentController;
     private ServiceOrderPayment _orderPayment;
+    private SalePayment _salePayment;
     private String _amountToPay;
 
-    public PaymentModal(ServiceOrder serviceOrder, Sale sale, String amountToPay, java.awt.Frame parent, boolean modal) {
+    public PaymentModal(ServiceOrder serviceOrder, String amountToPay, java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
 
-        //this._createdOrderView = orderModel;
-        this._orderController = new OrderController();
-        this._depositController = new DepositController();
-        this._employeeController = new EmployeeController();
+        this._orderPaymentController = new ServiceOrderPaymentController();
+        this._salePaymentController = new SalePaymentController();
         this._serviceOrderModel = serviceOrder;
-        this.sale = sale;
         this._amountToPay = amountToPay;
 
-        //this._newOrderView = newOrderView;
-        //this._createdOrderView = createdOrderView;
-        this._orderPaymentController = new OrderPaymentController();
-        loadOrderPaymentFields(serviceOrder, amountToPay);
+        loadOrderPaymentFields(serviceOrder.getIdServiceOrder(), amountToPay);
+    }
+
+    public PaymentModal(Sale sale, String amountToPay, java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
+        initComponents();
+
+        this._orderPaymentController = new ServiceOrderPaymentController();
+        this._salePaymentController = new SalePaymentController();
+        this._saleModel = sale;
+        this._amountToPay = amountToPay;
+
+        loadOrderPaymentFields(sale.getIdSale(), amountToPay);
     }
 
     public ServiceOrderPayment getOrderPayment() {
         return _orderPayment;
     }
 
-    private void loadOrderPaymentFields(ServiceOrder pOrderNo, String pDepositAmount) {
-        this.lbl_order_value.setText(String.valueOf(pOrderNo.getIdServiceOrder()));
-        this.lbl_amount_value.setText(CommonExtension.formatEuroCurrency(Double.parseDouble(pDepositAmount)));
+    public SalePayment getSalePayment() {
+        return _salePayment;
+    }
+
+    private void loadOrderPaymentFields(long id, String amount) {
+        this.lbl_order_value.setText(String.valueOf(id));
+        this.lbl_amount_value.setText(CommonExtension.formatEuroCurrency(Double.parseDouble(amount)));
         this.txt_payment_value.setText("");
         this.lbl_change_value.setText("");
     }
 
-    private ServiceOrderPayment getOrderPaymentFields() {
-        ServiceOrderPayment orderPayment = null;
-
+    public void confirmPayment() {
         String paymentValueText = this.txt_payment_value.getText().trim();
         Object selectedItem = this.combo_box_pay_method.getSelectedItem();
 
         if (selectedItem == null || selectedItem.toString().isEmpty() || paymentValueText.isEmpty()) {
-            return null;
+            return;
         }
 
         double paymentValue;
@@ -69,27 +76,37 @@ public class PaymentModal extends javax.swing.JDialog {
             paymentValue = Double.parseDouble(paymentValueText);
             amountToPay = Double.parseDouble(_amountToPay);
         } catch (NumberFormatException e) {
-            // Handle invalid input gracefully
-            return null;
+            return;
         }
 
         if (paymentValue < amountToPay) {
             JOptionPane.showMessageDialog(this, CommonConstant.ERROR_ORDER_DIVERG_PAYMENT);
-            return null;
+            return;
         }
 
         PayMethod selectedPayMethod = (PayMethod) selectedItem;
 
-        orderPayment = new ServiceOrderPayment(
-                _serviceOrderModel,
-                selectedPayMethod,
-                CommonExtension.formatEuroToDouble(this.lbl_amount_value.getText()),
-                paymentValue,
-                CommonExtension.formatEuroToDouble(this.lbl_change_value.getText()),
-                _serviceOrderModel.getCreated()
-        );
+        double changeAmount = paymentValue - amountToPay;
 
-        return orderPayment;
+        if (_serviceOrderModel != null) {
+            _orderPayment = new ServiceOrderPayment(
+                    _serviceOrderModel,
+                    selectedPayMethod,
+                    amountToPay,
+                    paymentValue,
+                    changeAmount,
+                    _serviceOrderModel.getCreated()
+            );
+        } else if (_saleModel != null) {
+            _salePayment = new SalePayment(
+                    _saleModel,
+                    selectedPayMethod,
+                    amountToPay,
+                    paymentValue,
+                    changeAmount,
+                    _saleModel.getCreated()
+            );
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -183,7 +200,7 @@ public class PaymentModal extends javax.swing.JDialog {
         btn_pay.setBackground(new java.awt.Color(21, 76, 121));
         btn_pay.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_pay.setForeground(new java.awt.Color(255, 255, 255));
-        btn_pay.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_pay.png"))); // NOI18N
+        btn_pay.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_pay.png"))); // NOI18N
         btn_pay.setText("Pay");
         btn_pay.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -194,7 +211,7 @@ public class PaymentModal extends javax.swing.JDialog {
         btn_cancel.setBackground(new java.awt.Color(21, 76, 121));
         btn_cancel.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_cancel.setForeground(new java.awt.Color(255, 255, 255));
-        btn_cancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_cancel.png"))); // NOI18N
+        btn_cancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_cancel.png"))); // NOI18N
         btn_cancel.setText("Cancel");
         btn_cancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -310,25 +327,31 @@ public class PaymentModal extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_payActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_payActionPerformed
-        ServiceOrderPayment addOrderPayment = getOrderPaymentFields();
+        confirmPayment();
+
+        // Tenta obter o pagamento de service ordem
+        ServiceOrderPayment addOrderPayment = getOrderPayment();
+
+        // Tenta obter o pagamento de venda
+        SalePayment addSalePayment = getSalePayment();
 
         if (addOrderPayment != null) {
             long idOrderPaymentAdded = _orderPaymentController.addOrderPayment(addOrderPayment);
-            if (addOrderPayment != null) {
-                if (idOrderPaymentAdded > 0) {
-                    //JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_ORDER_PAYMENT);
-                    addOrderPayment.setIdOrderPayment(idOrderPaymentAdded);
-
-//                    if (_newOrderView != null) {
-//                        _newOrderView._ord = addOrderPayment;
-//                    }
-                    //CommonExtension.orderPayment = addOrderPayment;
-                    this._orderPayment = addOrderPayment;
-                    this.dispose();
-                } else {
-                    JOptionPane.showMessageDialog(this, CommonConstant.ERROR_ORDER_PAYMENT, null, JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
+            if (idOrderPaymentAdded > 0) {
+                addOrderPayment.setIdOrderPayment(idOrderPaymentAdded);
+                this._orderPayment = addOrderPayment;
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, CommonConstant.ERROR_ORDER_PAYMENT, null, JOptionPane.ERROR_MESSAGE);
+            }
+        } else if (addSalePayment != null) {
+            long idSalePaymentAdded = _salePaymentController.addOrderPayment(addSalePayment);
+            if (idSalePaymentAdded > 0) {
+                addSalePayment.setIdSalePayment(idSalePaymentAdded);
+                this._salePayment = addSalePayment;
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, CommonConstant.ERROR_ORDER_PAYMENT, null, JOptionPane.ERROR_MESSAGE);
             }
         }
     }//GEN-LAST:event_btn_payActionPerformed

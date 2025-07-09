@@ -2,6 +2,8 @@ package com.pchouse.pchousestoremvn.dao;
 
 import com.pchouse.pchousestoremvn.models.Deposit;
 import com.pchouse.pchousestoremvn.models.Employee;
+import com.pchouse.pchousestoremvn.models.Sale;
+import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
 import com.pchouse.pchousestoremvn.util.JPAUtil;
@@ -26,6 +28,15 @@ public class DepositDAO {
                 );
                 deposit.setServiceOrder(managedOrder);
             }
+            
+            // Attach associated Sale
+            if (deposit.getSale()!= null) {
+                Sale managedSale = em.find(
+                        Sale.class,
+                        deposit.getSale().getIdSale()
+                );
+                deposit.setSale(managedSale);
+            }
 
             // Attach associated ServiceOrderPayment
             if (deposit.getServiceOrderPayment() != null) {
@@ -34,6 +45,15 @@ public class DepositDAO {
                         deposit.getServiceOrderPayment().getIdOrderPayment()
                 );
                 deposit.setServiceOrderPayment(managedOrderPayment);
+            }
+            
+            // Attach associated SalePayment
+            if (deposit.getSalePayment() != null) {
+                SalePayment managedSalePayment = em.find(
+                        SalePayment.class,
+                        deposit.getSalePayment().getIdSalePayment()
+                );
+                deposit.setSalePayment(managedSalePayment);
             }
 
             // Attach associated Employee
@@ -72,5 +92,4 @@ public class DepositDAO {
         }
         return orderDeposits;
     }
-
 }

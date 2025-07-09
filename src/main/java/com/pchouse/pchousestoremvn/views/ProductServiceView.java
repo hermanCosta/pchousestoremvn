@@ -81,9 +81,9 @@ public class ProductServiceView extends javax.swing.JInternalFrame {
         } else {
             getProdServ = new ProductService(
                     txt_prod_serv_name.getText().toUpperCase(),
-                    (this.txt_prod_serv_qty.getText().trim().isEmpty()) ? 1 : Integer.parseInt(this.txt_prod_serv_qty.getText()),
-                    Double.parseDouble(txt_prod_serv_price.getText()),
-                    (this.txt_prod_serv_min_qty.getText().trim().isEmpty()) ? 1 : Integer.parseInt(this.txt_prod_serv_min_qty.getText()),
+                    (this.txt_prod_serv_qty.getText().trim().isEmpty()) ? 1 : Integer.parseInt(this.txt_prod_serv_qty.getText().trim()),
+                    Double.parseDouble(txt_prod_serv_price.getText().trim()),
+                    (this.txt_prod_serv_min_qty.getText().trim().isEmpty()) ? 1 : Integer.parseInt(this.txt_prod_serv_min_qty.getText().trim()),
                     combo_box_prod_serv_categ.getSelectedItem().toString(),
                     txt_prod_serv_notes.getText().toUpperCase(),
                     CommonSetting.COMPANY
@@ -190,7 +190,7 @@ public class ProductServiceView extends javax.swing.JInternalFrame {
         btn_update_product_service.setBackground(new java.awt.Color(21, 76, 121));
         btn_update_product_service.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_update_product_service.setForeground(new java.awt.Color(255, 255, 255));
-        btn_update_product_service.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_save_changes.png"))); // NOI18N
+        btn_update_product_service.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_save_changes.png"))); // NOI18N
         btn_update_product_service.setText("Update");
         btn_update_product_service.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -201,7 +201,7 @@ public class ProductServiceView extends javax.swing.JInternalFrame {
         btn_add_product_service.setBackground(new java.awt.Color(21, 76, 121));
         btn_add_product_service.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_add_product_service.setForeground(new java.awt.Color(255, 255, 255));
-        btn_add_product_service.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_add.png"))); // NOI18N
+        btn_add_product_service.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_add.png"))); // NOI18N
         btn_add_product_service.setText("Add");
         btn_add_product_service.setToolTipText("");
         btn_add_product_service.addActionListener(new java.awt.event.ActionListener() {
@@ -213,7 +213,7 @@ public class ProductServiceView extends javax.swing.JInternalFrame {
         txt_delete_product_service.setBackground(new java.awt.Color(21, 76, 121));
         txt_delete_product_service.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         txt_delete_product_service.setForeground(new java.awt.Color(255, 255, 255));
-        txt_delete_product_service.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_cancel.png"))); // NOI18N
+        txt_delete_product_service.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_cancel.png"))); // NOI18N
         txt_delete_product_service.setText("Delete");
         txt_delete_product_service.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -224,7 +224,7 @@ public class ProductServiceView extends javax.swing.JInternalFrame {
         btn_clear_fields.setBackground(new java.awt.Color(21, 76, 121));
         btn_clear_fields.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_clear_fields.setForeground(new java.awt.Color(255, 255, 255));
-        btn_clear_fields.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_clear.png"))); // NOI18N
+        btn_clear_fields.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_clear.png"))); // NOI18N
         btn_clear_fields.setText("Clear");
         btn_clear_fields.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -452,7 +452,7 @@ public class ProductServiceView extends javax.swing.JInternalFrame {
             }
         });
 
-        lbl_search_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_search_black.png"))); // NOI18N
+        lbl_search_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_search_black.png"))); // NOI18N
 
         javax.swing.GroupLayout panel_product_listLayout = new javax.swing.GroupLayout(panel_product_list);
         panel_product_list.setLayout(panel_product_listLayout);

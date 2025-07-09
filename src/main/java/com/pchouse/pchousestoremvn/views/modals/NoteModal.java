@@ -4,23 +4,21 @@ import com.pchouse.pchousestoremvn.common.CommonConstant;
 import com.pchouse.pchousestoremvn.common.CommonExtension;
 import com.pchouse.pchousestoremvn.common.CommonStrings;
 import com.pchouse.pchousestoremvn.controllers.EmployeeController;
-import com.pchouse.pchousestoremvn.controllers.OrderController;
 import com.pchouse.pchousestoremvn.controllers.OrderNoteController;
 import com.pchouse.pchousestoremvn.models.Employee;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
-import com.pchouse.pchousestoremvn.models.ServiceOrderNote;
+import com.pchouse.pchousestoremvn.models.OrderNote;
 import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 public class NoteModal extends javax.swing.JDialog {
-    
-    private final OrderController _orderController;
+
     private final OrderNoteController _orderNoteController;
     private final EmployeeController _employeeController;
     private final DefaultTableModel _dtmOrderNote;
-    private List<ServiceOrderNote> _listOrderNotes;
+    private List<OrderNote> _listOrderNotes;
     private ServiceOrder _createdOrderView;
 
     public NoteModal(ServiceOrder orderModel, java.awt.Frame parent, boolean modal) {
@@ -28,7 +26,6 @@ public class NoteModal extends javax.swing.JDialog {
         initComponents();
 
         this._createdOrderView = orderModel;
-        this._orderController = new OrderController();
         this._orderNoteController = new OrderNoteController();
         this._employeeController = new EmployeeController();
         this._createdOrderView = orderModel;
@@ -42,7 +39,7 @@ public class NoteModal extends javax.swing.JDialog {
         _dtmOrderNote.setRowCount(0);
 
         if (this._listOrderNotes != null) {
-            for (ServiceOrderNote orderNote : _listOrderNotes) {
+            for (OrderNote orderNote : _listOrderNotes) {
                 _dtmOrderNote.addRow(
                         new Object[]{
                             orderNote.getIdServiceOrderNote(),
@@ -62,7 +59,7 @@ public class NoteModal extends javax.swing.JDialog {
             if (this._listOrderNotes != null) {
                 _dtmOrderNote.setRowCount(0);
 
-                for (ServiceOrderNote orderNote : _listOrderNotes) {
+                for (OrderNote orderNote : _listOrderNotes) {
                     _dtmOrderNote.addRow(
                             new Object[]{
                                 orderNote.getIdServiceOrderNote(),
@@ -78,8 +75,8 @@ public class NoteModal extends javax.swing.JDialog {
         }
     }
 
-    private ServiceOrderNote getOrderNoteFields(ServiceOrder order) {
-        ServiceOrderNote orderNote = null;
+    private OrderNote getOrderNoteFields(ServiceOrder order) {
+        OrderNote orderNote = null;
 
         if (this.editor_pane_notes.getText().trim().isEmpty() || !this.editor_pane_notes.isEnabled() || !this.hdn_txt_note_id.getText().trim().isEmpty()) {
             return orderNote;
@@ -92,7 +89,7 @@ public class NoteModal extends javax.swing.JDialog {
                 String password = CommonExtension.requestUserPassword();
                 Employee employee = _employeeController.getEmployeeByPass(password);
                 if (employee != null) {
-                    orderNote = new ServiceOrderNote(order, employee, this.editor_pane_notes.getText().toUpperCase(), new Date());
+                    orderNote = new OrderNote(order, employee, this.editor_pane_notes.getText().toUpperCase(), new Date());
                 } else {
                     JOptionPane.showMessageDialog(this, CommonConstant.NOT_AUTHORIZED, null, JOptionPane.ERROR_MESSAGE);
                 }
@@ -136,7 +133,7 @@ public class NoteModal extends javax.swing.JDialog {
 
         panel_notes.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        lbl_search_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_search_black.png"))); // NOI18N
+        lbl_search_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_search_black.png"))); // NOI18N
 
         txt_search_note.setPreferredSize(new java.awt.Dimension(12, 30));
         txt_search_note.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -245,7 +242,7 @@ public class NoteModal extends javax.swing.JDialog {
         btn_clear_fields.setBackground(new java.awt.Color(21, 76, 121));
         btn_clear_fields.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_clear_fields.setForeground(new java.awt.Color(255, 255, 255));
-        btn_clear_fields.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_clear.png"))); // NOI18N
+        btn_clear_fields.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_clear.png"))); // NOI18N
         btn_clear_fields.setText("Clear");
         btn_clear_fields.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -256,7 +253,7 @@ public class NoteModal extends javax.swing.JDialog {
         btn_add.setBackground(new java.awt.Color(21, 76, 121));
         btn_add.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_add.setForeground(new java.awt.Color(255, 255, 255));
-        btn_add.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_add.png"))); // NOI18N
+        btn_add.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_add.png"))); // NOI18N
         btn_add.setText("Add");
         btn_add.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -267,7 +264,7 @@ public class NoteModal extends javax.swing.JDialog {
         btn_delete.setBackground(new java.awt.Color(21, 76, 121));
         btn_delete.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_delete.setForeground(new java.awt.Color(255, 255, 255));
-        btn_delete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_cancel.png"))); // NOI18N
+        btn_delete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_cancel.png"))); // NOI18N
         btn_delete.setText("Delete");
         btn_delete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -367,7 +364,7 @@ public class NoteModal extends javax.swing.JDialog {
     }//GEN-LAST:event_btn_clear_fieldsActionPerformed
 
     private void btn_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
-        ServiceOrderNote addOrderNote = getOrderNoteFields(_createdOrderView);
+        OrderNote addOrderNote = getOrderNoteFields(_createdOrderView);
         if (addOrderNote != null) {
 
             long idNoteAdded = _orderNoteController.addOrderNote(addOrderNote);
@@ -387,7 +384,7 @@ public class NoteModal extends javax.swing.JDialog {
 
         if (selectedRow >= 0) {
 
-            ServiceOrderNote deleteNote = new ServiceOrderNote();
+            OrderNote deleteNote = new OrderNote();
 
 //            deleteNote.setNote((Integer) _dtmFault.getValueAt(selectedRow, 0));
 //            deleteNote.setDescription(_dtmFault.getValueAt(selectedRow, 1).toString());

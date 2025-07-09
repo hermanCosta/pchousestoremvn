@@ -4,6 +4,7 @@ import com.pchouse.pchousestoremvn.dao.SaleDAO;
 import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Company;
 import com.pchouse.pchousestoremvn.models.Sale;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SaleController {
@@ -12,31 +13,67 @@ public class SaleController {
 
     // Retrieve the ID of the last sale
     public long getLastSaleId() {
-        return SALE_DAO.getLastSaleIdDAO();
+        try {
+            return SALE_DAO.getLastSaleIdDAO();
+        } catch (Exception e) {
+            System.err.println("Error retrieving last sale ID: " + e.getMessage());
+            e.printStackTrace();
+            return -1;
+        }
     }
 
-    // Add a new sale to the database
+// Add a new sale to the database
     public long addSale(Sale pSale) throws BusinessException {
-        return SALE_DAO.addSaleDAO(pSale);
+        try {
+            return SALE_DAO.addSaleDAO(pSale);
+        } catch (Exception e) {
+            System.err.println("Error adding sale: " + e.getMessage());
+            e.printStackTrace();
+            throw new BusinessException("Unable to add sale.");
+        }
     }
 
-    // Get sale details by ID
+// Get sale details by ID
     public Sale getItemSale(long pIdSale) {
-        return SALE_DAO.getItemSaleDAO(pIdSale);
+        try {
+            return SALE_DAO.getItemSaleDAO(pIdSale);
+        } catch (Exception e) {
+            System.err.println("Error retrieving sale by ID: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    // Retrieve all sales for a specific company
+// Retrieve all sales for a specific company
     public List<Sale> getAllSales(Company pCompany) {
-        return SALE_DAO.getAllSaleDAO(pCompany);
+        try {
+            return SALE_DAO.getAllSaleDAO(pCompany);
+        } catch (Exception e) {
+            System.err.println("Error retrieving all sales: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
-    // Search sales for a specific company based on a search term
+// Search sales for a specific company based on a search term
     public List<Sale> searchSale(Company pCompany, String pSearch) {
-        return SALE_DAO.searchSaleDAO(pCompany, pSearch);
+        try {
+            return SALE_DAO.searchSaleDAO(pCompany, pSearch);
+        } catch (Exception e) {
+            System.err.println("Error searching sales: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
-    // Update an existing sale
+// Update an existing sale
     public boolean updateSale(Sale pSaleModel) {
-        return SALE_DAO.updateSaleDAO(pSaleModel);
+        try {
+            return SALE_DAO.updateSaleDAO(pSaleModel);
+        } catch (Exception e) {
+            System.err.println("Error updating sale: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
     }
 }

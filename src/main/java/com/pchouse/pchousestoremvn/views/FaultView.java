@@ -176,7 +176,7 @@ public class FaultView extends javax.swing.JInternalFrame {
             }
         });
 
-        lbl_search_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_search_black.png"))); // NOI18N
+        lbl_search_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_search_black.png"))); // NOI18N
 
         panel_fault_input.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -228,7 +228,7 @@ public class FaultView extends javax.swing.JInternalFrame {
         btn_clear_fields.setBackground(new java.awt.Color(21, 76, 121));
         btn_clear_fields.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_clear_fields.setForeground(new java.awt.Color(255, 255, 255));
-        btn_clear_fields.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_clear.png"))); // NOI18N
+        btn_clear_fields.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_clear.png"))); // NOI18N
         btn_clear_fields.setText("Clear");
         btn_clear_fields.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -239,7 +239,7 @@ public class FaultView extends javax.swing.JInternalFrame {
         btn_update.setBackground(new java.awt.Color(21, 76, 121));
         btn_update.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_update.setForeground(new java.awt.Color(255, 255, 255));
-        btn_update.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_save_changes.png"))); // NOI18N
+        btn_update.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_save_changes.png"))); // NOI18N
         btn_update.setText("Update");
         btn_update.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -250,7 +250,7 @@ public class FaultView extends javax.swing.JInternalFrame {
         btn_add.setBackground(new java.awt.Color(21, 76, 121));
         btn_add.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_add.setForeground(new java.awt.Color(255, 255, 255));
-        btn_add.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_add.png"))); // NOI18N
+        btn_add.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_add.png"))); // NOI18N
         btn_add.setText("Add");
         btn_add.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -261,7 +261,7 @@ public class FaultView extends javax.swing.JInternalFrame {
         btn_delete.setBackground(new java.awt.Color(21, 76, 121));
         btn_delete.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_delete.setForeground(new java.awt.Color(255, 255, 255));
-        btn_delete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_cancel.png"))); // NOI18N
+        btn_delete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_cancel.png"))); // NOI18N
         btn_delete.setText("Delete");
         btn_delete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

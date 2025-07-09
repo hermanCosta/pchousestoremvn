@@ -66,7 +66,7 @@ public class PrintRefurbLabel extends javax.swing.JFrame {
         panel_refurb_specs.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         panel_refurb_specs.setMaximumSize(new java.awt.Dimension(555, 200));
 
-        lbl_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/logo_slogan_small.png"))); // NOI18N
+        lbl_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/logo_slogan_small.png"))); // NOI18N
 
         lbl_warranty.setFont(new java.awt.Font("sansserif", 0, 13)); // NOI18N
         lbl_warranty.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -176,7 +176,7 @@ public class PrintRefurbLabel extends javax.swing.JFrame {
         btn_print.setBackground(new java.awt.Color(21, 76, 121));
         btn_print.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
         btn_print.setForeground(new java.awt.Color(255, 255, 255));
-        btn_print.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_print.png"))); // NOI18N
+        btn_print.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_print.png"))); // NOI18N
         btn_print.setText("Print");
         btn_print.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

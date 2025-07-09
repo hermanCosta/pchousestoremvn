@@ -3,10 +3,10 @@ package com.pchouse.pchousestoremvn.views;
 import com.pchouse.pchousestoremvn.common.CommonConstant;
 import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.controllers.DepositController;
-import com.pchouse.pchousestoremvn.controllers.OrderController;
-import com.pchouse.pchousestoremvn.controllers.OrderFaultController;
+import com.pchouse.pchousestoremvn.controllers.ServiceOrderController;
+import com.pchouse.pchousestoremvn.controllers.ServiceOrderFaultController;
 import com.pchouse.pchousestoremvn.controllers.OrderNoteController;
-import com.pchouse.pchousestoremvn.controllers.OrderProdServController;
+import com.pchouse.pchousestoremvn.controllers.ServiceOrderProdServController;
 import com.pchouse.pchousestoremvn.enums.OrderStatus;
 import com.pchouse.pchousestoremvn.models.Deposit;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
@@ -22,10 +22,10 @@ import javax.swing.table.DefaultTableModel;
 public class OrderListView extends javax.swing.JInternalFrame {
 
     private List<ServiceOrder> _listOrder;
-    private final OrderController _orderController;
+    private final ServiceOrderController _orderController;
     private final OrderNoteController _orderNoteController;
-    private final OrderFaultController _orderFaultController;
-    private final OrderProdServController _orderProdServController;
+    private final ServiceOrderFaultController _orderFaultController;
+    private final ServiceOrderProdServController _orderProdServController;
     private final DepositController _orderDeposit;
     private final DefaultTableModel _dtmOrder;
 
@@ -35,10 +35,10 @@ public class OrderListView extends javax.swing.JInternalFrame {
         CommonSetting.requestTxtFocus(this.txt_search_order);
         CommonSetting.tableSettings(this.table_view_order_list);
 
-        this._orderController = new OrderController();
+        this._orderController = new ServiceOrderController();
         this._orderNoteController = new OrderNoteController();
-        this._orderFaultController = new OrderFaultController();
-        this._orderProdServController = new OrderProdServController();
+        this._orderFaultController = new ServiceOrderFaultController();
+        this._orderProdServController = new ServiceOrderProdServController();
         this._orderDeposit = new DepositController();
         this._dtmOrder = (DefaultTableModel) this.table_view_order_list.getModel();
 
@@ -99,10 +99,11 @@ public class OrderListView extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         panel_order_list = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        table_view_order_list = new javax.swing.JTable();
         txt_search_order = new javax.swing.JTextField();
         lbl_search_icon = new javax.swing.JLabel();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        table_view_order_list = new javax.swing.JTable();
 
         setBorder(null);
         setClosable(true);
@@ -113,6 +114,18 @@ public class OrderListView extends javax.swing.JInternalFrame {
         setPreferredSize(new java.awt.Dimension(1050, 650));
 
         panel_order_list.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        txt_search_order.setFont(new java.awt.Font("sansserif", 0, 14)); // NOI18N
+        txt_search_order.setMinimumSize(new java.awt.Dimension(80, 32));
+        txt_search_order.setPreferredSize(new java.awt.Dimension(500, 30));
+        txt_search_order.setRequestFocusEnabled(false);
+        txt_search_order.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txt_search_orderKeyReleased(evt);
+            }
+        });
+
+        lbl_search_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_search_black.png"))); // NOI18N
 
         table_view_order_list.setAutoCreateRowSorter(true);
         table_view_order_list.setModel(new javax.swing.table.DefaultTableModel(
@@ -154,17 +167,7 @@ public class OrderListView extends javax.swing.JInternalFrame {
             table_view_order_list.getColumnModel().getColumn(6).setMaxWidth(150);
         }
 
-        txt_search_order.setFont(new java.awt.Font("sansserif", 0, 14)); // NOI18N
-        txt_search_order.setMinimumSize(new java.awt.Dimension(80, 32));
-        txt_search_order.setPreferredSize(new java.awt.Dimension(500, 30));
-        txt_search_order.setRequestFocusEnabled(false);
-        txt_search_order.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                txt_search_orderKeyReleased(evt);
-            }
-        });
-
-        lbl_search_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_search_black.png"))); // NOI18N
+        jTabbedPane1.addTab("tab1", jScrollPane1);
 
         javax.swing.GroupLayout panel_order_listLayout = new javax.swing.GroupLayout(panel_order_list);
         panel_order_list.setLayout(panel_order_listLayout);
@@ -173,11 +176,11 @@ public class OrderListView extends javax.swing.JInternalFrame {
             .addGroup(panel_order_listLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panel_order_listLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
                     .addGroup(panel_order_listLayout.createSequentialGroup()
                         .addComponent(lbl_search_icon)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txt_search_order, javax.swing.GroupLayout.DEFAULT_SIZE, 984, Short.MAX_VALUE)))
+                        .addComponent(txt_search_order, javax.swing.GroupLayout.DEFAULT_SIZE, 1016, Short.MAX_VALUE))
+                    .addComponent(jTabbedPane1))
                 .addContainerGap())
         );
         panel_order_listLayout.setVerticalGroup(
@@ -185,10 +188,10 @@ public class OrderListView extends javax.swing.JInternalFrame {
             .addGroup(panel_order_listLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panel_order_listLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txt_search_order, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(txt_search_order, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
                     .addComponent(lbl_search_icon, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 564, Short.MAX_VALUE)
+                .addComponent(jTabbedPane1)
                 .addContainerGap())
         );
 
@@ -266,6 +269,7 @@ public class OrderListView extends javax.swing.JInternalFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel lbl_search_icon;
     private javax.swing.JPanel panel_order_list;
     private javax.swing.JTable table_view_order_list;

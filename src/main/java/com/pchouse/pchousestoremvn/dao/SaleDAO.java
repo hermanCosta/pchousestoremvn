@@ -16,18 +16,18 @@ public class SaleDAO {
 
     public long getLastSaleIdDAO() {
         EntityManager em = JPAUtil.getEntityManager();
-        long orderId = 0;
+        long saleId = 0;
         try {
             TypedQuery<Long> query = em.createQuery("SELECT MAX(s.idSale) FROM Sale s", Long.class);
             Long result = query.getSingleResult();
-            orderId = (result != null) ? result : 0;
+            saleId = (result != null) ? result : 0;
         } catch (Exception e) {
-            System.err.println("Error retrieving last order ID: " + e.getMessage());
+            System.err.println("Error retrieving last sale ID: " + e.getMessage());
             e.printStackTrace();
         } finally {
             em.close();
         }
-        return orderId;
+        return saleId;
     }
 
     public long addSaleDAO(Sale pSaleModel) throws BusinessException {
@@ -38,7 +38,7 @@ public class SaleDAO {
 
             Customer customer = pSaleModel.getCustomer();
             Person person = customer.getPerson();
-            
+
             if (person.getIdPerson() == 0) {
                 em.persist(person);
                 em.flush();
@@ -94,11 +94,11 @@ public class SaleDAO {
         List<Sale> listSale = null;
         try {
             TypedQuery<Sale> query = em.createQuery(
-                    "FROM Sale s WHERE s.company = :pCompany SALE BY s.created DESC", Sale.class);
+                    "FROM Sale s WHERE s.company = :pCompany ORDER BY s.created DESC", Sale.class);
             query.setParameter("pCompany", pCompany);
             listSale = query.getResultList();
         } catch (Exception e) {
-            System.err.println("Error retrieving all orders: " + e.getMessage());
+            System.err.println("Error retrieving all sales: " + e.getMessage());
             e.printStackTrace();
         } finally {
             em.close();
@@ -111,12 +111,12 @@ public class SaleDAO {
         List<Sale> listSale = null;
         try {
             TypedQuery<Sale> query = em.createQuery(
-                    "SELECT DISTINCT o FROM Sale o "
-                    + "JOIN o.customer c JOIN c.person p "
-                    + "WHERE o.company = :pCompany AND "
+                    "SELECT DISTINCT s FROM Sale s "
+                    + "JOIN s.customer c JOIN c.person p "
+                    + "WHERE s.company = :pCompany AND "
                     + "(p.firstName LIKE :pSearch OR p.lastName LIKE :pSearch OR "
                     + "p.contactNo LIKE :pSearch OR p.email LIKE :pSearch OR "
-                    + "CAST(o.idSale AS string) LIKE :pSearch)", Sale.class);
+                    + "CAST(s.idSale AS string) LIKE :pSearch)", Sale.class);
             query.setParameter("pCompany", pCompany);
             query.setParameter("pSearch", "%" + pSearch + "%");
             listSale = query.getResultList();

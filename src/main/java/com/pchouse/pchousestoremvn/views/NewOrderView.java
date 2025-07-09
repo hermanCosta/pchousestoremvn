@@ -8,10 +8,10 @@ import com.pchouse.pchousestoremvn.controllers.DepositController;
 import com.pchouse.pchousestoremvn.controllers.DeviceController;
 import com.pchouse.pchousestoremvn.controllers.EmployeeController;
 import com.pchouse.pchousestoremvn.controllers.FaultController;
-import com.pchouse.pchousestoremvn.controllers.OrderController;
-import com.pchouse.pchousestoremvn.controllers.OrderFaultController;
+import com.pchouse.pchousestoremvn.controllers.ServiceOrderController;
+import com.pchouse.pchousestoremvn.controllers.ServiceOrderFaultController;
 import com.pchouse.pchousestoremvn.controllers.OrderNoteController;
-import com.pchouse.pchousestoremvn.controllers.OrderProdServController;
+import com.pchouse.pchousestoremvn.controllers.ServiceOrderProdServController;
 import com.pchouse.pchousestoremvn.controllers.ProductServiceController;
 import com.pchouse.pchousestoremvn.enums.OrderStatus;
 import com.pchouse.pchousestoremvn.exception.BusinessException;
@@ -24,7 +24,7 @@ import com.pchouse.pchousestoremvn.models.Person;
 import com.pchouse.pchousestoremvn.models.ProductService;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderFault;
-import com.pchouse.pchousestoremvn.models.ServiceOrderNote;
+import com.pchouse.pchousestoremvn.models.OrderNote;
 import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrderProdServ;
 import com.pchouse.pchousestoremvn.views.modals.CustomerModal;
@@ -51,14 +51,14 @@ public class NewOrderView extends javax.swing.JInternalFrame {
     private List<ProductService> _listProdServ;
     private List<Fault> _listFault;
     public ServiceOrderPayment _orderPayment = null;
-    private final OrderController _orderController;
+    private final ServiceOrderController _orderController;
     private final ProductServiceController _productServiceController;
     private final FaultController _faultController;
     private final CustomerController _customerController;
     private final DepositController _depositController;
     private final EmployeeController _employeeController;
-    private final OrderProdServController _orderProdServController;
-    private final OrderFaultController _orderFaultController;
+    private final ServiceOrderProdServController _orderProdServController;
+    private final ServiceOrderFaultController _orderFaultController;
     private final OrderNoteController _orderNoteController;
     private final DeviceController _deviceController;
     private final DefaultTableModel _dtmProdServ;
@@ -78,14 +78,14 @@ public class NewOrderView extends javax.swing.JInternalFrame {
         CommonSetting.tableSettings(table_view_faults);
         CommonSetting.tableSettings(table_view_products);
 
-        this._orderController = new OrderController();
+        this._orderController = new ServiceOrderController();
         this._productServiceController = new ProductServiceController();
         this._faultController = new FaultController();
         this._customerController = new CustomerController();
         this._depositController = new DepositController();
         this._employeeController = new EmployeeController();
-        this._orderProdServController = new OrderProdServController();
-        this._orderFaultController = new OrderFaultController();
+        this._orderProdServController = new ServiceOrderProdServController();
+        this._orderFaultController = new ServiceOrderFaultController();
         this._orderNoteController = new OrderNoteController();
         this._deviceController = new DeviceController();
         this._dtmProdServ = (DefaultTableModel) this.table_view_products.getModel();
@@ -447,7 +447,7 @@ public class NewOrderView extends javax.swing.JInternalFrame {
         txt_contact.setPreferredSize(new java.awt.Dimension(224, 25));
 
         btn_seacrh_customer.setBackground(new java.awt.Color(0, 0, 0));
-        btn_seacrh_customer.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_search_customer.png"))); // NOI18N
+        btn_seacrh_customer.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_search_customer.png"))); // NOI18N
         btn_seacrh_customer.setPreferredSize(new java.awt.Dimension(35, 25));
         btn_seacrh_customer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -456,7 +456,7 @@ public class NewOrderView extends javax.swing.JInternalFrame {
         });
 
         btn_copy.setBackground(new java.awt.Color(0, 0, 0));
-        btn_copy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_copy.png"))); // NOI18N
+        btn_copy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_copy.png"))); // NOI18N
         btn_copy.setPreferredSize(new java.awt.Dimension(35, 25));
         btn_copy.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -556,7 +556,7 @@ public class NewOrderView extends javax.swing.JInternalFrame {
         hdn_txt_customer_id.setPreferredSize(new java.awt.Dimension(0, 0));
 
         btn_international_number1.setBackground(new java.awt.Color(0, 0, 0));
-        btn_international_number1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_international_number.png"))); // NOI18N
+        btn_international_number1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_international_number.png"))); // NOI18N
         btn_international_number1.setPreferredSize(new java.awt.Dimension(35, 25));
         btn_international_number1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -769,7 +769,7 @@ public class NewOrderView extends javax.swing.JInternalFrame {
         btn_save_order.setBackground(new java.awt.Color(21, 76, 121));
         btn_save_order.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_save_order.setForeground(new java.awt.Color(255, 255, 255));
-        btn_save_order.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_save.png"))); // NOI18N
+        btn_save_order.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_save.png"))); // NOI18N
         btn_save_order.setText("Save");
         btn_save_order.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -780,7 +780,7 @@ public class NewOrderView extends javax.swing.JInternalFrame {
         btn_cancel.setBackground(new java.awt.Color(21, 76, 121));
         btn_cancel.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_cancel.setForeground(new java.awt.Color(255, 255, 255));
-        btn_cancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_cancel.png"))); // NOI18N
+        btn_cancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_cancel.png"))); // NOI18N
         btn_cancel.setText("Cancel");
         btn_cancel.setNextFocusableComponent(txt_first_name);
         btn_cancel.addActionListener(new java.awt.event.ActionListener() {
@@ -828,7 +828,7 @@ public class NewOrderView extends javax.swing.JInternalFrame {
             }
         });
 
-        lbl_search_fault_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_search_small_left.png"))); // NOI18N
+        lbl_search_fault_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_search_small_left.png"))); // NOI18N
 
         layered_pane_list_fault.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -889,7 +889,7 @@ public class NewOrderView extends javax.swing.JInternalFrame {
             }
         });
 
-        lbl_search_prod_serv_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_search_small_left.png"))); // NOI18N
+        lbl_search_prod_serv_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_search_small_left.png"))); // NOI18N
 
         layered_pane_list_prod_serv.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -1075,11 +1075,11 @@ public class NewOrderView extends javax.swing.JInternalFrame {
 
                     if (!this.txt_deposit.getText().trim().isEmpty()) {
 
-                        PaymentModal paymentModal = new PaymentModal(addOrder, null, this.txt_deposit.getText(), new MainMenuView(CommonSetting.COMPANY), true);
+                        PaymentModal paymentModal = new PaymentModal(addOrder, this.txt_deposit.getText(), new MainMenuView(CommonSetting.COMPANY), true);
                         paymentModal.setVisible(true);
 
                         Deposit deposit = new Deposit(addOrder, addOrder.getEmployee(), Double.parseDouble(this.txt_deposit.getText()), addOrder.getCreated());
-                        deposit.setServiceOrderPayment(CommonExtension.orderPayment);
+                        deposit.setServiceOrderPayment(paymentModal.getOrderPayment());
 
                         long idDepositAdded = this._depositController.addDeposit(deposit);
                         if (idDepositAdded > 0) {
@@ -1097,7 +1097,7 @@ public class NewOrderView extends javax.swing.JInternalFrame {
 
                 if (isAdded) {
                     // Add creating note
-                    ServiceOrderNote orderNote = new ServiceOrderNote(addOrder, addOrder.getEmployee(), CommonConstant.ORDER_CREATED_NOTE, new Date());
+                    OrderNote orderNote = new OrderNote(addOrder, addOrder.getEmployee(), CommonConstant.ORDER_CREATED_NOTE, new Date());
                     _orderNoteController.addOrderNote(orderNote);
 
                     JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_SAVE);

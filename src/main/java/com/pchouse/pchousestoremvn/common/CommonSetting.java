@@ -6,12 +6,15 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.beans.PropertyVetoException;
 import javax.swing.JDesktopPane;
+import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -106,6 +109,16 @@ public class CommonSetting {
         };
         jTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
     }
-    
-    
+
+    public class BaseFrame extends JFrame {
+
+        public BaseFrame() {
+            setAppIcon();
+        }
+
+        protected void setAppIcon() {
+            Image icon = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/logo_slogan_small.png"));
+            setIconImage(icon);
+        }
+    }
 }

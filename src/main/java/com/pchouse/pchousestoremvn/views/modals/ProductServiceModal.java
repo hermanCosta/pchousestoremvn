@@ -125,7 +125,7 @@ public class ProductServiceModal extends javax.swing.JDialog {
             table_view_products_list.getColumnModel().getColumn(2).setMaxWidth(150);
         }
 
-        lbl_search_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_search_black.png"))); // NOI18N
+        lbl_search_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_search_black.png"))); // NOI18N
         lbl_search_icon.setPreferredSize(new java.awt.Dimension(32, 25));
 
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -133,7 +133,7 @@ public class ProductServiceModal extends javax.swing.JDialog {
         btn_clear.setBackground(new java.awt.Color(21, 76, 121));
         btn_clear.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_clear.setForeground(new java.awt.Color(255, 255, 255));
-        btn_clear.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_add_new.png"))); // NOI18N
+        btn_clear.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_add_new.png"))); // NOI18N
         btn_clear.setText("Clear");
         btn_clear.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -144,7 +144,7 @@ public class ProductServiceModal extends javax.swing.JDialog {
         btn_add.setBackground(new java.awt.Color(21, 76, 121));
         btn_add.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_add.setForeground(new java.awt.Color(255, 255, 255));
-        btn_add.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_add_new.png"))); // NOI18N
+        btn_add.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_add_new.png"))); // NOI18N
         btn_add.setText("Add");
         btn_add.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -155,7 +155,7 @@ public class ProductServiceModal extends javax.swing.JDialog {
         btn_cancel.setBackground(new java.awt.Color(21, 76, 121));
         btn_cancel.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_cancel.setForeground(new java.awt.Color(255, 255, 255));
-        btn_cancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_add_new.png"))); // NOI18N
+        btn_cancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_add_new.png"))); // NOI18N
         btn_cancel.setText("Cancel");
         btn_cancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

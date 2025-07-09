@@ -108,7 +108,7 @@ public class MainMenuView extends javax.swing.JFrame {
         panel_menu_side.setPreferredSize(new java.awt.Dimension(0, 0));
 
         lbl_logo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lbl_logo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/logo_header.png"))); // NOI18N
+        lbl_logo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/logo_header.png"))); // NOI18N
         lbl_logo.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         lbl_logo.setPreferredSize(new java.awt.Dimension(0, 0));
 
@@ -119,15 +119,15 @@ public class MainMenuView extends javax.swing.JFrame {
 
         lbl_shop_name.setFont(new java.awt.Font("sansserif", 2, 16)); // NOI18N
         lbl_shop_name.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lbl_shop_name.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_address.png"))); // NOI18N
+        lbl_shop_name.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_address.png"))); // NOI18N
         lbl_shop_name.setText("shopName");
         lbl_shop_name.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        lbl_shop_address.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_address.png"))); // NOI18N
+        lbl_shop_address.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_address.png"))); // NOI18N
         lbl_shop_address.setText("shopAddress");
         lbl_shop_address.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        lbl_shop_tel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_phone_number.png"))); // NOI18N
+        lbl_shop_tel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_phone_number.png"))); // NOI18N
         lbl_shop_tel.setText("shopTel");
         lbl_shop_tel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 

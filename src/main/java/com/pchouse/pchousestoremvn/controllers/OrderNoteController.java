@@ -2,7 +2,7 @@ package com.pchouse.pchousestoremvn.controllers;
 
 import com.pchouse.pchousestoremvn.dao.OrderNoteDAO;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
-import com.pchouse.pchousestoremvn.models.ServiceOrderNote;
+import com.pchouse.pchousestoremvn.models.OrderNote;
 import java.util.List;
 
 public class OrderNoteController {
@@ -10,12 +10,12 @@ public class OrderNoteController {
     private final OrderNoteDAO ORDER_NOTE_DAO = new OrderNoteDAO();
 
     // Add a new order note
-    public long addOrderNote(ServiceOrderNote pOrderNote) {
+    public long addOrderNote(OrderNote pOrderNote) {
         return ORDER_NOTE_DAO.addOrderNoteDAO(pOrderNote);
     }
 
     // Retrieve all order notes for a specific order
-    public List<ServiceOrderNote> getOrderNotes(ServiceOrder pOrder) {
+    public List<OrderNote> getOrderNotes(ServiceOrder pOrder) {
         return ORDER_NOTE_DAO.getAllOrderNoteDAO(pOrder);
     }
 
@@ -25,7 +25,7 @@ public class OrderNoteController {
     }
 
     // Search for order notes by a specific term
-    public List<ServiceOrderNote> searchOrderNotes(ServiceOrder pOrder, String pSearch) {
+    public List<OrderNote> searchOrderNotes(ServiceOrder pOrder, String pSearch) {
         return ORDER_NOTE_DAO.searchOrderNoteDAO(pOrder, pSearch);
     }
 }

@@ -24,11 +24,11 @@ public class Deposit implements Serializable {
     private long idDeposit;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "ID_SERVICE_ORDER", referencedColumnName = "ID_SERVICE_ORDER", nullable = false)
+    @JoinColumn(name = "ID_SERVICE_ORDER", referencedColumnName = "ID_SERVICE_ORDER", nullable = true)
     private ServiceOrder serviceOrder;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "ID_SALE", referencedColumnName = "ID_SALE", nullable = false)
+    @JoinColumn(name = "ID_SALE", referencedColumnName = "ID_SALE", nullable = true)
     private Sale sale;
 
     @ManyToOne(cascade = CascadeType.ALL)

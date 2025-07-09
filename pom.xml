@@ -84,7 +84,6 @@
             <version>1.5.3</version>
         </dependency>
 
-
         <!-- JasperReports (Relatórios) -->
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
@@ -98,7 +97,6 @@
             <artifactId>itextpdf</artifactId>
             <version>5.5.13.3</version>
         </dependency>
-
 
         <!-- SwingX (Componentes UI) -->
         <dependency>
@@ -122,6 +120,13 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>2.24.0</version>
+        </dependency>
+        
+        <!-- FlatLaf: temas modernos para Swing -->
+        <dependency>
+            <groupId>com.formdev</groupId>
+            <artifactId>flatlaf</artifactId>
+            <version>3.4</version>
         </dependency>
 
     </dependencies>

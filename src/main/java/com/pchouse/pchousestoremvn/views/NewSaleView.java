@@ -19,7 +19,7 @@ import com.pchouse.pchousestoremvn.models.Person;
 import com.pchouse.pchousestoremvn.models.ProductService;
 import com.pchouse.pchousestoremvn.models.Sale;
 import com.pchouse.pchousestoremvn.models.SaleProdServ;
-import com.pchouse.pchousestoremvn.models.ServiceOrderNote;
+import com.pchouse.pchousestoremvn.models.OrderNote;
 import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
 import com.pchouse.pchousestoremvn.views.modals.CustomerModal;
 import com.pchouse.pchousestoremvn.views.modals.PaymentModal;
@@ -42,6 +42,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
 
     private long hdnCustomerId;
     private List<ProductService> _listProdServ;
+    private Sale _saleModel;
     public ServiceOrderPayment _orderPayment = null;
     private final SaleController _saleController;
     private final ProductServiceController _productServiceController;
@@ -87,16 +88,8 @@ public class NewSaleView extends javax.swing.JInternalFrame {
                 }
             }
         });
-
-//        generateOrderId();
     }
 
-//    private void generateOrderId() {
-//        long orderId = _saleController.getLastOrderId();
-//        orderId++;
-//        String nextId = CommonStrings.formatOrderNumber(orderId);
-//        this.lbl_auto_order_no.setText(String.valueOf(nextId));
-//    }
     public void setCustomerFields(Customer customer) {
         if (customer != null) {
             this.txt_contact.setFormatterFactory(null);
@@ -290,6 +283,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
 
         panel_sale_details = new javax.swing.JPanel();
         panel_input_detail = new javax.swing.JPanel();
+        lbl_first_name_star = new javax.swing.JLabel();
         lbl_first_name = new javax.swing.JLabel();
         txt_first_name = new javax.swing.JTextField();
         lbl_last_name = new javax.swing.JLabel();
@@ -333,6 +327,10 @@ public class NewSaleView extends javax.swing.JInternalFrame {
 
         panel_input_detail.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
+        lbl_first_name_star.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
+        lbl_first_name_star.setForeground(java.awt.Color.red);
+        lbl_first_name_star.setText("*");
+
         lbl_first_name.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         lbl_first_name.setText("First Name");
 
@@ -358,7 +356,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
         txt_contact.setPreferredSize(new java.awt.Dimension(224, 25));
 
         btn_seacrh_customer.setBackground(new java.awt.Color(0, 0, 0));
-        btn_seacrh_customer.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_search_customer.png"))); // NOI18N
+        btn_seacrh_customer.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_search_customer.png"))); // NOI18N
         btn_seacrh_customer.setPreferredSize(new java.awt.Dimension(35, 25));
         btn_seacrh_customer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -367,7 +365,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
         });
 
         btn_copy.setBackground(new java.awt.Color(0, 0, 0));
-        btn_copy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_copy.png"))); // NOI18N
+        btn_copy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_copy.png"))); // NOI18N
         btn_copy.setPreferredSize(new java.awt.Dimension(35, 25));
         btn_copy.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -394,7 +392,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
         hdn_txt_customer_id.setPreferredSize(new java.awt.Dimension(0, 0));
 
         btn_international_number1.setBackground(new java.awt.Color(0, 0, 0));
-        btn_international_number1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_international_number.png"))); // NOI18N
+        btn_international_number1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_international_number.png"))); // NOI18N
         btn_international_number1.setPreferredSize(new java.awt.Dimension(35, 25));
         btn_international_number1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -410,9 +408,14 @@ public class NewSaleView extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panel_input_detailLayout.createSequentialGroup()
+                        .addComponent(lbl_email)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txt_email, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(panel_input_detailLayout.createSequentialGroup()
                         .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lbl_last_name_star, javax.swing.GroupLayout.PREFERRED_SIZE, 7, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lbl_contact_star, javax.swing.GroupLayout.PREFERRED_SIZE, 7, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(lbl_contact_star, javax.swing.GroupLayout.PREFERRED_SIZE, 7, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lbl_first_name_star, javax.swing.GroupLayout.PREFERRED_SIZE, 7, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panel_input_detailLayout.createSequentialGroup()
@@ -426,20 +429,13 @@ public class NewSaleView extends javax.swing.JInternalFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btn_copy, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(panel_input_detailLayout.createSequentialGroup()
-                                .addComponent(lbl_last_name)
+                                .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(lbl_last_name)
+                                    .addComponent(lbl_first_name))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txt_last_name, javax.swing.GroupLayout.DEFAULT_SIZE, 345, Short.MAX_VALUE))
-                            .addGroup(panel_input_detailLayout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(txt_first_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(panel_input_detailLayout.createSequentialGroup()
-                        .addComponent(lbl_email)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txt_email, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(panel_input_detailLayout.createSequentialGroup()
-                        .addGap(19, 19, 19)
-                        .addComponent(lbl_first_name)
-                        .addGap(0, 343, Short.MAX_VALUE)))
+                                .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txt_first_name, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(txt_last_name, javax.swing.GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE))))))
                 .addContainerGap())
             .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(panel_input_detailLayout.createSequentialGroup()
@@ -451,9 +447,11 @@ public class NewSaleView extends javax.swing.JInternalFrame {
             panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_input_detailLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txt_first_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lbl_first_name))
+                .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(txt_first_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lbl_first_name))
+                    .addComponent(lbl_first_name_star, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbl_last_name)
@@ -474,12 +472,12 @@ public class NewSaleView extends javax.swing.JInternalFrame {
                             .addComponent(txt_email, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lbl_email)))
                     .addComponent(btn_international_number1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(308, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_input_detailLayout.createSequentialGroup()
-                    .addContainerGap(27, Short.MAX_VALUE)
+                    .addContainerGap(43, Short.MAX_VALUE)
                     .addComponent(hdn_txt_customer_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(373, Short.MAX_VALUE)))
+                    .addContainerGap(388, Short.MAX_VALUE)))
         );
 
         panel_total_amount.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -554,7 +552,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
         btn_save_sale.setBackground(new java.awt.Color(21, 76, 121));
         btn_save_sale.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_save_sale.setForeground(new java.awt.Color(255, 255, 255));
-        btn_save_sale.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_save.png"))); // NOI18N
+        btn_save_sale.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_save.png"))); // NOI18N
         btn_save_sale.setText("Save");
         btn_save_sale.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -565,7 +563,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
         btn_cancel.setBackground(new java.awt.Color(21, 76, 121));
         btn_cancel.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_cancel.setForeground(new java.awt.Color(255, 255, 255));
-        btn_cancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_cancel.png"))); // NOI18N
+        btn_cancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_cancel.png"))); // NOI18N
         btn_cancel.setText("Cancel");
         btn_cancel.setNextFocusableComponent(txt_first_name);
         btn_cancel.addActionListener(new java.awt.event.ActionListener() {
@@ -611,7 +609,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
             }
         });
 
-        lbl_search_prod_serv_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_search_small_left.png"))); // NOI18N
+        lbl_search_prod_serv_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_search_small_left.png"))); // NOI18N
 
         layered_pane_list_prod_serv.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -682,7 +680,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
                     .addComponent(panel_sale_buttons, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(panel_sale_detailsLayout.createSequentialGroup()
                         .addComponent(panel_input_detail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(panel_sale_detailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(layered_pane_list_prod_serv, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(panel_sale_detailsLayout.createSequentialGroup()
@@ -696,16 +694,14 @@ public class NewSaleView extends javax.swing.JInternalFrame {
             panel_sale_detailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_sale_detailsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panel_sale_detailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panel_sale_detailsLayout.createSequentialGroup()
-                        .addComponent(panel_input_detail, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(12, 12, 12))
+                .addGroup(panel_sale_detailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(panel_sale_detailsLayout.createSequentialGroup()
                         .addGroup(panel_sale_detailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txt_search_prod_serv, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lbl_search_prod_serv_icon, javax.swing.GroupLayout.Alignment.TRAILING))
-                        .addComponent(layered_pane_list_prod_serv, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(layered_pane_list_prod_serv, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(panel_input_detail, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
                 .addComponent(panel_total_amount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(panel_sale_buttons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -718,7 +714,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(panel_sale_details, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(panel_sale_details, javax.swing.GroupLayout.DEFAULT_SIZE, 1027, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -762,17 +758,15 @@ public class NewSaleView extends javax.swing.JInternalFrame {
 
                     if (!this.txt_deposit.getText().trim().isEmpty()) {
 
-                        PaymentModal paymentModal = new PaymentModal(null, addSale, this.txt_deposit.getText(), new MainMenuView(CommonSetting.COMPANY), true);
+                        PaymentModal paymentModal = new PaymentModal(addSale, this.txt_deposit.getText(), new MainMenuView(CommonSetting.COMPANY), true);
                         paymentModal.setVisible(true);
 
                         Deposit deposit = new Deposit(addSale, addSale.getEmployee(), CommonExtension.salePayment, Double.parseDouble(this.txt_deposit.getText()), addSale.getCreated());
-
+                        deposit.setSalePayment(paymentModal.getSalePayment());
+                        
                         long idDepositAdded = this._depositController.addDeposit(deposit);
                         if (idDepositAdded > 0) {
 
-//                        // Add deposit note
-//                        OrderNote saleNote = new OrderNote(addOrder, addOrder.getEmployee(), CommonExtension.setDepositPayNote(Double.parseDouble(this.txt_deposit.getText())), new Date());
-//                        _saleNoteController.addOrderNoteController(saleNote);
                             isAdded = true;
                         } else {
                             JOptionPane.showMessageDialog(this, CommonConstant.ERROR_ADD_DEPOSIT, this.getTitle(), JOptionPane.ERROR_MESSAGE);
@@ -783,7 +777,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
 
                 if (isAdded) {
                     // Add creating note
-                    ServiceOrderNote saleNote = new ServiceOrderNote(addSale, addSale.getEmployee(), CommonConstant.ORDER_CREATED_NOTE, new Date());
+                    OrderNote saleNote = new OrderNote(addSale, addSale.getEmployee(), CommonConstant.SALE_CREATED_NOTE, new Date());
 
                     _saleNoteController.addOrderNote(saleNote);
 
@@ -987,6 +981,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lbl_due_field;
     private javax.swing.JLabel lbl_email;
     private javax.swing.JLabel lbl_first_name;
+    private javax.swing.JLabel lbl_first_name_star;
     private javax.swing.JLabel lbl_last_name;
     private javax.swing.JLabel lbl_last_name_star;
     private javax.swing.JLabel lbl_search_prod_serv_icon;

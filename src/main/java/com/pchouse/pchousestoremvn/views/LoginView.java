@@ -56,8 +56,8 @@ public class LoginView extends JFrame {
         JPanel panel = new JPanel();
         panel.setBackground(new Color(21, 76, 121));
 
-        JLabel lblUserIcon = createIconLabel("/Img/icon-customer.png");
-        JLabel lblPassIcon = createIconLabel("/Img/icon_password.png");
+        JLabel lblUserIcon = createIconLabel("/icons/icon-customer.png");
+        JLabel lblPassIcon = createIconLabel("/icons/icon_password.png");
 
         setupTextField(txtUsername, "FREDERICKST");
         setupTextField(txtPassword, "fredst");
@@ -126,7 +126,7 @@ public class LoginView extends JFrame {
         btnSignIn.setBackground(new Color(21, 76, 121));
         btnSignIn.setForeground(Color.WHITE);
         btnSignIn.setFont(new Font("Lucida Grande", Font.BOLD, 17));
-        btnSignIn.setIcon(new ImageIcon(getClass().getResource("/Img/icon_login.png")));
+        btnSignIn.setIcon(new ImageIcon(getClass().getResource("/icons/icon_login.png")));
         btnSignIn.setFocusTraversalKeysEnabled(true);
         btnSignIn.addActionListener(e -> onSignIn());
     }
