@@ -572,7 +572,7 @@ public class RefurbComputerView extends javax.swing.JInternalFrame {
         panel_refurb_label.setMaximumSize(new java.awt.Dimension(555, 200));
         panel_refurb_label.setPreferredSize(new java.awt.Dimension(430, 220));
 
-        lbl_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/logo_slogan_small.png"))); // NOI18N
+        lbl_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/app_icon.png"))); // NOI18N
 
         txt_bran_mod_scr_label.setFont(new java.awt.Font("sansserif", 1, 15)); // NOI18N
         txt_bran_mod_scr_label.setHorizontalAlignment(javax.swing.JTextField.CENTER);

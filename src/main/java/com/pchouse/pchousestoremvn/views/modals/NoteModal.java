@@ -8,6 +8,7 @@ import com.pchouse.pchousestoremvn.controllers.OrderNoteController;
 import com.pchouse.pchousestoremvn.models.Employee;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.OrderNote;
+import com.pchouse.pchousestoremvn.models.Sale;
 import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -19,22 +20,34 @@ public class NoteModal extends javax.swing.JDialog {
     private final EmployeeController _employeeController;
     private final DefaultTableModel _dtmOrderNote;
     private List<OrderNote> _listOrderNotes;
-    private ServiceOrder _createdOrderView;
+    private ServiceOrder _serviceOrderModel;
+    private Sale _saleModel;
 
     public NoteModal(ServiceOrder orderModel, java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
 
-        this._createdOrderView = orderModel;
+        this._serviceOrderModel = orderModel;
         this._orderNoteController = new OrderNoteController();
         this._employeeController = new EmployeeController();
-        this._createdOrderView = orderModel;
+        this._serviceOrderModel = orderModel;
+        this._dtmOrderNote = (DefaultTableModel) this.table_view_notes.getModel();
+        loadOrderNoteListTable();
+    }
+    
+    public NoteModal(Sale saleModel, java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
+        initComponents();
+
+        this._saleModel = saleModel;
+        this._orderNoteController = new OrderNoteController();
+        this._employeeController = new EmployeeController();
         this._dtmOrderNote = (DefaultTableModel) this.table_view_notes.getModel();
         loadOrderNoteListTable();
     }
 
     private void loadOrderNoteListTable() {
-        this._listOrderNotes = this._orderNoteController.getOrderNotes(_createdOrderView);
+        this._listOrderNotes = this._orderNoteController.getOrderNotes(_serviceOrderModel);
 
         _dtmOrderNote.setRowCount(0);
 
@@ -54,7 +67,7 @@ public class NoteModal extends javax.swing.JDialog {
 
     private void searchFault() {
         if (!this.txt_search_note.getText().trim().isEmpty()) {
-            this._listOrderNotes = this._orderNoteController.searchOrderNotes(_createdOrderView, this.txt_search_note.getText().toUpperCase());
+            this._listOrderNotes = this._orderNoteController.searchOrderNotes(_serviceOrderModel, this.txt_search_note.getText().toUpperCase());
 
             if (this._listOrderNotes != null) {
                 _dtmOrderNote.setRowCount(0);
@@ -364,7 +377,7 @@ public class NoteModal extends javax.swing.JDialog {
     }//GEN-LAST:event_btn_clear_fieldsActionPerformed
 
     private void btn_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
-        OrderNote addOrderNote = getOrderNoteFields(_createdOrderView);
+        OrderNote addOrderNote = getOrderNoteFields(_serviceOrderModel);
         if (addOrderNote != null) {
 
             long idNoteAdded = _orderNoteController.addOrderNote(addOrderNote);

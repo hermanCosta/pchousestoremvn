@@ -5,21 +5,42 @@
 package com.pchouse.pchousestoremvn.views;
 
 import com.pchouse.pchousestoremvn.common.CommonSetting;
+import com.pchouse.pchousestoremvn.controllers.DepositController;
+import com.pchouse.pchousestoremvn.controllers.OrderNoteController;
 import com.pchouse.pchousestoremvn.controllers.ServiceOrderController;
 import com.pchouse.pchousestoremvn.controllers.SaleController;
+import com.pchouse.pchousestoremvn.controllers.SaleProdServController;
+import com.pchouse.pchousestoremvn.controllers.ServiceOrderFaultController;
+import com.pchouse.pchousestoremvn.controllers.ServiceOrderProdServController;
+import com.pchouse.pchousestoremvn.enums.OrderStatus;
+import com.pchouse.pchousestoremvn.models.Deposit;
 import com.pchouse.pchousestoremvn.models.Sale;
+import com.pchouse.pchousestoremvn.models.SaleProdServ;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
+import com.pchouse.pchousestoremvn.models.ServiceOrderFault;
+import com.pchouse.pchousestoremvn.models.ServiceOrderProdServ;
+import java.beans.PropertyVetoException;
+import java.net.URL;
 import java.util.List;
+import javax.swing.JDesktopPane;
+import javax.swing.JInternalFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 public class OrderSaleListView extends javax.swing.JInternalFrame {
 
-    private final ServiceOrderController _orderController;
-    private final SaleController _saleController;
-    private final DefaultTableModel _dtmOrder;
-    private final DefaultTableModel _dtmSale;
     private List<ServiceOrder> _listOrder;
     private List<Sale> _listSale;
+    private final OrderNoteController _orderNoteController;
+    private final DepositController _orderDepositController;
+    private final ServiceOrderController _serviceOrderController;
+    private final ServiceOrderFaultController _serviceOrderFaultController;
+    private final ServiceOrderProdServController _serviceOrderProdServController;
+    private final SaleController _saleController;
+    private final SaleProdServController _saleProdServController;
+    private final DefaultTableModel _dtmOrder;
+    private final DefaultTableModel _dtmSale;
 
     public OrderSaleListView() {
         initComponents();
@@ -28,10 +49,16 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
         CommonSetting.tableSettings(this.table_view_order_list);
         CommonSetting.tableSettings(this.table_view_sale_list);
 
-        this._orderController = new ServiceOrderController();
+        this._serviceOrderController = new ServiceOrderController();
         this._saleController = new SaleController();
+        this._saleProdServController = new SaleProdServController();
         this._dtmOrder = (DefaultTableModel) this.table_view_order_list.getModel();
         this._dtmSale = (DefaultTableModel) this.table_view_sale_list.getModel();
+
+        this._orderNoteController = new OrderNoteController();
+        this._serviceOrderFaultController = new ServiceOrderFaultController();
+        this._serviceOrderProdServController = new ServiceOrderProdServController();
+        this._orderDepositController = new DepositController();
 
         loadOrderListTable();
         loadSaleListTable();
@@ -39,7 +66,7 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
 
     private void loadOrderListTable() {
         try {
-            this._listOrder = _orderController.getAllOrders(CommonSetting.COMPANY);
+            this._listOrder = _serviceOrderController.getAllOrders(CommonSetting.COMPANY);
             _dtmOrder.setRowCount(0);
             if (_listOrder != null) {
                 for (ServiceOrder order : _listOrder) {
@@ -93,7 +120,7 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
             }
 
             if (selectedTab == 0) {
-                this._listOrder = _orderController.searchOrder(CommonSetting.COMPANY, searchTerm);
+                this._listOrder = _serviceOrderController.searchOrder(CommonSetting.COMPANY, searchTerm);
                 _dtmOrder.setRowCount(0);
                 if (_listOrder != null) {
                     for (ServiceOrder order : _listOrder) {
@@ -127,6 +154,99 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
             System.err.println("Error searching orders or sales: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    private void table_view_order_listMouseClicked(java.awt.event.MouseEvent evt) {
+        if (evt.getClickCount() == 2) {
+            int selectedRow = table_view_order_list.getSelectedRow();
+            if (selectedRow < 0) {
+                return;
+            }
+
+            Long orderId = (Long) table_view_order_list.getValueAt(selectedRow, 0);
+
+            try {
+                ServiceOrder orderModel = _serviceOrderController.getItemOrder(orderId);
+                List<ServiceOrderFault> listOrderFault = _serviceOrderFaultController.getOrderFaults(orderModel);
+                List<ServiceOrderProdServ> listOrderProdServ = _serviceOrderProdServController.getOrderProdServ(orderModel);
+                List<Deposit> listOrderDeposit = _orderDepositController.getOrderDeposit(orderModel);
+
+                if (orderModel.getStatus() == OrderStatus.IN_PROGRESS) {
+                    CreatedOrderView createdOrderView = new CreatedOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
+                    openInternalFrame(createdOrderView, "Order: " + orderId);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null,
+                        "An error occurred while opening the order details:\n" + e.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void table_view_sale_listMouseClicked(java.awt.event.MouseEvent evt) {
+        if (evt.getClickCount() == 2) {
+            int selectedRow = table_view_sale_list.getSelectedRow();
+            if (selectedRow < 0) {
+                return;
+            }
+
+            Long saleId = (Long) table_view_sale_list.getValueAt(selectedRow, 0);
+
+            try {
+                Sale saleModel = _saleController.getItemSale(saleId);
+                List<SaleProdServ> listSaleProdServ = _saleProdServController.getSaleProdServ(saleModel);
+                List<Deposit> listSaleDeposit = _orderDepositController.getOrderDeposit(saleModel);
+
+                URL url = getClass().getResource("/icons/app_icon.png");
+                System.out.println("URL: " + url);  // veja se imprime null ou o caminho correto
+
+                URL urlLogo = getClass().getResource("/icons/app_icon.png");
+                System.out.println("LOGO Small: " + urlLogo);  // veja se imprime null ou o caminho correto
+
+                CreatedSaleView createdSaleView = new CreatedSaleView(saleModel, listSaleProdServ, listSaleDeposit);
+                openInternalFrame(createdSaleView, "Sale: " + saleId);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null,
+                        "An error occurred while opening the sale details:\n" + e.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void openInternalFrame(JInternalFrame frame, String title) {
+        frame.setTitle(title);
+        frame.setClosable(true);
+        frame.setIconifiable(true);
+        frame.setMaximizable(true);
+        frame.setResizable(true);
+
+        JDesktopPane desktop = CommonSetting.MAIN_MENU_DESKTOP_PANE;
+
+        for (JInternalFrame openFrame : desktop.getAllFrames()) {
+            try {
+                openFrame.dispose();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        desktop.add(frame);
+        frame.setVisible(true);
+
+        SwingUtilities.invokeLater(() -> {
+            try {
+                frame.setSelected(true);
+                frame.setMaximum(true);
+            } catch (PropertyVetoException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @SuppressWarnings("unchecked")
@@ -227,6 +347,18 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(panel_order_list, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
+
+        table_view_order_list.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                table_view_order_listMouseClicked(evt);
+            }
+        });
+
+        table_view_sale_list.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                table_view_sale_listMouseClicked(evt);
+            }
+        });
 
         pack();
     }

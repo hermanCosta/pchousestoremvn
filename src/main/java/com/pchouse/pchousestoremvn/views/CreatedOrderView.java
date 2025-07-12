@@ -476,7 +476,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
         txt_contact.setPreferredSize(new java.awt.Dimension(224, 25));
 
         btn_seacrh_customer.setBackground(new java.awt.Color(0, 0, 0));
-        btn_seacrh_customer.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_search_customer.png"))); // NOI18N
+        btn_seacrh_customer.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_search_customer.png"))); // NOI18N
         btn_seacrh_customer.setPreferredSize(new java.awt.Dimension(35, 25));
         btn_seacrh_customer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -485,7 +485,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
         });
 
         btn_copy.setBackground(new java.awt.Color(0, 0, 0));
-        btn_copy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_copy.png"))); // NOI18N
+        btn_copy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_copy.png"))); // NOI18N
         btn_copy.setPreferredSize(new java.awt.Dimension(35, 25));
         btn_copy.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -585,7 +585,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
         hdn_txt_customer_id.setPreferredSize(new java.awt.Dimension(0, 0));
 
         btn_international_number1.setBackground(new java.awt.Color(0, 0, 0));
-        btn_international_number1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_international_number.png"))); // NOI18N
+        btn_international_number1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_international_number.png"))); // NOI18N
         btn_international_number1.setPreferredSize(new java.awt.Dimension(35, 25));
         btn_international_number1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -815,7 +815,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
         btn_save_order.setBackground(new java.awt.Color(21, 76, 121));
         btn_save_order.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_save_order.setForeground(new java.awt.Color(255, 255, 255));
-        btn_save_order.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_save.png"))); // NOI18N
+        btn_save_order.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_save.png"))); // NOI18N
         btn_save_order.setText("Save");
         btn_save_order.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -826,7 +826,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
         btn_print.setBackground(new java.awt.Color(21, 76, 121));
         btn_print.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_print.setForeground(new java.awt.Color(255, 255, 255));
-        btn_print.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_print.png"))); // NOI18N
+        btn_print.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_print.png"))); // NOI18N
         btn_print.setText("Print");
         btn_print.setNextFocusableComponent(txt_first_name);
         btn_print.addActionListener(new java.awt.event.ActionListener() {
@@ -838,7 +838,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
         btn_notes.setBackground(new java.awt.Color(21, 76, 121));
         btn_notes.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_notes.setForeground(new java.awt.Color(255, 255, 255));
-        btn_notes.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_notes.png"))); // NOI18N
+        btn_notes.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_notes.png"))); // NOI18N
         btn_notes.setText("History");
         btn_notes.setNextFocusableComponent(txt_first_name);
         btn_notes.addActionListener(new java.awt.event.ActionListener() {
@@ -850,7 +850,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
         btn_fix.setBackground(new java.awt.Color(0, 153, 102));
         btn_fix.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_fix.setForeground(new java.awt.Color(255, 255, 255));
-        btn_fix.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_fix_order.png"))); // NOI18N
+        btn_fix.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_fix_order.png"))); // NOI18N
         btn_fix.setText("Fixed");
         btn_fix.setNextFocusableComponent(txt_first_name);
         btn_fix.addActionListener(new java.awt.event.ActionListener() {
@@ -862,7 +862,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
         btn_not_fix.setBackground(new java.awt.Color(255, 51, 51));
         btn_not_fix.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_not_fix.setForeground(new java.awt.Color(255, 255, 255));
-        btn_not_fix.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_not_fix.png"))); // NOI18N
+        btn_not_fix.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_not_fix.png"))); // NOI18N
         btn_not_fix.setText("Not Fixed");
         btn_not_fix.setNextFocusableComponent(txt_first_name);
         btn_not_fix.addActionListener(new java.awt.event.ActionListener() {
@@ -874,7 +874,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
         btn_deposit.setBackground(new java.awt.Color(21, 76, 121));
         btn_deposit.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_deposit.setForeground(new java.awt.Color(255, 255, 255));
-        btn_deposit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_cash_entries.png"))); // NOI18N
+        btn_deposit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_cash_entries.png"))); // NOI18N
         btn_deposit.setText("Deposit");
         btn_deposit.setNextFocusableComponent(txt_first_name);
         btn_deposit.addActionListener(new java.awt.event.ActionListener() {
@@ -934,7 +934,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
             }
         });
 
-        lbl_search_fault_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_search_small_left.png"))); // NOI18N
+        lbl_search_fault_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_search_small_left.png"))); // NOI18N
 
         layered_pane_list_fault.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -995,7 +995,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
             }
         });
 
-        lbl_search_prod_serv_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_search_small_left.png"))); // NOI18N
+        lbl_search_prod_serv_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_search_small_left.png"))); // NOI18N
 
         layered_pane_list_prod_serv.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 

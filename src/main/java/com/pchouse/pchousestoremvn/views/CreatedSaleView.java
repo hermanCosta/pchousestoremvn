@@ -4,20 +4,12 @@ import com.pchouse.pchousestoremvn.common.CommonConstant;
 import com.pchouse.pchousestoremvn.common.CommonExtension;
 import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.common.CommonStrings;
-import com.pchouse.pchousestoremvn.controllers.CustomerController;
-import com.pchouse.pchousestoremvn.controllers.DepositController;
-import com.pchouse.pchousestoremvn.controllers.EmployeeController;
 import com.pchouse.pchousestoremvn.controllers.SaleController;
-import com.pchouse.pchousestoremvn.controllers.OrderNoteController;
-import com.pchouse.pchousestoremvn.controllers.SaleProdServController;
-import com.pchouse.pchousestoremvn.controllers.ProductServiceController;
 import com.pchouse.pchousestoremvn.models.Customer;
 import com.pchouse.pchousestoremvn.models.Deposit;
-import com.pchouse.pchousestoremvn.models.ProductService;
 import com.pchouse.pchousestoremvn.models.Sale;
 import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.models.SaleProdServ;
-import com.pchouse.pchousestoremvn.models.ServiceOrderProdServ;
 import com.pchouse.pchousestoremvn.views.modals.DepositModal;
 import com.pchouse.pchousestoremvn.views.modals.NoteModal;
 import java.awt.Frame;
@@ -26,80 +18,61 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 import java.util.List;
 import javax.swing.DefaultListModel;
-import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 public class CreatedSaleView extends javax.swing.JInternalFrame {
 
     private long hdnCustomerId;
-    private List<ProductService> _listProdServ;
+    private Sale _saleModel;
     public SalePayment _orderPayment = null;
     private final SaleController _saleController;
-    private final ProductServiceController _productServiceController;
-    private final CustomerController _customerController;
-    private final DepositController _depositController;
-    private final EmployeeController _employeeController;
-    private final SaleProdServController _saleProdServController;
-    private final OrderNoteController _saleNoteController;
     private final DefaultTableModel _dtmProdServ;
     private final DefaultListModel _defaultListModelProdServ;
     Frame _parentFrame = JOptionPane.getFrameForComponent(this);
 
-    public CreatedSaleView(Sale saleModel, List<SaleProdServ> listOrderProdServ, List<Deposit> listOrderDeposit) {
+    public CreatedSaleView(Sale saleModel, List<SaleProdServ> listSaleProdServ, List<Deposit> listOrderDeposit) {
         initComponents();
-
-        //avoid auto old value by focus loosing
-        this.txt_contact.setFocusLostBehavior(JFormattedTextField.PERSIST);
 
         CommonExtension.checkEmailFormat(this.txt_email);
         CommonSetting.requestTxtFocus(txt_first_name);
         CommonSetting.tableSettings(table_view_products);
 
+        this._saleModel = saleModel;
         this._saleController = new SaleController();
-        this._productServiceController = new ProductServiceController();
-        this._customerController = new CustomerController();
-        this._depositController = new DepositController();
-        this._employeeController = new EmployeeController();
-        this._saleProdServController = new SaleProdServController();
-        this._saleNoteController = new OrderNoteController();
         this._dtmProdServ = (DefaultTableModel) this.table_view_products.getModel();
         this._defaultListModelProdServ = new DefaultListModel();
 
+        loadSaleFields(saleModel, listSaleProdServ, listOrderDeposit);
     }
 
-    private void loadOrderFields(Sale orderModel, List<SaleProdServ> listOrderProdServ, List<Deposit> listOrderDeposit) {
+    private void loadSaleFields(Sale orderModel, List<SaleProdServ> listSaleProdServ, List<Deposit> listOrderDeposit) {
         setCustomerFields(orderModel.getCustomer());
 
-        this.lbl_auto_order_no.setText(CommonStrings.formatOrderNumber(orderModel.getIdSale()));
-        this.spn_bad_sectors.setValue(orderModel.getBadSector());
-        this.editor_pane_notes.setText(orderModel.getNote());
+        this.lbl_auto_sale_no.setText(CommonStrings.formatOrderNumber(orderModel.getIdSale()));
         this.lbl_total_field.setText(CommonExtension.formatEuroCurrency(orderModel.getTotal()));
-        this.lbl_due_field.setText(CommonExtension.formatEuroCurrency(orderModel.getDue()));
 
         loadOrderDeposit(listOrderDeposit);
-        loadOrderFault(listOrderFault);
-        loadOrderProdServ(listOrderProdServ);
+        loadSaleProdServ(listSaleProdServ);
     }
 
-    private void loadOrderProdServ(List<ServiceOrderProdServ> listOrderProdServ) {
-        if (listOrderProdServ != null) {
+    private void loadSaleProdServ(List<SaleProdServ> listSaleProdServ) {
+        if (listSaleProdServ != null) {
             _dtmProdServ.setRowCount(0);
-            for (ServiceOrderProdServ orderProdServ : listOrderProdServ) {
+            for (SaleProdServ orderProdServ : listSaleProdServ) {
                 _dtmProdServ.addRow(new Object[]{
                     orderProdServ.getProdServ().getIdProductService(),
                     orderProdServ.getProdServ().getProdServName(),
                     orderProdServ.getQty(),
                     orderProdServ.getProdServ().getPrice(),
                     orderProdServ.getTotal(),
-                    orderProdServ.getIdServiceOrderProdServ()
+                    orderProdServ.getIdSaleProdServ()
                 });
             }
         }
     }
 
-    // Method must be public, because receive data back from customerModal
-    public void setCustomerFields(Customer customer) {
+    private void setCustomerFields(Customer customer) {
         if (customer != null) {
             this.txt_contact.setFormatterFactory(null);
             this.hdn_txt_customer_id.setText(String.valueOf(customer.getIdCustomer()));
@@ -107,8 +80,6 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
             this.txt_last_name.setText(customer.getPerson().getLastName());
             this.txt_contact.setText(customer.getPerson().getContactNo());
             this.txt_email.setText(customer.getPerson().getEmail());
-
-            this.txt_brand.requestFocus();
         }
     }
 
@@ -118,7 +89,7 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
             for (Deposit orderDeposit : listOrderDeposit) {
                 totalDeposit += orderDeposit.getAmount();
             }
-            this.lbl_deposit_paid.setText(CommonExtension.formatEuroCurrency(totalDeposit));
+            //this.lbl_deposit_paid.setText(CommonExtension.formatEuroCurrency(totalDeposit));
         }
     }
 
@@ -149,10 +120,9 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
         txt_email = new javax.swing.JTextField();
         hdn_txt_customer_id = new javax.swing.JTextField();
         lbl_sale_no = new javax.swing.JLabel();
-        lbl_auto_order_no = new javax.swing.JLabel();
+        lbl_auto_sale_no = new javax.swing.JLabel();
         panel_total_amount = new javax.swing.JPanel();
         lbl_total = new javax.swing.JLabel();
-        lbl_due = new javax.swing.JLabel();
         lbl_total_field = new javax.swing.JLabel();
         lbl_due_field = new javax.swing.JLabel();
         panel_sale_buttons = new javax.swing.JPanel();
@@ -202,7 +172,7 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
         txt_contact.setPreferredSize(new java.awt.Dimension(224, 25));
 
         btn_copy.setBackground(new java.awt.Color(0, 0, 0));
-        btn_copy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_copy.png"))); // NOI18N
+        btn_copy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_copy.png"))); // NOI18N
         btn_copy.setPreferredSize(new java.awt.Dimension(35, 25));
         btn_copy.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -224,8 +194,8 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
         lbl_sale_no.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         lbl_sale_no.setText("Sale");
 
-        lbl_auto_order_no.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
-        lbl_auto_order_no.setText("autoGen");
+        lbl_auto_sale_no.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
+        lbl_auto_sale_no.setText("autoGen");
 
         javax.swing.GroupLayout panel_input_detailLayout = new javax.swing.GroupLayout(panel_input_detail);
         panel_input_detail.setLayout(panel_input_detailLayout);
@@ -255,7 +225,7 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
                     .addGroup(panel_input_detailLayout.createSequentialGroup()
                         .addComponent(lbl_sale_no)
                         .addGap(7, 7, 7)
-                        .addComponent(lbl_auto_order_no)
+                        .addComponent(lbl_auto_sale_no)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -269,7 +239,7 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
             .addGroup(panel_input_detailLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lbl_auto_order_no)
+                    .addComponent(lbl_auto_sale_no)
                     .addComponent(lbl_sale_no))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -302,9 +272,6 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
         lbl_total.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         lbl_total.setText("Total:");
 
-        lbl_due.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        lbl_due.setText("Due:");
-
         lbl_total_field.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
 
         lbl_due_field.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
@@ -321,10 +288,9 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lbl_total_field))
                     .addGroup(panel_total_amountLayout.createSequentialGroup()
-                        .addComponent(lbl_due)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(37, 37, 37)
                         .addComponent(lbl_due_field)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(955, Short.MAX_VALUE))
         );
         panel_total_amountLayout.setVerticalGroup(
             panel_total_amountLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -334,9 +300,7 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
                     .addComponent(lbl_total)
                     .addComponent(lbl_total_field))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(panel_total_amountLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lbl_due)
-                    .addComponent(lbl_due_field))
+                .addComponent(lbl_due_field)
                 .addContainerGap())
         );
 
@@ -345,7 +309,7 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
         btn_save_sale.setBackground(new java.awt.Color(0, 0, 0));
         btn_save_sale.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_save_sale.setForeground(new java.awt.Color(255, 255, 255));
-        btn_save_sale.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/icon_save.png"))); // NOI18N
+        btn_save_sale.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_save.png"))); // NOI18N
         btn_save_sale.setText("Refund");
         btn_save_sale.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -366,7 +330,7 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
         btn_notes.setBackground(new java.awt.Color(21, 76, 121));
         btn_notes.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_notes.setForeground(new java.awt.Color(255, 255, 255));
-        btn_notes.setText("History");
+        btn_notes.setText("Notes");
         btn_notes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_notesActionPerformed(evt);
@@ -461,7 +425,7 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
                 .addGroup(panel_sale_detailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(panel_input_detail, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(scroll_pane_products, javax.swing.GroupLayout.DEFAULT_SIZE, 435, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 55, Short.MAX_VALUE)
                 .addComponent(panel_total_amount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(panel_sale_buttons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -526,14 +490,14 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btn_save_saleActionPerformed
 
     private void btn_depositActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_depositActionPerformed
-        DepositModal depositModal = new DepositModal(_servicerderModel, _parentFrame, true);
+        DepositModal depositModal = new DepositModal(_saleModel, _parentFrame, true);
         depositModal.setLocationRelativeTo(this);
         depositModal.setVisible(true);
     }//GEN-LAST:event_btn_depositActionPerformed
 
     private void btn_notesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_notesActionPerformed
 
-        NoteModal noteModal = new NoteModal(_servicerderModel, _parentFrame, true);
+        NoteModal noteModal = new NoteModal(_saleModel, _parentFrame, true);
         noteModal.setLocationRelativeTo(this);
         noteModal.setVisible(true);
     }//GEN-LAST:event_btn_notesActionPerformed
@@ -544,9 +508,8 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
     private javax.swing.JButton btn_notes;
     private javax.swing.JButton btn_save_sale;
     private javax.swing.JTextField hdn_txt_customer_id;
-    private javax.swing.JLabel lbl_auto_order_no;
+    private javax.swing.JLabel lbl_auto_sale_no;
     private javax.swing.JLabel lbl_contact;
-    private javax.swing.JLabel lbl_due;
     private javax.swing.JLabel lbl_due_field;
     private javax.swing.JLabel lbl_email;
     private javax.swing.JLabel lbl_first_name;

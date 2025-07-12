@@ -88,7 +88,7 @@
                       <Component id="panel_input_detail" max="32767" attributes="0"/>
                       <Component id="scroll_pane_products" pref="435" max="32767" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="38" max="32767" attributes="0"/>
+                  <EmptySpace pref="55" max="32767" attributes="0"/>
                   <Component id="panel_total_amount" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Component id="panel_sale_buttons" min="-2" max="-2" attributes="0"/>
@@ -139,7 +139,7 @@
                           <Group type="102" attributes="0">
                               <Component id="lbl_sale_no" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
-                              <Component id="lbl_auto_order_no" min="-2" max="-2" attributes="0"/>
+                              <Component id="lbl_auto_sale_no" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           </Group>
                       </Group>
@@ -159,7 +159,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="lbl_auto_order_no" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="lbl_auto_sale_no" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="lbl_sale_no" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
@@ -313,7 +313,7 @@
                 <Property name="text" type="java.lang.String" value="Sale"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="lbl_auto_order_no">
+            <Component class="javax.swing.JLabel" name="lbl_auto_sale_no">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Lucida Grande" size="16" style="1"/>
@@ -344,12 +344,11 @@
                               <Component id="lbl_total_field" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="lbl_due" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="37" max="-2" attributes="0"/>
                               <Component id="lbl_due_field" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace pref="955" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -362,10 +361,7 @@
                           <Component id="lbl_total_field" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="lbl_due" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="lbl_due_field" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
+                      <Component id="lbl_due_field" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -378,14 +374,6 @@
                   <Font name="Lucida Grande" size="14" style="0"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Total:"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="lbl_due">
-              <Properties>
-                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Lucida Grande" size="14" style="0"/>
-                </Property>
-                <Property name="text" type="java.lang.String" value="Due:"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="lbl_total_field">
@@ -490,7 +478,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="ff" green="ff" red="ff" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="History"/>
+                <Property name="text" type="java.lang.String" value="Notes"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_notesActionPerformed"/>

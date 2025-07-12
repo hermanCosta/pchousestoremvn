@@ -14,7 +14,7 @@ public class MainApp {
             ex.printStackTrace();
         }
         
-        //logo_slogan_small
+        //app_icon
         SwingUtilities.invokeLater(() -> {
             // Agora LoginView é uma JFrame normal, então podemos chamar diretamente
             new LoginView().setVisible(true);

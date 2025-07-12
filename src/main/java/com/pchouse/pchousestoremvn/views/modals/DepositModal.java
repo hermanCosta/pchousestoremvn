@@ -4,6 +4,7 @@ import com.pchouse.pchousestoremvn.common.CommonExtension;
 import com.pchouse.pchousestoremvn.common.CommonStrings;
 import com.pchouse.pchousestoremvn.controllers.DepositController;
 import com.pchouse.pchousestoremvn.models.Deposit;
+import com.pchouse.pchousestoremvn.models.Sale;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -14,24 +15,35 @@ public class DepositModal extends javax.swing.JDialog {
     private final DepositController _depositController;
     private final DefaultTableModel _dtmOrderDeposit;
     private List<Deposit> _listOrderDeposit;
-    private ServiceOrder _createdOrderView;
+    private ServiceOrder _serviceOrderModel;
+    private Sale _saleModel;
 
-    public DepositModal(ServiceOrder orderModel, java.awt.Frame parent, boolean modal) {
+    public DepositModal(ServiceOrder serviceOrderModel, java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
 
-        this._createdOrderView = orderModel;
+        this._serviceOrderModel = serviceOrderModel;
         this._depositController = new DepositController();
-        this._createdOrderView = orderModel;
+        this._serviceOrderModel = serviceOrderModel;
+        this._dtmOrderDeposit = (DefaultTableModel) this.table_view_deposits.getModel();
+        loadOrderDepositListTable();
+    }
+
+    public DepositModal(Sale saleModel, java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
+        initComponents();
+
+        this._saleModel = saleModel;
+        this._depositController = new DepositController();
         this._dtmOrderDeposit = (DefaultTableModel) this.table_view_deposits.getModel();
         loadOrderDepositListTable();
     }
 
     private void loadOrderDepositListTable() {
         try {
-            this._listOrderDeposit = this._depositController.getOrderDeposit(_createdOrderView);
+            this._listOrderDeposit = this._depositController.getOrderDeposit(_serviceOrderModel);
 
-            this.lbl_order_deposit_id.setText(CommonStrings.formatOrderNumber(_createdOrderView.getIdServiceOrder()));
+            this.lbl_order_deposit_id.setText(CommonStrings.formatOrderNumber(_serviceOrderModel.getIdServiceOrder()));
             _dtmOrderDeposit.setRowCount(0);
             double totalDeposit = 0;
 

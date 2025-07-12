@@ -66,7 +66,7 @@ public class PrintRefurbLabel extends javax.swing.JFrame {
         panel_refurb_specs.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         panel_refurb_specs.setMaximumSize(new java.awt.Dimension(555, 200));
 
-        lbl_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/logo_slogan_small.png"))); // NOI18N
+        lbl_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/app_icon.png"))); // NOI18N
 
         lbl_warranty.setFont(new java.awt.Font("sansserif", 0, 13)); // NOI18N
         lbl_warranty.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);

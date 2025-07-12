@@ -117,7 +117,7 @@ public class CommonSetting {
         }
 
         protected void setAppIcon() {
-            Image icon = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/logo_slogan_small.png"));
+            Image icon = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/app_icon.png"));
             setIconImage(icon);
         }
     }

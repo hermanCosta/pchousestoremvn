@@ -92,4 +92,20 @@ public class DepositDAO {
         }
         return orderDeposits;
     }
+    
+     public List<Deposit> getSaleDepositDAO(Sale sale) {
+        EntityManager em = JPAUtil.getEntityManager();
+        List<Deposit> orderDeposits = null;
+        try {
+            TypedQuery<Deposit> query = em.createQuery(
+                    "SELECT d FROM Deposit d WHERE d.sale.idSale = :saleId", Deposit.class);
+            query.setParameter("saleId", sale.getIdSale());
+            orderDeposits = query.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+        return orderDeposits;
+    }
 }
