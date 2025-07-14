@@ -31,6 +31,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import javax.swing.DefaultListModel;
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
@@ -141,80 +142,172 @@ public class NewSaleView extends javax.swing.JInternalFrame {
         this.txt_first_name.requestFocus();
     }
 
+//    private Sale getSaleFields() {
+//        Sale saleDetails = null;
+//        Customer customer = null;
+//        String password;
+//        Employee employee;
+//        boolean isNewCustomer = true;
+//
+//        if (this.txt_first_name.getText().trim().isEmpty() || this.txt_last_name.getText().trim().isEmpty()
+//                || this.txt_contact.getText().trim().isEmpty()
+//                || this.table_view_products.getRowCount() == 0) {
+//            JOptionPane.showMessageDialog(this, CommonConstant.WARN_EMPTY_FIELDS, this.getTitle(), JOptionPane.WARNING_MESSAGE);
+//
+//            return saleDetails;
+//        } else {
+//            password = CommonExtension.requestUserPassword();
+//            employee = _employeeController.getEmployeeByPass(password);
+//            if (employee != null) {
+//                int idCustomer = CommonExtension.setIdExtension(this.hdn_txt_customer_id);
+//
+//                if (idCustomer > 0) {
+//                    isNewCustomer = false;
+//                    customer = this._customerController.getCustomerById(idCustomer);
+//                    if (!customer.getPerson().getFirstName().equals(this.txt_first_name.getText())
+//                            || !customer.getPerson().getLastName().equals(this.txt_last_name.getText())
+//                            || !CommonExtension.formatContactNo(customer.getPerson().getContactNo()).equals(CommonExtension.formatContactNo(this.txt_contact.getText()))
+//                            || !customer.getPerson().getEmail().equals(this.txt_email.getText())) {
+//
+//                        JOptionPane.showMessageDialog(this, CommonConstant.WARN_CUSTOMER_MATCHING, this.getTitle(), JOptionPane.WARNING_MESSAGE);
+//                        CustomerModal customerModal = new CustomerModal(this, new MainMenuView(CommonSetting.COMPANY), true, customer);
+//                        customerModal.setVisible(true);
+//                        this.hdn_txt_customer_id.setText("");
+//                        return saleDetails;
+//                    }
+//                }
+//
+//                if (isNewCustomer) {
+//                    Customer checkCustomer = _customerController.searchCustomerByContactNo(this.txt_contact.getText().replace("(", "").replace(")", "").replace("-", "").replace(" ", ""));
+//
+//                    if (checkCustomer != null) {
+//                        JOptionPane.showMessageDialog(this, CommonConstant.WARN_EXIST_PERSON, this.getTitle(), JOptionPane.WARNING_MESSAGE);
+//
+//                        CustomerModal customerModal = new CustomerModal(this, _parentFrame, true, checkCustomer);
+//                        customerModal.setLocationRelativeTo(this);
+//                        customerModal.setVisible(true);
+//
+//                        return saleDetails;
+//                    } else {
+//
+//                        Person person = new Person(
+//                                this.txt_first_name.getText().toUpperCase(),
+//                                this.txt_last_name.getText().toUpperCase(),
+//                                this.txt_contact.getText().replace("(", "").replace(")", "").replace("-", "").replace(" ", ""),
+//                                this.txt_email.getText().toLowerCase());
+//
+//                        customer = new Customer(person, CommonSetting.COMPANY);
+//                    }
+//                }
+//
+//                saleDetails = new Sale(
+//                        customer,
+//                        employee,
+//                        CommonSetting.COMPANY,
+//                        CommonExtension.formatEuroToDouble(this.lbl_total_field.getText()),
+//                        new Date(),
+//                        null,
+//                        null,
+//                        OrderStatus.FINISHED.toString());
+//
+//            } else {
+//                JOptionPane.showMessageDialog(this, CommonConstant.NOT_AUTHORIZED, null, JOptionPane.ERROR_MESSAGE);
+//            }
+//        }
+//
+//        return saleDetails;
+//    }
     private Sale getSaleFields() {
-        Sale saleDetails = null;
-        Customer customer = null;
-        String password;
-        Employee employee;
-        boolean isNewCustomer = true;
-
-        if (this.txt_first_name.getText().trim().isEmpty() || this.txt_last_name.getText().trim().isEmpty()
-                || this.txt_contact.getText().trim().isEmpty()
-                || this.table_view_products.getRowCount() == 0) {
+        if (!validateRequiredFields()) {
             JOptionPane.showMessageDialog(this, CommonConstant.WARN_EMPTY_FIELDS, this.getTitle(), JOptionPane.WARNING_MESSAGE);
-
-            return saleDetails;
-        } else {
-            password = CommonExtension.requestUserPassword();
-            employee = _employeeController.getEmployeeByPass(password);
-            if (employee != null) {
-                int idCustomer = CommonExtension.setIdExtension(this.hdn_txt_customer_id);
-
-                if (idCustomer > 0) {
-                    isNewCustomer = false;
-                    customer = this._customerController.getCustomerById(idCustomer);
-                    if (!customer.getPerson().getFirstName().equals(this.txt_first_name.getText())
-                            || !customer.getPerson().getLastName().equals(this.txt_last_name.getText())
-                            || !CommonExtension.formatContactNo(customer.getPerson().getContactNo()).equals(CommonExtension.formatContactNo(this.txt_contact.getText()))
-                            || !customer.getPerson().getEmail().equals(this.txt_email.getText())) {
-
-                        JOptionPane.showMessageDialog(this, CommonConstant.WARN_CUSTOMER_MATCHING, this.getTitle(), JOptionPane.WARNING_MESSAGE);
-                        CustomerModal customerModal = new CustomerModal(this, new MainMenuView(CommonSetting.COMPANY), true, customer);
-                        customerModal.setVisible(true);
-                        this.hdn_txt_customer_id.setText("");
-                        return saleDetails;
-                    }
-                }
-
-                if (isNewCustomer) {
-                    Customer checkCustomer = _customerController.searchCustomerByContactNo(this.txt_contact.getText().replace("(", "").replace(")", "").replace("-", "").replace(" ", ""));
-
-                    if (checkCustomer != null) {
-                        JOptionPane.showMessageDialog(this, CommonConstant.WARN_EXIST_PERSON, this.getTitle(), JOptionPane.WARNING_MESSAGE);
-
-                        CustomerModal customerModal = new CustomerModal(this, _parentFrame, true, checkCustomer);
-                        customerModal.setLocationRelativeTo(this);
-                        customerModal.setVisible(true);
-
-                        return saleDetails;
-                    } else {
-
-                        Person person = new Person(
-                                this.txt_first_name.getText().toUpperCase(),
-                                this.txt_last_name.getText().toUpperCase(),
-                                this.txt_contact.getText().replace("(", "").replace(")", "").replace("-", "").replace(" ", ""),
-                                this.txt_email.getText().toLowerCase());
-
-                        customer = new Customer(person, CommonSetting.COMPANY);
-                    }
-                }
-
-                saleDetails = new Sale(
-                        customer,
-                        employee,
-                        CommonSetting.COMPANY,
-                        CommonExtension.formatEuroToDouble(this.lbl_total_field.getText()),
-                        new Date(),
-                        null,
-                        null,
-                        OrderStatus.FINISHED.toString());
-
-            } else {
-                JOptionPane.showMessageDialog(this, CommonConstant.NOT_AUTHORIZED, null, JOptionPane.ERROR_MESSAGE);
-            }
+            return null;
         }
 
-        return saleDetails;
+        String password = CommonExtension.requestUserPassword();
+        Employee employee = _employeeController.getEmployeeByPass(password);
+
+        if (employee == null) {
+            JOptionPane.showMessageDialog(this, CommonConstant.NOT_AUTHORIZED, null, JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
+        Customer customer = resolveCustomer();
+        if (customer == null) {
+            return null;
+        }
+
+        return createSale(customer, employee);
+    }
+
+    private boolean validateRequiredFields() {
+        return !txt_first_name.getText().trim().isEmpty()
+                && !txt_last_name.getText().trim().isEmpty()
+                && !txt_contact.getText().trim().isEmpty()
+                && table_view_products.getRowCount() > 0;
+    }
+
+    private Customer resolveCustomer() {
+        int idCustomer = CommonExtension.setIdExtension(hdn_txt_customer_id);
+        String firstName = txt_first_name.getText().trim();
+        String lastName = txt_last_name.getText().trim();
+        String contact = CommonExtension.normalizePhone(txt_contact.getText());
+        String email = txt_email.getText().trim();
+
+        if (idCustomer > 0) {
+            Customer existingCustomer = _customerController.getCustomerById(idCustomer);
+            if (!dataMatches(existingCustomer, firstName, lastName, contact, email)) {
+                JOptionPane.showMessageDialog(this, CommonConstant.WARN_CUSTOMER_MATCHING, this.getTitle(), JOptionPane.WARNING_MESSAGE);
+                CustomerModal customerModal = new CustomerModal(this, new MainMenuView(CommonSetting.COMPANY), true, existingCustomer);
+                customerModal.setVisible(true);
+                hdn_txt_customer_id.setText("");
+                return null;
+            }
+            return existingCustomer;
+        } else {
+            Customer foundCustomer = _customerController.searchCustomerByContactNo(contact);
+            if (foundCustomer != null) {
+                JOptionPane.showMessageDialog(this, CommonConstant.WARN_EXIST_PERSON, this.getTitle(), JOptionPane.WARNING_MESSAGE);
+                CustomerModal customerModal = new CustomerModal(this, _parentFrame, true, foundCustomer);
+                customerModal.setLocationRelativeTo(this);
+                customerModal.setVisible(true);
+                return null;
+            } else {
+                Person newPerson = new Person(
+                        firstName.toUpperCase(),
+                        lastName.toUpperCase(),
+                        contact,
+                        email.toLowerCase()
+                );
+                return new Customer(newPerson, CommonSetting.COMPANY);
+            }
+        }
+    }
+
+    private boolean dataMatches(Customer customer, String firstName, String lastName, String contact, String email) {
+        if (customer == null || customer.getPerson() == null) {
+            return false;
+        }
+
+        Person person = customer.getPerson();
+        return person.getFirstName().equals(firstName)
+                && person.getLastName().equals(lastName)
+                && CommonExtension.normalizePhone(person.getContactNo()).equals(contact)
+                && Objects.equals(person.getEmail(), email);
+    }
+
+    private Sale createSale(Customer customer, Employee employee) {
+        double totalAmount = CommonExtension.formatEuroToDouble(lbl_total_field.getText());
+
+        return new Sale(
+                customer,
+                employee,
+                CommonSetting.COMPANY,
+                totalAmount,
+                new Date(),
+                null,
+                null,
+                OrderStatus.FINISHED.toString()
+        );
     }
 
     private List<SaleProdServ> getSaleProdServ(Sale sale) {
@@ -275,6 +368,64 @@ public class NewSaleView extends javax.swing.JInternalFrame {
             list_prod_serv_search.getParent().setVisible(true); // Ensure parent is visible
             list_prod_serv_search.requestFocusInWindow();
         }
+    }
+
+    private boolean saveSaleItems(Sale sale) throws BusinessException {
+        List<SaleProdServ> items = getSaleProdServ(sale);
+        if (items == null) {
+            return true;
+        }
+
+        for (SaleProdServ item : items) {
+            long id = _saleProdServController.addSaleProdServ(item);
+            System.out.println("ProdServ Added: " + id);
+            if (id <= 0) {
+                showError("Erro ao salvar produto/serviço.");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean processDepositIfExists(Sale sale) throws BusinessException {
+        String depositText = txt_deposit.getText().trim();
+        if (depositText.isEmpty()) {
+            return true;
+        }
+
+        PaymentModal paymentModal = new PaymentModal(sale, depositText, new MainMenuView(CommonSetting.COMPANY), true);
+        paymentModal.setVisible(true);
+
+        Deposit deposit = new Deposit(
+                sale,
+                sale.getEmployee(),
+                CommonExtension.salePayment,
+                Double.parseDouble(depositText),
+                sale.getCreated()
+        );
+        deposit.setSalePayment(paymentModal.getSalePayment());
+
+        long idDeposit = _depositController.addDeposit(deposit);
+        if (idDeposit <= 0) {
+            showError(CommonConstant.ERROR_ADD_DEPOSIT);
+            return false;
+        }
+
+        return true;
+    }
+
+    private void saveSaleNote(Sale sale) throws BusinessException {
+        OrderNote note = new OrderNote(
+                sale,
+                sale.getEmployee(),
+                CommonConstant.SALE_CREATED_NOTE,
+                new Date()
+        );
+        _saleNoteController.addOrderNote(note);
+    }
+
+    private void showError(String message) {
+        JOptionPane.showMessageDialog(this, message, getTitle(), JOptionPane.ERROR_MESSAGE);
     }
 
     @SuppressWarnings("unchecked")
@@ -489,7 +640,6 @@ public class NewSaleView extends javax.swing.JInternalFrame {
         lbl_deposit.setText("Deposit:");
 
         txt_deposit.setFont(new java.awt.Font("sansserif", 0, 13)); // NOI18N
-        txt_deposit.setForeground(new java.awt.Color(51, 51, 255));
         txt_deposit.setNextFocusableComponent(btn_save_sale);
         txt_deposit.setPreferredSize(new java.awt.Dimension(100, 25));
         txt_deposit.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -730,66 +880,37 @@ public class NewSaleView extends javax.swing.JInternalFrame {
 
     private void btn_save_saleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_save_saleActionPerformed
         Sale addSale = getSaleFields();
-        boolean isAdded = false;
 
-        if (addSale != null) {
-            // Add device
+        if (addSale == null) {
+            return;
+        }
 
-            try {
-                long idOrderAdded = this._saleController.addSale(addSale);
-                if (idOrderAdded > 0) {
-                    addSale.setIdSale(idOrderAdded);
+        try {
+            long idSale = _saleController.addSale(addSale);
 
-                    List<SaleProdServ> listSaleProdServ = getSaleProdServ(addSale);
-                    if (listSaleProdServ != null) {
-                        for (SaleProdServ prodServItem : listSaleProdServ) {
-                            long idSaleProdServAdded = _saleProdServController.addSaleProdServ(prodServItem);
-                            System.out.println("ProdServ Added: " + idSaleProdServAdded);
-
-                            if (idSaleProdServAdded > 0) {
-                                isAdded = true;
-                            } else {
-                                isAdded = false;
-                                System.out.println("Error to add ProdServ");
-                                return;
-                            }
-                        }
-                    }
-
-                    if (!this.txt_deposit.getText().trim().isEmpty()) {
-
-                        PaymentModal paymentModal = new PaymentModal(addSale, this.txt_deposit.getText(), new MainMenuView(CommonSetting.COMPANY), true);
-                        paymentModal.setVisible(true);
-
-                        Deposit deposit = new Deposit(addSale, addSale.getEmployee(), CommonExtension.salePayment, Double.parseDouble(this.txt_deposit.getText()), addSale.getCreated());
-                        deposit.setSalePayment(paymentModal.getSalePayment());
-                        
-                        long idDepositAdded = this._depositController.addDeposit(deposit);
-                        if (idDepositAdded > 0) {
-
-                            isAdded = true;
-                        } else {
-                            JOptionPane.showMessageDialog(this, CommonConstant.ERROR_ADD_DEPOSIT, this.getTitle(), JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                    }
-                }
-
-                if (isAdded) {
-                    // Add creating note
-                    OrderNote saleNote = new OrderNote(addSale, addSale.getEmployee(), CommonConstant.SALE_CREATED_NOTE, new Date());
-
-                    _saleNoteController.addOrderNote(saleNote);
-
-                    JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_SAVE);
-                    clearFields();
-                }
-
-            } catch (BusinessException e) {
-                JOptionPane.showMessageDialog(this, e.getMessage(), this.getTitle(), JOptionPane.ERROR_MESSAGE);
-                e.printStackTrace();
+            if (idSale <= 0) {
+                showError("Erro ao salvar a venda.");
                 return;
             }
+
+            addSale.setIdSale(idSale);
+
+            if (!saveSaleItems(addSale)) {
+                return;
+            }
+
+            if (!processDepositIfExists(addSale)) {
+                return;
+            }
+
+            saveSaleNote(addSale);
+
+            JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_SAVE);
+            clearFields();
+
+        } catch (BusinessException e) {
+            e.printStackTrace();
+            showError(e.getMessage());
         }
     }//GEN-LAST:event_btn_save_saleActionPerformed
 

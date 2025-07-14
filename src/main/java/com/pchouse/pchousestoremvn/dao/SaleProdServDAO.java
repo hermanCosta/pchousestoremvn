@@ -44,7 +44,7 @@ public class SaleProdServDAO {
         List<SaleProdServ> listSaleProdServ = null;
         try {
             TypedQuery<SaleProdServ> query = em.createQuery(
-                    "FROM SaleProdServ o WHERE o.serviceOrder = :pSale", SaleProdServ.class);
+                    "FROM SaleProdServ s WHERE s.sale = :pSale", SaleProdServ.class);
             query.setParameter("pSale", pSale);
             listSaleProdServ = query.getResultList();
         } catch (Exception e) {
@@ -61,7 +61,7 @@ public class SaleProdServDAO {
         long result = 0;
         try {
             em.getTransaction().begin();
-            result = em.createQuery("DELETE FROM SaleProdServ o WHERE o.idSaleProdServ = :pIdSaleProdServ")
+            result = em.createQuery("DELETE FROM SaleProdServ s WHERE s.idSaleProdServ = :pIdSaleProdServ")
                     .setParameter("pIdSaleProdServ", pIdSaleProdServ)
                     .executeUpdate();
             em.getTransaction().commit();

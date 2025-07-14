@@ -314,7 +314,7 @@
                   <Color blue="ff" green="ff" red="ff" type="rgb"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/Img/icon_pay.png"/>
+                  <Image iconType="3" name="/icons/icon_pay.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Pay"/>
               </Properties>
@@ -334,7 +334,7 @@
                   <Color blue="ff" green="ff" red="ff" type="rgb"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/Img/icon_cancel.png"/>
+                  <Image iconType="3" name="/icons/icon_cancel.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Cancel"/>
               </Properties>

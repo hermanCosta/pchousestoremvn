@@ -41,7 +41,7 @@ public class MenuViewTest extends JFrame {
         sidePanel.setBackground(Color.LIGHT_GRAY);
         sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
 
-// Topo: Shop Name com ícone
+        // Topo: Shop Name com ícone
         JLabel lblShopNameTitle = new JLabel("Shop Name");
         lblShopNameTitle.setForeground(Color.WHITE);
         lblShopNameTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -55,19 +55,19 @@ public class MenuViewTest extends JFrame {
         lblShopName.setBorder(BorderFactory.createEmptyBorder(5, 10, 15, 10));
         sidePanel.add(lblShopName);
 
-// Painel para o logo
+        // Painel para o logo
         JPanel logoPanel = new JPanel();
         logoPanel.setBackground(Color.LIGHT_GRAY);
         logoPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         logoPanel.setLayout(new BorderLayout());
 
-// Ícone do logo
+        // Ícone do logo
         JLabel lblLogo = new JLabel();
         lblLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/logo_header.png"))); // Ícone do logo
         logoPanel.add(lblLogo, BorderLayout.CENTER);
         sidePanel.add(logoPanel);
 
-// Informações da loja com ícones
+        // Informações da loja com ícones
         JLabel lblShopAddress = new JLabel();
         lblShopAddress.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_address.png"))); // Ícone de endereço
         lblShopAddress.setText(_company.getAddress());
@@ -84,7 +84,7 @@ public class MenuViewTest extends JFrame {
         lblShopTel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         sidePanel.add(lblShopTel);
 
-// Rodapé: Timestamp
+        // Rodapé: Timestamp
         lblTimeStamp = new JLabel(getFormattedTimestamp());
         lblTimeStamp.setForeground(Color.WHITE);
         lblTimeStamp.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -92,7 +92,7 @@ public class MenuViewTest extends JFrame {
         lblTimeStamp.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         sidePanel.add(lblTimeStamp);
 
-// Adicionar o sidePanel ao desktopPane ou onde for necessário
+        // Adicionar o sidePanel ao desktopPane ou onde for necessário
         desktopPane.add(sidePanel);
 
         JMenuBar menuBar = new JMenuBar();
@@ -159,6 +159,25 @@ public class MenuViewTest extends JFrame {
         menuBar.add(menuConsult);
 
         setJMenuBar(menuBar);
+
+        if (isDevMode()) {
+            JButton btnReloadUI = new JButton("⟳ Recarregar UI");
+            btnReloadUI.setAlignmentX(Component.CENTER_ALIGNMENT);
+            btnReloadUI.setFocusable(false);
+            btnReloadUI.setBackground(new Color(200, 80, 80));
+            btnReloadUI.setForeground(Color.WHITE);
+            btnReloadUI.setFont(new Font("SansSerif", Font.BOLD, 14));
+            btnReloadUI.setMaximumSize(new Dimension(180, 40));
+            btnReloadUI.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+            btnReloadUI.addActionListener(e -> {
+                this.dispose();
+                com.pchouse.pchousestoremvn.MainApp.carregarTelaInicial(); // Recarrega toda a aplicação
+            });
+
+            sidePanel.add(Box.createVerticalStrut(30)); // espaço antes do botão
+            sidePanel.add(btnReloadUI);
+        }
 
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(desktopPane, BorderLayout.CENTER);
@@ -234,5 +253,9 @@ public class MenuViewTest extends JFrame {
     private void menuItemOrdersActionPerformed(ActionEvent evt) {
         //openInternalFrame(new OrderListView());
         openInternalFrame(new OrderSaleListView());
+    }
+
+    private boolean isDevMode() {
+        return Boolean.getBoolean("devMode");
     }
 }

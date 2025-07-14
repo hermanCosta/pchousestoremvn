@@ -27,7 +27,7 @@ public class CommonExtension {
     public static ServiceOrderPayment orderPayment = null;
     public static ServiceOrder orderModel = null;
     public static SalePayment salePayment = null;
-    
+
     public static int setIdExtension(JTextField jTextField) {
         if (jTextField.getText().trim().isEmpty()) {
             return 0;
@@ -231,5 +231,9 @@ public class CommonExtension {
             formatedContact = contact.trim().replace("(", "").replace(")", "").replace("-", "").replaceAll(" ", "");
         }
         return formatedContact;
+    }
+
+    public static String normalizePhone(String phone) {
+        return phone.replaceAll("[^0-9]", "");
     }
 }

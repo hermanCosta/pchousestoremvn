@@ -376,7 +376,7 @@
                   <Color blue="0" green="0" red="0" type="rgb"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/Img/icon_search_customer.png"/>
+                  <Image iconType="3" name="/icons/icon_search_customer.png"/>
                 </Property>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[35, 25]"/>
@@ -392,7 +392,7 @@
                   <Color blue="0" green="0" red="0" type="rgb"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/Img/icon_copy.png"/>
+                  <Image iconType="3" name="/icons/icon_copy.png"/>
                 </Property>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[35, 25]"/>
@@ -626,7 +626,7 @@
                   <Color blue="0" green="0" red="0" type="rgb"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/Img/icon_international_number.png"/>
+                  <Image iconType="3" name="/icons/icon_international_number.png"/>
                 </Property>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[35, 25]"/>
@@ -806,7 +806,7 @@
                   <Color blue="ff" green="ff" red="ff" type="rgb"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/Img/icon_save.png"/>
+                  <Image iconType="3" name="/icons/icon_save.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Save"/>
               </Properties>
@@ -826,7 +826,7 @@
                   <Color blue="ff" green="ff" red="ff" type="rgb"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/Img/icon_cancel.png"/>
+                  <Image iconType="3" name="/icons/icon_cancel.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Cancel"/>
                 <Property name="nextFocusableComponent" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
@@ -857,7 +857,7 @@
         <Component class="javax.swing.JLabel" name="lbl_search_fault_icon">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/Img/icon_search_small_left.png"/>
+              <Image iconType="3" name="/icons/icon_search_small_left.png"/>
             </Property>
           </Properties>
         </Component>
@@ -961,7 +961,7 @@
         <Component class="javax.swing.JLabel" name="lbl_search_prod_serv_icon">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/Img/icon_search_small_left.png"/>
+              <Image iconType="3" name="/icons/icon_search_small_left.png"/>
             </Property>
           </Properties>
         </Component>

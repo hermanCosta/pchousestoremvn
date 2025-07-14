@@ -100,7 +100,6 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
         }
 
         this.lbl_total_field.setText(CommonExtension.formatEuroCurrency(sum));
-        this.lbl_due_field.setText(this.lbl_total_field.getText());
     }
 
     @SuppressWarnings("unchecked")
@@ -124,11 +123,10 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
         panel_total_amount = new javax.swing.JPanel();
         lbl_total = new javax.swing.JLabel();
         lbl_total_field = new javax.swing.JLabel();
-        lbl_due_field = new javax.swing.JLabel();
         panel_sale_buttons = new javax.swing.JPanel();
-        btn_save_sale = new javax.swing.JButton();
-        btn_deposit = new javax.swing.JButton();
+        btn_refund_sale = new javax.swing.JButton();
         btn_notes = new javax.swing.JButton();
+        btn_deposit = new javax.swing.JButton();
         scroll_pane_products = new javax.swing.JScrollPane();
         table_view_products = new javax.swing.JTable();
 
@@ -274,66 +272,59 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
 
         lbl_total_field.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
 
-        lbl_due_field.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
-
         javax.swing.GroupLayout panel_total_amountLayout = new javax.swing.GroupLayout(panel_total_amount);
         panel_total_amount.setLayout(panel_total_amountLayout);
         panel_total_amountLayout.setHorizontalGroup(
             panel_total_amountLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_total_amountLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panel_total_amountLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panel_total_amountLayout.createSequentialGroup()
-                        .addComponent(lbl_total)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lbl_total_field))
-                    .addGroup(panel_total_amountLayout.createSequentialGroup()
-                        .addGap(37, 37, 37)
-                        .addComponent(lbl_due_field)))
-                .addContainerGap(955, Short.MAX_VALUE))
+                .addComponent(lbl_total)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lbl_total_field, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panel_total_amountLayout.setVerticalGroup(
             panel_total_amountLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_total_amountLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panel_total_amountLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lbl_total)
-                    .addComponent(lbl_total_field))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(lbl_due_field)
-                .addContainerGap())
+                .addGroup(panel_total_amountLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(lbl_total_field, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lbl_total, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18))
         );
 
         panel_sale_buttons.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        btn_save_sale.setBackground(new java.awt.Color(0, 0, 0));
-        btn_save_sale.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        btn_save_sale.setForeground(new java.awt.Color(255, 255, 255));
-        btn_save_sale.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_save.png"))); // NOI18N
-        btn_save_sale.setText("Refund");
-        btn_save_sale.addActionListener(new java.awt.event.ActionListener() {
+        btn_refund_sale.setBackground(new java.awt.Color(0, 0, 0));
+        btn_refund_sale.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+        btn_refund_sale.setForeground(new java.awt.Color(255, 255, 255));
+        btn_refund_sale.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_refund.png"))); // NOI18N
+        btn_refund_sale.setText("Refund");
+        btn_refund_sale.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_save_saleActionPerformed(evt);
-            }
-        });
-
-        btn_deposit.setBackground(new java.awt.Color(21, 76, 121));
-        btn_deposit.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        btn_deposit.setForeground(new java.awt.Color(255, 255, 255));
-        btn_deposit.setText("Deposit");
-        btn_deposit.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_depositActionPerformed(evt);
+                btn_refund_saleActionPerformed(evt);
             }
         });
 
         btn_notes.setBackground(new java.awt.Color(21, 76, 121));
         btn_notes.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_notes.setForeground(new java.awt.Color(255, 255, 255));
+        btn_notes.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_notes.png"))); // NOI18N
         btn_notes.setText("Notes");
         btn_notes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_notesActionPerformed(evt);
+            }
+        });
+
+        btn_deposit.setBackground(new java.awt.Color(21, 76, 121));
+        btn_deposit.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+        btn_deposit.setForeground(new java.awt.Color(255, 255, 255));
+        btn_deposit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_cash_entries.png"))); // NOI18N
+        btn_deposit.setText("Deposit");
+        btn_deposit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_depositActionPerformed(evt);
             }
         });
 
@@ -343,21 +334,21 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
             panel_sale_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_sale_buttonsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(btn_save_sale)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btn_refund_sale)
+                .addGap(12, 12, 12)
                 .addComponent(btn_notes)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btn_deposit)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(638, Short.MAX_VALUE))
         );
         panel_sale_buttonsLayout.setVerticalGroup(
             panel_sale_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_sale_buttonsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panel_sale_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btn_save_sale)
-                    .addComponent(btn_deposit)
-                    .addComponent(btn_notes))
+                    .addComponent(btn_refund_sale)
+                    .addComponent(btn_notes)
+                    .addComponent(btn_deposit))
                 .addContainerGap())
         );
 
@@ -425,7 +416,7 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
                 .addGroup(panel_sale_detailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(panel_input_detail, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(scroll_pane_products, javax.swing.GroupLayout.DEFAULT_SIZE, 435, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 55, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
                 .addComponent(panel_total_amount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(panel_sale_buttons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -481,13 +472,18 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
             }
 
             this.lbl_total_field.setText(String.valueOf((sum)));
-            this.lbl_due_field.setText(String.valueOf(this.lbl_total_field.getText()));
         }
     }//GEN-LAST:event_table_view_productsKeyReleased
 
-    private void btn_save_saleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_save_saleActionPerformed
+    private void btn_refund_saleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refund_saleActionPerformed
 
-    }//GEN-LAST:event_btn_save_saleActionPerformed
+    }//GEN-LAST:event_btn_refund_saleActionPerformed
+
+    private void btn_notesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_notesActionPerformed
+        NoteModal noteModal = new NoteModal(_saleModel, _parentFrame, true);
+        noteModal.setLocationRelativeTo(this);
+        noteModal.setVisible(true);
+    }//GEN-LAST:event_btn_notesActionPerformed
 
     private void btn_depositActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_depositActionPerformed
         DepositModal depositModal = new DepositModal(_saleModel, _parentFrame, true);
@@ -495,22 +491,14 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
         depositModal.setVisible(true);
     }//GEN-LAST:event_btn_depositActionPerformed
 
-    private void btn_notesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_notesActionPerformed
-
-        NoteModal noteModal = new NoteModal(_saleModel, _parentFrame, true);
-        noteModal.setLocationRelativeTo(this);
-        noteModal.setVisible(true);
-    }//GEN-LAST:event_btn_notesActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_copy;
     private javax.swing.JButton btn_deposit;
     private javax.swing.JButton btn_notes;
-    private javax.swing.JButton btn_save_sale;
+    private javax.swing.JButton btn_refund_sale;
     private javax.swing.JTextField hdn_txt_customer_id;
     private javax.swing.JLabel lbl_auto_sale_no;
     private javax.swing.JLabel lbl_contact;
-    private javax.swing.JLabel lbl_due_field;
     private javax.swing.JLabel lbl_email;
     private javax.swing.JLabel lbl_first_name;
     private javax.swing.JLabel lbl_last_name;

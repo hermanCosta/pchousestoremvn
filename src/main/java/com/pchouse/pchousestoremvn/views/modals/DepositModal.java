@@ -79,7 +79,6 @@ public class DepositModal extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
         panel_notes = new javax.swing.JPanel();
         lbl_order_no = new javax.swing.JLabel();
         lbl_order_deposit_id = new javax.swing.JLabel();
@@ -88,8 +87,6 @@ public class DepositModal extends javax.swing.JDialog {
         panel_deposit_total = new javax.swing.JPanel();
         lbl_deposit_paid = new javax.swing.JLabel();
         lbl_total = new javax.swing.JLabel();
-
-        jLabel1.setText("jLabel1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Deposit History View");
@@ -211,7 +208,6 @@ public class DepositModal extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel lbl_deposit_paid;
     private javax.swing.JLabel lbl_order_deposit_id;
     private javax.swing.JLabel lbl_order_no;

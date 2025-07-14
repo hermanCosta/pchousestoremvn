@@ -3,6 +3,7 @@ package com.pchouse.pchousestoremvn.dao;
 import com.pchouse.pchousestoremvn.models.Employee;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.OrderNote;
+import com.pchouse.pchousestoremvn.models.Sale;
 import com.pchouse.pchousestoremvn.util.JPAUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
@@ -17,15 +18,23 @@ public class OrderNoteDAO {
         try {
             em.getTransaction().begin();
 
-            // Ensure ServiceOrde is managed
-            ServiceOrder managedOrder = em.find(ServiceOrder.class, pOrderNote.getServiceOrder().getIdServiceOrder());
+            if (pOrderNote.getSale() != null) {
+                // Attach managed Sale reference
+                Sale managedSale = em.find(Sale.class, pOrderNote.getSale().getIdSale());
+                pOrderNote.setSale(managedSale);
+            } else if (pOrderNote.getServiceOrder() != null) {
+                // Attach managed ServiceOrder reference
+                ServiceOrder managedOrder = em.find(ServiceOrder.class, pOrderNote.getServiceOrder().getIdServiceOrder());
+                pOrderNote.setServiceOrder(managedOrder);
+            } else {
+                // The note must be linked to either a Sale or a ServiceOrder
+                throw new IllegalArgumentException("OrderNote must be associated with either a Sale or a ServiceOrder.");
+            }
+            
             Employee manageEmployee = em.find(Employee.class, pOrderNote.getEmployee().getIdEmployee());
-
-            // Assign managed references
-            pOrderNote.setServiceOrder(managedOrder);
             pOrderNote.setEmployee(manageEmployee);
-
-            // Persist the new ServiceOrderNote record
+            
+            // Persist the new OrderNote record
             em.persist(pOrderNote);
             em.getTransaction().commit();
             idOrderNoteAdded = pOrderNote.getIdServiceOrderNote();

@@ -200,12 +200,6 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
                 List<SaleProdServ> listSaleProdServ = _saleProdServController.getSaleProdServ(saleModel);
                 List<Deposit> listSaleDeposit = _orderDepositController.getOrderDeposit(saleModel);
 
-                URL url = getClass().getResource("/icons/app_icon.png");
-                System.out.println("URL: " + url);  // veja se imprime null ou o caminho correto
-
-                URL urlLogo = getClass().getResource("/icons/app_icon.png");
-                System.out.println("LOGO Small: " + urlLogo);  // veja se imprime null ou o caminho correto
-
                 CreatedSaleView createdSaleView = new CreatedSaleView(saleModel, listSaleProdServ, listSaleDeposit);
                 openInternalFrame(createdSaleView, "Sale: " + saleId);
 
