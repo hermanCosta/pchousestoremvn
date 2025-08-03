@@ -241,7 +241,7 @@ public class OrderListView extends javax.swing.JInternalFrame {
 
             if (orderModel.getStatus() == OrderStatus.IN_PROGRESS) {
                 CreatedOrderView createdOrderView = new CreatedOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
-                createdOrderView.setTitle("Order: " + orderId);
+                createdOrderView.setTitle("Order In Progress: " + orderId);
                 createdOrderView.setClosable(true);
                 createdOrderView.setIconifiable(true);
                 createdOrderView.setMaximizable(true);
@@ -254,6 +254,25 @@ public class OrderListView extends javax.swing.JInternalFrame {
                     try {
                         createdOrderView.setSelected(true);
                         createdOrderView.setMaximum(true);
+                    } catch (PropertyVetoException e) {
+                        e.printStackTrace();
+                    }
+                });
+            } else if (orderModel.getStatus() == OrderStatus.FIXED) {
+                FixedOrderView fixedOrderView = new FixedOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
+                fixedOrderView.setTitle("Order Fixed: " + orderId);
+                fixedOrderView.setClosable(true);
+                fixedOrderView.setIconifiable(true);
+                fixedOrderView.setMaximizable(true);
+                fixedOrderView.setResizable(true);
+
+                desktop.add(fixedOrderView);
+                fixedOrderView.setVisible(true);
+
+                SwingUtilities.invokeLater(() -> {
+                    try {
+                        fixedOrderView.setSelected(true);
+                        fixedOrderView.setMaximum(true);
                     } catch (PropertyVetoException e) {
                         e.printStackTrace();
                     }

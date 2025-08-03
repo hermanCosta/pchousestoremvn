@@ -41,7 +41,7 @@ public class DepositController {
     }
 
 // Returns the list of deposits associated with a specific sale
-    public List<Deposit> getOrderDeposit(Sale pSale) {
+    public List<Deposit> getSaleDeposit(Sale pSale) {
         try {
             return DEPOSIT_DAO.getSaleDepositDAO(pSale);
         } catch (Exception e) {

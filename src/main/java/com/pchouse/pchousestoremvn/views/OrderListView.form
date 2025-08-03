@@ -89,7 +89,7 @@
               <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Component id="txt_search_order" pref="32" max="32767" attributes="0"/>
+                      <Component id="txt_search_order" max="32767" attributes="0"/>
                       <Component id="lbl_search_icon" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>

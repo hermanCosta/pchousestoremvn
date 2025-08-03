@@ -13,7 +13,10 @@ public class CommonConstant {
     public static final String WARN_EXIST_ITEM = "This item already exist";
     public static final String WARN_ADD_ITEM = "Please, add at least one item: ";
     public static final String CONFIRM_ADD_ITEM = "Do you want to add a new item in the database?";
-
+    public static final String CONFIRM_ORDER_FIXED = "Are you sure you want to mark this Service Order as FIXED?";
+    public static final String CONFIRM_ORDER_NOT_FIXED = "Are you sure you want to mark this Service Order as NOT FIXED?";
+    public static final String CONFIRM_ORDER_IN_PROGRESS = "Are you sure you want to mark this Service Order as IN PROGRESS?";
+    
     public static final String SUCCESS_SAVE = "Saved succesfully";
     public static final String SUCCESS_UPDATE = "Updated succesfully";
 
@@ -30,6 +33,7 @@ public class CommonConstant {
     public static final String ORDER_FIXED_NOTE = "ORDER FIXED";
     public static final String ORDER_NOT_FIXED_NOTE = "ORDER NOT FIXED";
     public static final String ORDER_PICKED_NOTE = "ORDER PICKED";
+    public static final String ORDER_BACKED_IN_PROGRESS_NOTE = "ORDER BACKED TO IN PROGRESS";
 
     public static final String SALE_CREATED_NOTE = "SALE CREATED";
 

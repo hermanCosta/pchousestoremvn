@@ -30,10 +30,10 @@ public class OrderNoteDAO {
                 // The note must be linked to either a Sale or a ServiceOrder
                 throw new IllegalArgumentException("OrderNote must be associated with either a Sale or a ServiceOrder.");
             }
-            
+
             Employee manageEmployee = em.find(Employee.class, pOrderNote.getEmployee().getIdEmployee());
             pOrderNote.setEmployee(manageEmployee);
-            
+
             // Persist the new OrderNote record
             em.persist(pOrderNote);
             em.getTransaction().commit();
@@ -52,7 +52,7 @@ public class OrderNoteDAO {
         EntityManager em = JPAUtil.getEntityManager();
         List<OrderNote> listOrderNote = null;
         try {
-            TypedQuery<OrderNote> query = em.createQuery("FROM ServiceOrderNote n WHERE n.serviceOrder = :pOrder ORDER BY n.created ASC", OrderNote.class);
+            TypedQuery<OrderNote> query = em.createQuery("FROM OrderNote n WHERE n.serviceOrder = :pOrder ORDER BY n.created ASC", OrderNote.class);
             query.setParameter("pOrder", pOrder);
             listOrderNote = query.getResultList();
         } catch (Exception e) {
@@ -69,7 +69,7 @@ public class OrderNoteDAO {
         Long idOrderNote = null;
         try {
             TypedQuery<Long> query = em.createQuery(
-                    "SELECT n.idOrderNote FROM ServiceOrderNote n WHERE n.note = :pNote AND n.serviceOrder = :pOrder", Long.class);
+                    "SELECT n.idOrderNote FROM OrderNote n WHERE n.note = :pNote AND n.serviceOrder = :pOrder", Long.class);
             query.setParameter("pNote", pNote);
             query.setParameter("pOrder", pOrder);
             idOrderNote = query.getSingleResult();
@@ -86,8 +86,41 @@ public class OrderNoteDAO {
         EntityManager em = JPAUtil.getEntityManager();
         List<OrderNote> listOrderNote = null;
         try {
-            TypedQuery<OrderNote> query = em.createQuery("FROM ServiceOrderNote n WHERE n.serviceOrder = :pOrder AND n.note LIKE :pSearch", OrderNote.class);
+            TypedQuery<OrderNote> query = em.createQuery("FROM OrderNote n WHERE n.serviceOrder = :pOrder AND n.note LIKE :pSearch", OrderNote.class);
             query.setParameter("pOrder", pOrder);
+            query.setParameter("pSearch", "%" + pSearch + "%");
+            listOrderNote = query.getResultList();
+        } catch (Exception e) {
+            System.err.println("Error searching order notes: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+        return listOrderNote;
+    }
+
+    public List<OrderNote> getAllSaleNoteDAO(Sale pSale) {
+        EntityManager em = JPAUtil.getEntityManager();
+        List<OrderNote> listSaleNote = null;
+        try {
+            TypedQuery<OrderNote> query = em.createQuery("FROM OrderNote n WHERE n.sale = :pSale ORDER BY n.created ASC", OrderNote.class);
+            query.setParameter("pSale", pSale);
+            listSaleNote = query.getResultList();
+        } catch (Exception e) {
+            System.err.println("Error retrieving order notes: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+        return listSaleNote;
+    }
+    
+        public List<OrderNote> searchSaleNoteDAO(Sale pSale, String pSearch) {
+        EntityManager em = JPAUtil.getEntityManager();
+        List<OrderNote> listOrderNote = null;
+        try {
+            TypedQuery<OrderNote> query = em.createQuery("FROM OrderNote n WHERE n.sale = :pSale AND n.note LIKE :pSearch", OrderNote.class);
+            query.setParameter("pSale", pSale);
             query.setParameter("pSearch", "%" + pSearch + "%");
             listOrderNote = query.getResultList();
         } catch (Exception e) {

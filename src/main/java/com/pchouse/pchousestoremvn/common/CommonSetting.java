@@ -121,4 +121,34 @@ public class CommonSetting {
             setIconImage(icon);
         }
     }
+
+    public static void openInternalFrame(JInternalFrame frame, String title) {
+        frame.setTitle(title);
+        frame.setClosable(true);
+        frame.setIconifiable(true);
+        frame.setMaximizable(true);
+        frame.setResizable(true);
+
+        JDesktopPane desktop = CommonSetting.MAIN_MENU_DESKTOP_PANE;
+
+        for (JInternalFrame openFrame : desktop.getAllFrames()) {
+            try {
+                openFrame.dispose();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        desktop.add(frame);
+        frame.setVisible(true);
+
+        SwingUtilities.invokeLater(() -> {
+            try {
+                frame.setSelected(true);
+                frame.setMaximum(true);
+            } catch (PropertyVetoException e) {
+                e.printStackTrace();
+            }
+        });
+    }
 }

@@ -82,4 +82,17 @@ public class ServiceOrderProdServ implements Serializable {
     public void setTotal(Double total) {
         this.total = total;
     }
+    
+    // Getters para o JasperReport
+    public String getDescription() {
+        return prodServ != null ? prodServ.getProdServName() : "";
+    }
+
+    public Double getUnitPrice() {
+        return prodServ != null ? prodServ.getPrice() : 0.0;
+    }
+
+    public Integer getQuantity() {
+        return qty;
+    }
 }

@@ -100,7 +100,7 @@
                       </Group>
                       <Component id="panel_input_detail" max="32767" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="13" max="32767" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
                   <Component id="panel_total_amount" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Component id="panel_sale_buttons" min="-2" max="-2" attributes="0"/>

@@ -3,6 +3,7 @@ package com.pchouse.pchousestoremvn.views.modals;
 import com.pchouse.pchousestoremvn.common.CommonExtension;
 import com.pchouse.pchousestoremvn.common.CommonStrings;
 import com.pchouse.pchousestoremvn.controllers.DepositController;
+import com.pchouse.pchousestoremvn.enums.PayMethod;
 import com.pchouse.pchousestoremvn.models.Deposit;
 import com.pchouse.pchousestoremvn.models.Sale;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
@@ -24,7 +25,6 @@ public class DepositModal extends javax.swing.JDialog {
 
         this._serviceOrderModel = serviceOrderModel;
         this._depositController = new DepositController();
-        this._serviceOrderModel = serviceOrderModel;
         this._dtmOrderDeposit = (DefaultTableModel) this.table_view_deposits.getModel();
         loadOrderDepositListTable();
     }
@@ -41,29 +41,45 @@ public class DepositModal extends javax.swing.JDialog {
 
     private void loadOrderDepositListTable() {
         try {
-            this._listOrderDeposit = this._depositController.getOrderDeposit(_serviceOrderModel);
-
-            this.lbl_order_deposit_id.setText(CommonStrings.formatOrderNumber(_serviceOrderModel.getIdServiceOrder()));
-            _dtmOrderDeposit.setRowCount(0);
-            double totalDeposit = 0;
-
-            if (this._listOrderDeposit != null) {
-                for (Deposit depositItem : _listOrderDeposit) {
-                    _dtmOrderDeposit.addRow(
-                            new Object[]{
-                                depositItem.getIdDeposit(),
-                                CommonStrings.formatDateToString(depositItem.getCreated()),
-                                CommonExtension.formatEuroCurrency(depositItem.getAmount()),
-                                depositItem.getServiceOrderPayment().getPayMethod(),
-                                depositItem.getEmployee().getUsername()
-                            }
-                    );
-
-                    totalDeposit += depositItem.getAmount();
-                }
+            long idOrderFormat = 0;
+            if (_serviceOrderModel != null) {
+                this._listOrderDeposit = this._depositController.getOrderDeposit(_serviceOrderModel);
+                this.lbl_order_deposit_id.setText(CommonStrings.formatOrderNumber(_serviceOrderModel.getIdServiceOrder()));
+            } else if (_saleModel != null) {
+                this._listOrderDeposit = this._depositController.getSaleDeposit(_saleModel);
+                this.lbl_order_deposit_id.setText(CommonStrings.formatOrderNumber(_saleModel.getIdSale()));
             }
 
-            this.lbl_total.setText(CommonExtension.formatEuroCurrency(totalDeposit));
+            if (_listOrderDeposit.size() > 0) {
+                _dtmOrderDeposit.setRowCount(0);
+                double totalDeposit = 0;
+
+                if (this._listOrderDeposit != null) {
+                    for (Deposit depositItem : _listOrderDeposit) {
+                        PayMethod payMethod = null;
+                                if (_serviceOrderModel != null) {
+                                    payMethod = depositItem.getServiceOrderPayment().getPayMethod();
+                                    } else if (_saleModel != null){
+                                        payMethod = depositItem.getSalePayment().getPayMethod();
+                                    }
+                        
+                        _dtmOrderDeposit.addRow(
+                                new Object[]{
+                                    depositItem.getIdDeposit(),
+                                    CommonStrings.formatDateToString(depositItem.getCreated()),
+                                    CommonExtension.formatEuroCurrency(depositItem.getAmount()),
+                                    payMethod,
+                                    depositItem.getEmployee().getUsername()
+                                }
+                        );
+
+                        totalDeposit += depositItem.getAmount();
+                    }
+                }
+
+                this.lbl_total.setText(CommonExtension.formatEuroCurrency(totalDeposit));
+            }
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(
                     this,

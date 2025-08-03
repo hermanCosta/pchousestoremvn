@@ -20,7 +20,6 @@ import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderFault;
 import com.pchouse.pchousestoremvn.models.ServiceOrderProdServ;
 import java.beans.PropertyVetoException;
-import java.net.URL;
 import java.util.List;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
@@ -32,7 +31,6 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
 
     private List<ServiceOrder> _listOrder;
     private List<Sale> _listSale;
-    private final OrderNoteController _orderNoteController;
     private final DepositController _orderDepositController;
     private final ServiceOrderController _serviceOrderController;
     private final ServiceOrderFaultController _serviceOrderFaultController;
@@ -55,7 +53,6 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
         this._dtmOrder = (DefaultTableModel) this.table_view_order_list.getModel();
         this._dtmSale = (DefaultTableModel) this.table_view_sale_list.getModel();
 
-        this._orderNoteController = new OrderNoteController();
         this._serviceOrderFaultController = new ServiceOrderFaultController();
         this._serviceOrderProdServController = new ServiceOrderProdServController();
         this._orderDepositController = new DepositController();
@@ -173,7 +170,13 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
 
                 if (orderModel.getStatus() == OrderStatus.IN_PROGRESS) {
                     CreatedOrderView createdOrderView = new CreatedOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
-                    openInternalFrame(createdOrderView, "Order: " + orderId);
+                    openInternalFrame(createdOrderView, "Order In Progress: " + orderId);
+                } else if (orderModel.getStatus() == OrderStatus.FIXED){
+                    FixedOrderView fixedOrderView = new FixedOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
+                    openInternalFrame(fixedOrderView, "Order Fixed" + orderId);
+                } else if(orderModel.getStatus() == OrderStatus.NOT_FIXED){
+                    NotFixedOrderView notFixedOrderView = new NotFixedOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
+                    openInternalFrame(notFixedOrderView, "Order Not Fixed" + orderId);
                 }
 
             } catch (Exception e) {
@@ -198,7 +201,7 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
             try {
                 Sale saleModel = _saleController.getItemSale(saleId);
                 List<SaleProdServ> listSaleProdServ = _saleProdServController.getSaleProdServ(saleModel);
-                List<Deposit> listSaleDeposit = _orderDepositController.getOrderDeposit(saleModel);
+                List<Deposit> listSaleDeposit = _orderDepositController.getSaleDeposit(saleModel);
 
                 CreatedSaleView createdSaleView = new CreatedSaleView(saleModel, listSaleProdServ, listSaleDeposit);
                 openInternalFrame(createdSaleView, "Sale: " + saleId);

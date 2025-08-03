@@ -1,13 +1,11 @@
 package com.pchouse.pchousestoremvn.enums;
 
 public enum OrderStatus {
-   IN_PROGRESS,
-   FINISHED,
-   PICKED,
-   REFUNDED,
-   CANCELLED,
-   FIXED,
-   NOT_FIXED
+    IN_PROGRESS,
+    FIXED,
+    NOT_FIXED,
+    FINISHED,
+    PICKED,
+    REFUNDED,
+    CANCELLED
 }
-
-

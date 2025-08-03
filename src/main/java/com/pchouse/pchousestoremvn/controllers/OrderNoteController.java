@@ -3,6 +3,7 @@ package com.pchouse.pchousestoremvn.controllers;
 import com.pchouse.pchousestoremvn.dao.OrderNoteDAO;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.OrderNote;
+import com.pchouse.pchousestoremvn.models.Sale;
 import java.util.List;
 
 public class OrderNoteController {
@@ -28,4 +29,15 @@ public class OrderNoteController {
     public List<OrderNote> searchOrderNotes(ServiceOrder pOrder, String pSearch) {
         return ORDER_NOTE_DAO.searchOrderNoteDAO(pOrder, pSearch);
     }
+
+    // Retrieve all sale notes for a specific sale
+    public List<OrderNote> getAllSaleNote(Sale pSale) {
+        return ORDER_NOTE_DAO.getAllSaleNoteDAO(pSale);
+    }
+    // Search for sale notes by a specific term
+
+    public List<OrderNote> searchSaleNote(Sale pSale, String pSearch) {
+        return ORDER_NOTE_DAO.searchSaleNoteDAO(pSale, pSearch);
+    }
+
 }

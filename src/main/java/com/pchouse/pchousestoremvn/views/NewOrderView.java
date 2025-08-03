@@ -27,6 +27,7 @@ import com.pchouse.pchousestoremvn.models.ServiceOrderFault;
 import com.pchouse.pchousestoremvn.models.OrderNote;
 import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrderProdServ;
+import com.pchouse.pchousestoremvn.util.ReportGenerator;
 import com.pchouse.pchousestoremvn.views.modals.CustomerModal;
 import com.pchouse.pchousestoremvn.views.modals.PaymentModal;
 import java.awt.EventQueue;
@@ -796,7 +797,7 @@ public class NewOrderView extends javax.swing.JInternalFrame {
             .addGroup(panel_order_buttonsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(btn_save_order)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btn_cancel)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -1026,6 +1027,8 @@ public class NewOrderView extends javax.swing.JInternalFrame {
 
     private void btn_save_orderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_save_orderActionPerformed
         ServiceOrder addOrder = getOrderFields();
+        List<ServiceOrderFault> listOrderFault = null;
+        List<ServiceOrderProdServ> listOrderProdServ = null;
         boolean isAdded = false;
 
         if (addOrder != null) {
@@ -1041,7 +1044,7 @@ public class NewOrderView extends javax.swing.JInternalFrame {
                 if (idOrderAdded > 0) {
                     addOrder.setIdServiceOrder(idOrderAdded);
 
-                    List<ServiceOrderFault> listOrderFault = getOrderFault(addOrder);
+                    listOrderFault = getOrderFault(addOrder);
                     if (listOrderFault != null) {
                         for (ServiceOrderFault faultItem : listOrderFault) {
                             long idOrderFaultAdded = _orderFaultController.addOrderFault(faultItem);
@@ -1057,7 +1060,7 @@ public class NewOrderView extends javax.swing.JInternalFrame {
                         }
                     }
 
-                    List<ServiceOrderProdServ> listOrderProdServ = getOrderProdServ(addOrder);
+                    listOrderProdServ = getOrderProdServ(addOrder);
                     if (listOrderProdServ != null) {
                         for (ServiceOrderProdServ prodServItem : listOrderProdServ) {
                             long idOrderProdServAdded = _orderProdServController.addOrderProdServ(prodServItem);
@@ -1084,9 +1087,6 @@ public class NewOrderView extends javax.swing.JInternalFrame {
                         long idDepositAdded = this._depositController.addDeposit(deposit);
                         if (idDepositAdded > 0) {
 
-//                        // Add deposit note
-//                        OrderNote orderNote = new OrderNote(addOrder, addOrder.getEmployee(), CommonExtension.setDepositPayNote(Double.parseDouble(this.txt_deposit.getText())), new Date());
-//                        _orderNoteController.addOrderNoteController(orderNote);
                             isAdded = true;
                         } else {
                             JOptionPane.showMessageDialog(this, CommonConstant.ERROR_ADD_DEPOSIT, this.getTitle(), JOptionPane.ERROR_MESSAGE);
@@ -1102,7 +1102,12 @@ public class NewOrderView extends javax.swing.JInternalFrame {
 
                     JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_SAVE);
                     clearFields();
-                } 
+
+                    // Gera e exibe o relatório
+                    new ReportGenerator().generateServiceOrderReport(addOrder, listOrderFault, listOrderProdServ);
+
+                    //new ReportGenerator().generateReport(savedOrder, listOrderFault, listOrderProdServ);
+                }
 
             } catch (BusinessException e) {
                 JOptionPane.showMessageDialog(this, e.getMessage(), this.getTitle(), JOptionPane.ERROR_MESSAGE);

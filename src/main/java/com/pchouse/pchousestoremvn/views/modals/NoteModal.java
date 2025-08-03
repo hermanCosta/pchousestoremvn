@@ -30,11 +30,10 @@ public class NoteModal extends javax.swing.JDialog {
         this._serviceOrderModel = orderModel;
         this._orderNoteController = new OrderNoteController();
         this._employeeController = new EmployeeController();
-        this._serviceOrderModel = orderModel;
         this._dtmOrderNote = (DefaultTableModel) this.table_view_notes.getModel();
         loadOrderNoteListTable();
     }
-    
+
     public NoteModal(Sale saleModel, java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
@@ -47,7 +46,11 @@ public class NoteModal extends javax.swing.JDialog {
     }
 
     private void loadOrderNoteListTable() {
-        this._listOrderNotes = this._orderNoteController.getOrderNotes(_serviceOrderModel);
+        if (_serviceOrderModel != null) {
+            this._listOrderNotes = this._orderNoteController.getOrderNotes(_serviceOrderModel);
+        } else if (_saleModel != null) {
+            this._listOrderNotes = this._orderNoteController.getAllSaleNote(_saleModel);
+        }
 
         _dtmOrderNote.setRowCount(0);
 
@@ -65,9 +68,14 @@ public class NoteModal extends javax.swing.JDialog {
         }
     }
 
-    private void searchFault() {
+    private void searchNote() {
         if (!this.txt_search_note.getText().trim().isEmpty()) {
-            this._listOrderNotes = this._orderNoteController.searchOrderNotes(_serviceOrderModel, this.txt_search_note.getText().toUpperCase());
+
+            if (_serviceOrderModel != null) {
+                this._listOrderNotes = this._orderNoteController.searchOrderNotes(_serviceOrderModel, this.txt_search_note.getText().toUpperCase());
+            } else if (_saleModel != null) {
+                this._listOrderNotes = this._orderNoteController.searchSaleNote(_saleModel, this.txt_search_note.getText().toUpperCase());
+            }
 
             if (this._listOrderNotes != null) {
                 _dtmOrderNote.setRowCount(0);
@@ -88,7 +96,7 @@ public class NoteModal extends javax.swing.JDialog {
         }
     }
 
-    private OrderNote getOrderNoteFields(ServiceOrder order) {
+    private OrderNote getOrderNoteFields(ServiceOrder order, Sale sale) {
         OrderNote orderNote = null;
 
         if (this.editor_pane_notes.getText().trim().isEmpty() || !this.editor_pane_notes.isEnabled() || !this.hdn_txt_note_id.getText().trim().isEmpty()) {
@@ -102,7 +110,12 @@ public class NoteModal extends javax.swing.JDialog {
                 String password = CommonExtension.requestUserPassword();
                 Employee employee = _employeeController.getEmployeeByPass(password);
                 if (employee != null) {
-                    orderNote = new OrderNote(order, employee, this.editor_pane_notes.getText().toUpperCase(), new Date());
+
+                    if (order != null) {
+                        orderNote = new OrderNote(order, employee, this.editor_pane_notes.getText().toUpperCase(), new Date());
+                    } else if (sale != null) {
+                        orderNote = new OrderNote(sale, employee, this.editor_pane_notes.getText().toUpperCase(), new Date());
+                    }
                 } else {
                     JOptionPane.showMessageDialog(this, CommonConstant.NOT_AUTHORIZED, null, JOptionPane.ERROR_MESSAGE);
                 }
@@ -377,7 +390,7 @@ public class NoteModal extends javax.swing.JDialog {
     }//GEN-LAST:event_btn_clear_fieldsActionPerformed
 
     private void btn_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
-        OrderNote addOrderNote = getOrderNoteFields(_serviceOrderModel);
+        OrderNote addOrderNote = getOrderNoteFields(_serviceOrderModel, _saleModel);
         if (addOrderNote != null) {
 
             long idNoteAdded = _orderNoteController.addOrderNote(addOrderNote);
@@ -418,7 +431,7 @@ public class NoteModal extends javax.swing.JDialog {
     }//GEN-LAST:event_btn_deleteActionPerformed
 
     private void txt_search_noteKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_search_noteKeyReleased
-        searchFault();
+        searchNote();
     }//GEN-LAST:event_txt_search_noteKeyReleased
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

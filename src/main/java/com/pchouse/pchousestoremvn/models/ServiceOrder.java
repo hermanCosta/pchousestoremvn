@@ -1,7 +1,6 @@
 package com.pchouse.pchousestoremvn.models;
 
 import com.pchouse.pchousestoremvn.enums.OrderStatus;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

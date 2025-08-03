@@ -399,7 +399,6 @@ public class NewSaleView extends javax.swing.JInternalFrame {
         Deposit deposit = new Deposit(
                 sale,
                 sale.getEmployee(),
-                CommonExtension.salePayment,
                 Double.parseDouble(depositText),
                 sale.getCreated()
         );

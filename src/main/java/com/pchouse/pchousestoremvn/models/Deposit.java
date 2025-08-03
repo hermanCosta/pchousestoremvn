@@ -62,9 +62,8 @@ public class Deposit implements Serializable {
     }
 
     // Constructor for Sale
-    public Deposit(Sale sale, Employee employee, SalePayment salePayment, double amount, Date created) {
+    public Deposit(Sale sale, Employee employee, double amount, Date created) {
         this.sale = sale;
-        this.salePayment = salePayment;
         this.employee = employee;
         this.amount = amount;
         this.created = created;

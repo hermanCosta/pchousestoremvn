@@ -77,13 +77,13 @@ public class DepositDAO {
         return idDepositAdded;
     }
 
-    public List<Deposit> getOrderDepositDAO(ServiceOrder order) {
+    public List<Deposit> getOrderDepositDAO(ServiceOrder pOrder) {
         EntityManager em = JPAUtil.getEntityManager();
         List<Deposit> orderDeposits = null;
         try {
             TypedQuery<Deposit> query = em.createQuery(
-                    "SELECT d FROM Deposit d WHERE d.serviceOrder.idServiceOrder = :serviceOrderId", Deposit.class);
-            query.setParameter("serviceOrderId", order.getIdServiceOrder());
+                    "SELECT d FROM Deposit d WHERE d.serviceOrder = :pOrder", Deposit.class);
+            query.setParameter("pOrder", pOrder);
             orderDeposits = query.getResultList();
         } catch (Exception e) {
             e.printStackTrace();
@@ -93,13 +93,13 @@ public class DepositDAO {
         return orderDeposits;
     }
     
-     public List<Deposit> getSaleDepositDAO(Sale sale) {
+     public List<Deposit> getSaleDepositDAO(Sale pSale) {
         EntityManager em = JPAUtil.getEntityManager();
         List<Deposit> orderDeposits = null;
         try {
             TypedQuery<Deposit> query = em.createQuery(
-                    "SELECT d FROM Deposit d WHERE d.sale.idSale = :saleId", Deposit.class);
-            query.setParameter("saleId", sale.getIdSale());
+                    "SELECT d FROM Deposit d WHERE d.sale = :pSale", Deposit.class);
+            query.setParameter("pSale", pSale);
             orderDeposits = query.getResultList();
         } catch (Exception e) {
             e.printStackTrace();
