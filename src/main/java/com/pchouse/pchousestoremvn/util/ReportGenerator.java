@@ -3,6 +3,10 @@ package com.pchouse.pchousestoremvn.util;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderFault;
 import com.pchouse.pchousestoremvn.models.ServiceOrderProdServ;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.URL;
 
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
@@ -19,21 +23,45 @@ public class ReportGenerator {
     public void generateServiceOrderReport(ServiceOrder order,
             List<ServiceOrderFault> faults,
             List<ServiceOrderProdServ> prodServs) {
-
         try {
-            String reportPath = "/com/pchouse/pchousestoremvn/reports/ServiceOrderReport.jasper";
+            // Paths to your reports
+            String mainReportPath = "/com/pchouse/pchousestoremvn/reports/ServiceOrderReport.jasper";
+            String headerSubreportPath = "/com/pchouse/pchousestoremvn/reports/subreport_header.jasper";
             String subreportDir = "/com/pchouse/pchousestoremvn/reports/";
 
-            // Fonte de dados para produtos/serviços permanece igual
+            // Load the header subreport JasperReport object
+            JasperReport headerSubreport = (JasperReport) JRLoader.loadObject(
+                    getClass().getResource(headerSubreportPath)
+            );
+
+            // Create data sources
             JRBeanCollectionDataSource prodServDataSource = new JRBeanCollectionDataSource(prodServs);
 
-            // CONCATENA descrições das falhas separadas por vírgula
+            // Concatenate faults descriptions
             String faultsConcatenated = faults.stream()
                     .map(fault -> fault.getFault().getDescription())
                     .collect(Collectors.joining(", "));
 
-            // Parâmetros para o relatório principal
+            // Prepare parameters for main report (and subreport)
             Map<String, Object> parameters = new HashMap<>();
+
+            // Company info (shared with header subreport)
+            parameters.put("companyName", order.getCompany().getName());
+            parameters.put("companyAddress", order.getCompany().getAddress());
+            parameters.put("companyPhone", order.getCompany().getContactOne());
+            parameters.put("companyEmail", order.getCompany().getEmail());
+
+            // Logo InputStream
+            InputStream logoStream = getClass().getResourceAsStream("/icons/icon_logo_header_lg.png");
+            if (logoStream == null) {
+                System.err.println("Logo not found!");
+            }
+            parameters.put("companyLogo", logoStream);
+
+            // Pass the compiled header subreport to main report
+            parameters.put("subreport_header", headerSubreport);
+
+            // Other fields for main report
             parameters.put("orderId", order.getIdServiceOrder());
             parameters.put("customerName", order.getCustomer().getPerson().getFirstName() + " " + order.getCustomer().getPerson().getLastName());
             parameters.put("customerPhone", order.getCustomer().getPerson().getContactNo());
@@ -43,30 +71,100 @@ public class ReportGenerator {
             parameters.put("serialNumber", order.getDevice().getSerialNumber());
             parameters.put("createdDate", order.getCreated());
             parameters.put("notes", order.getNote());
-            
             parameters.put("total", order.getTotal());
             parameters.put("deposit", order.getTotal() - order.getDue());
             parameters.put("remaining", order.getDue());
-            
-            
-            // Subreports
-            parameters.put("SUBREPORT_DIR", getClass().getResource(subreportDir).toString());
 
-            // PASSAR a string concatenada em vez de DataSource para faults
             parameters.put("faultsConcatenated", faultsConcatenated);
-
-            // Para produtos/serviços ainda usa datasource
             parameters.put("prodServDataSource", prodServDataSource);
 
-            // Carrega e preenche o relatório principal
-            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(getClass().getResource(reportPath));
-            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JREmptyDataSource());
+            // Set subreport directory parameter (useful for subreports inside main report)
+            parameters.put("SUBREPORT_DIR", getClass().getResource(subreportDir).getPath());
 
-            // Exibe na tela
+            // Load main report
+            JasperReport mainReport = (JasperReport) JRLoader.loadObject(getClass().getResource(mainReportPath));
+
+            // Fill main report with parameters and an empty datasource (or your datasource)
+            JasperPrint jasperPrint = JasperFillManager.fillReport(mainReport, parameters, new JREmptyDataSource());
+
+            // View the filled report
             JasperViewer.viewReport(jasperPrint, false);
 
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            System.out.println("Report generated successfully.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
+
+    public void testHeaderSubreport(ServiceOrder order) {
+        try {
+            Map<String, Object> parameters = new HashMap<>();
+            // Parâmetros da empresa
+            parameters.put("companyName", order.getCompany().getName());
+            parameters.put("companyAddress", order.getCompany().getAddress());
+            parameters.put("companyPhone", order.getCompany().getContactOne());
+            parameters.put("companyEmail", order.getCompany().getEmail());
+
+            //InputStream logo = getClass().getResourceAsStream("/icons/icon_logo_header_lg.png");
+//           InputStream logoStream = getClass().getResourceAsStream("/icons/icon_logo_header_md_bg.png");
+//            parameters.put("companyLogo", logoStream);
+            InputStream logoStream = getClass().getResourceAsStream("/icons/icon_logo_header_md_bg.png");
+            parameters.put("companyLogo", logoStream);
+
+            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(
+                    getClass().getResource("/com/pchouse/pchousestoremvn/reports/subreport_header.jasper"));
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JREmptyDataSource());
+
+            JasperViewer.viewReport(jasperPrint, false);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void generateServiceOrderReportTest() {
+        try {
+            Map<String, Object> params = new HashMap<>();
+
+            // Company Info
+            params.put("companyName", "PCHouse");
+            params.put("companyAddress", "123 Tech Street");
+            params.put("companyPhone", "+1 555-1234");
+            params.put("companyEmail", "info@pchouse.com");
+
+            // Subreport path
+            URL subDirUrl = getClass().getResource("/com/pchouse/pchousestoremvn/reports/");
+            if (subDirUrl == null) {
+                throw new RuntimeException("Subreport directory not found!");
+            }
+
+            File subDirFile = new File(subDirUrl.toURI());
+            String subreportPath = subDirFile.getAbsolutePath() + File.separator;
+
+            File subreportFile = new File(subreportPath + "subreport_header.jasper");
+            System.out.println("Subreport path: " + subreportFile.getAbsolutePath());
+            if (!subreportFile.exists()) {
+                throw new FileNotFoundException("Subreport file not found: " + subreportFile.getAbsolutePath());
+            }
+
+            JasperReport subreport = (JasperReport) JRLoader.loadObject(subreportFile);
+            System.out.println("Subreport loaded: " + subreport.getName());
+            params.put("SUBREPORT_HEADER", subreport);
+
+            // Load and compile main report
+            JasperReport mainReport = (JasperReport) JRLoader.loadObject(
+                    getClass().getResource("/com/pchouse/pchousestoremvn/reports/MainReport.jasper")
+            );
+
+            System.out.println("Preenchendo o relatório...");
+            JasperPrint jasperPrint = JasperFillManager.fillReport(mainReport, params, new JREmptyDataSource(1));
+            System.out.println("Relatório preenchido com " + jasperPrint.getPages().size() + " páginas.");
+
+            JasperViewer.viewReport(jasperPrint, false);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

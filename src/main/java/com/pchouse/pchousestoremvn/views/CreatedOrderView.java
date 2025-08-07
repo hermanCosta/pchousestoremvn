@@ -1306,6 +1306,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
     private void btn_printActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_printActionPerformed
         // Gera e exibe o relatório
         new ReportGenerator().generateServiceOrderReport(_serviceOrderModel, _listServiceOrderFault, _listServiceOrderProdServ);
+        //new ReportGenerator().generateServiceOrderReportTest();
     }//GEN-LAST:event_btn_printActionPerformed
 
     private void txt_brandKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_brandKeyPressed

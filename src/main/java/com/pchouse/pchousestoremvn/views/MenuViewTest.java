@@ -63,7 +63,7 @@ public class MenuViewTest extends JFrame {
 
         // Ícone do logo
         JLabel lblLogo = new JLabel();
-        lblLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/logo_header.png"))); // Ícone do logo
+        lblLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_logo_header_md.png"))); // Ícone do logo
         logoPanel.add(lblLogo, BorderLayout.CENTER);
         sidePanel.add(logoPanel);
 
