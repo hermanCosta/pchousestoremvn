@@ -236,4 +236,12 @@ public class CommonExtension {
     public static String normalizePhone(String phone) {
         return phone.replaceAll("[^0-9]", "");
     }
+    
+    public static double parseTextFieldToDouble(JTextField jTextField){
+        if (!jTextField.getText().trim().isEmpty()) {
+            return Double.parseDouble(jTextField.getText());
+        } else{
+            return 0;
+        }
+    }
 }

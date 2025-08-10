@@ -46,7 +46,7 @@ public class CustomerModal extends javax.swing.JDialog {
         this(parent, modal, customer);
         this._createdOrderView = createdOrderView;
     }
-
+//CustomerModal(this, new MainMenuView(CommonSetting.COMPANY), true, null);
     public CustomerModal(NewSaleView newSaleView, Frame parent, boolean modal, Customer customer) {
         this(parent, modal, customer);
         this._newSaleView = newSaleView;

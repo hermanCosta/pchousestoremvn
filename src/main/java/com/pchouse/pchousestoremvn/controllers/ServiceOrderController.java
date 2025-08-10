@@ -3,7 +3,12 @@ package com.pchouse.pchousestoremvn.controllers;
 import com.pchouse.pchousestoremvn.dao.OrderDAO;
 import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Company;
+import com.pchouse.pchousestoremvn.models.Deposit;
+import com.pchouse.pchousestoremvn.models.OrderNote;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
+import com.pchouse.pchousestoremvn.models.ServiceOrderFault;
+import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
+import com.pchouse.pchousestoremvn.models.ServiceOrderProdServ;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,14 +71,45 @@ public class ServiceOrderController {
         }
     }
 
-// Update an existing order
-    public boolean updateOrder(ServiceOrder pOrderModel) {
+    // Update an existing order
+    public boolean updateServiceOrderStatus(ServiceOrder pOrderModel) {
         try {
-            return ORDER_DAO.updateOrderDAO(pOrderModel);
+            return ORDER_DAO.updateServiceOrderStatusDAO(pOrderModel);
         } catch (Exception e) {
             System.err.println("Error updating order: " + e.getMessage());
             e.printStackTrace();
             return false;
+        }
+    }
+
+    public long addServiceOrder(ServiceOrder order,
+            List<ServiceOrderFault> faults,
+            List<ServiceOrderProdServ> prodServs,
+            ServiceOrderPayment payment,
+            Deposit deposit,
+            OrderNote orderNote) throws BusinessException {
+
+        try {
+            return ORDER_DAO.addServiceOrderDAO(order, faults, prodServs, payment, deposit, orderNote);
+        } catch (Exception e) {
+            System.err.println("Error adding order: " + e.getMessage());
+            e.printStackTrace();
+            throw new BusinessException("Unable to add order.");
+        }
+    }
+
+    public boolean updateServiceOrder(
+            ServiceOrder order,
+            List<ServiceOrderFault> faults,
+            List<ServiceOrderProdServ> prodServs,
+            ServiceOrderPayment payment,
+            Deposit deposit,
+            OrderNote orderNote) throws BusinessException {
+        try {
+            return ORDER_DAO.updateServiceOrderDAO(order, faults, prodServs, payment, deposit, orderNote);
+        } catch (BusinessException e) {
+            e.printStackTrace();
+            throw new BusinessException("Error updating order: " + e.getMessage());
         }
     }
 }

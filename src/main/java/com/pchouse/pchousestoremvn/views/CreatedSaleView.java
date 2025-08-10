@@ -10,6 +10,7 @@ import com.pchouse.pchousestoremvn.models.Deposit;
 import com.pchouse.pchousestoremvn.models.Sale;
 import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.models.SaleProdServ;
+import com.pchouse.pchousestoremvn.util.ReportGenerator;
 import com.pchouse.pchousestoremvn.views.modals.DepositModal;
 import com.pchouse.pchousestoremvn.views.modals.NoteModal;
 import java.awt.Frame;
@@ -25,6 +26,7 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
 
     private long hdnCustomerId;
     private Sale _saleModel;
+    private List<SaleProdServ> _listSaleProdServs;
     public SalePayment _orderPayment = null;
     private final SaleController _saleController;
     private final DefaultTableModel _dtmProdServ;
@@ -39,6 +41,7 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
         CommonSetting.tableSettings(table_view_products);
 
         this._saleModel = saleModel;
+        this._listSaleProdServs = listSaleProdServ;
         this._saleController = new SaleController();
         this._dtmProdServ = (DefaultTableModel) this.table_view_products.getModel();
         this._defaultListModelProdServ = new DefaultListModel();
@@ -127,6 +130,7 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
         btn_refund_sale = new javax.swing.JButton();
         btn_notes = new javax.swing.JButton();
         btn_deposit = new javax.swing.JButton();
+        btn_print = new javax.swing.JButton();
         scroll_pane_products = new javax.swing.JScrollPane();
         table_view_products = new javax.swing.JTable();
 
@@ -328,6 +332,17 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
             }
         });
 
+        btn_print.setBackground(new java.awt.Color(21, 76, 121));
+        btn_print.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+        btn_print.setForeground(new java.awt.Color(255, 255, 255));
+        btn_print.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_print.png"))); // NOI18N
+        btn_print.setText("Print");
+        btn_print.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_printActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panel_sale_buttonsLayout = new javax.swing.GroupLayout(panel_sale_buttons);
         panel_sale_buttons.setLayout(panel_sale_buttonsLayout);
         panel_sale_buttonsLayout.setHorizontalGroup(
@@ -339,7 +354,9 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
                 .addComponent(btn_notes)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btn_deposit)
-                .addContainerGap(638, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btn_print)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panel_sale_buttonsLayout.setVerticalGroup(
             panel_sale_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -348,7 +365,8 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
                 .addGroup(panel_sale_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_refund_sale)
                     .addComponent(btn_notes)
-                    .addComponent(btn_deposit))
+                    .addComponent(btn_deposit)
+                    .addComponent(btn_print))
                 .addContainerGap())
         );
 
@@ -491,10 +509,17 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
         depositModal.setVisible(true);
     }//GEN-LAST:event_btn_depositActionPerformed
 
+    private void btn_printActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_printActionPerformed
+        
+        // Genarate and display the report
+        //new ReportGenerator().generateSaleOrderReport(_saleModel, _listSaleProdServs);
+    }//GEN-LAST:event_btn_printActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_copy;
     private javax.swing.JButton btn_deposit;
     private javax.swing.JButton btn_notes;
+    private javax.swing.JButton btn_print;
     private javax.swing.JButton btn_refund_sale;
     private javax.swing.JTextField hdn_txt_customer_id;
     private javax.swing.JLabel lbl_auto_sale_no;

@@ -2,9 +2,9 @@
 <!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="subreport_header" pageWidth="595" pageHeight="70" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="9fa2038b-2e0d-4a9c-b31f-1b43e06f5a17">
 	<parameter name="companyName" class="java.lang.String"/>
-	<parameter name="companyAddress" class="java.lang.String"/>
 	<parameter name="companyPhone" class="java.lang.String"/>
 	<parameter name="companyEmail" class="java.lang.String"/>
+	<parameter name="companyAddress" class="java.lang.String"/>
 	<parameter name="companyLogo" class="java.io.InputStream"/>
 	<detail>
 		<band height="65">
@@ -13,32 +13,32 @@
 				<imageExpression><![CDATA[$P{companyLogo}]]></imageExpression>
 			</image>
 			<textField>
-				<reportElement x="320" y="0" width="230" height="14" uuid="508cf2f2-b3bf-472e-8e5c-7896fbead4ad"/>
+				<reportElement x="320" y="0" width="230" height="12" uuid="508cf2f2-b3bf-472e-8e5c-7896fbead4ad"/>
 				<textElement textAlignment="Right">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{companyName}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="320" y="14" width="230" height="14" uuid="48d2a230-2178-46a9-9de3-06a1f0657864"/>
-				<textElement textAlignment="Right">
-					<font size="6"/>
-				</textElement>
-				<textFieldExpression><![CDATA["📍 " + $P{companyAddress}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="320" y="28" width="230" height="14" uuid="f22d9c12-a61c-4d8a-99e5-15c8a0d42c1d"/>
+				<reportElement x="320" y="28" width="230" height="10" uuid="f22d9c12-a61c-4d8a-99e5-15c8a0d42c1d"/>
 				<textElement textAlignment="Right">
 					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA["📞 " + $P{companyPhone}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="320" y="42" width="230" height="14" uuid="9e02fa5a-9507-48f8-9253-67b2821cc2c1"/>
+				<reportElement x="320" y="42" width="230" height="10" uuid="9e02fa5a-9507-48f8-9253-67b2821cc2c1"/>
 				<textElement textAlignment="Right">
 					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA["✉ " + $P{companyEmail}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="320" y="14" width="230" height="10" uuid="48d2a230-2178-46a9-9de3-06a1f0657864"/>
+				<textElement textAlignment="Right">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA["📍 " + $P{companyAddress}]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement x="0" y="60" width="555" height="1" forecolor="#999999" uuid="cf8630fc-92ac-41fb-a1f7-f9235eff479d"/>

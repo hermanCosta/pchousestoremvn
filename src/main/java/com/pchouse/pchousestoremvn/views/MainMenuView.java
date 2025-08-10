@@ -108,7 +108,7 @@ public class MainMenuView extends javax.swing.JFrame {
         panel_menu_side.setPreferredSize(new java.awt.Dimension(0, 0));
 
         lbl_logo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lbl_logo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/logo_header.png"))); // NOI18N
+        lbl_logo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_logo_header_md.png"))); // NOI18N
         lbl_logo.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         lbl_logo.setPreferredSize(new java.awt.Dimension(0, 0));
 

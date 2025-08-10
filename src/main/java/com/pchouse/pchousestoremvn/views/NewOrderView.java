@@ -707,7 +707,6 @@ public class NewOrderView extends javax.swing.JInternalFrame {
         lbl_deposit.setText("Deposit:");
 
         txt_deposit.setFont(new java.awt.Font("sansserif", 0, 13)); // NOI18N
-        txt_deposit.setForeground(new java.awt.Color(51, 51, 255));
         txt_deposit.setNextFocusableComponent(btn_save_order);
         txt_deposit.setPreferredSize(new java.awt.Dimension(100, 25));
         txt_deposit.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -1027,92 +1026,50 @@ public class NewOrderView extends javax.swing.JInternalFrame {
 
     private void btn_save_orderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_save_orderActionPerformed
         ServiceOrder addOrder = getOrderFields();
-        List<ServiceOrderFault> listOrderFault = null;
-        List<ServiceOrderProdServ> listOrderProdServ = null;
+        List<ServiceOrderFault> listOrderFault = getOrderFault(addOrder);
+        List<ServiceOrderProdServ> listOrderProdServ = getOrderProdServ(addOrder);
         boolean isAdded = false;
 
         if (addOrder != null) {
-            // Add device
-            Device device = _deviceController.searchDeviceBySerialNumber(addOrder.getDevice().getSerialNumber());
-            if (device != null) {
-                addOrder.setDevice(device);
-                isAdded = true;
-            }
-
             try {
-                long idOrderAdded = this._orderController.addOrder(addOrder);
+                // Try to find existing device by serial number
+                Device device = _deviceController.searchDeviceBySerialNumber(addOrder.getDevice().getSerialNumber());
+                if (device != null) {
+                    addOrder.setDevice(device);
+                }
+
+                ServiceOrderPayment payment = null;
+                Deposit deposit = null;
+                OrderNote orderNote = null;
+
+                if (!this.txt_deposit.getText().trim().isEmpty()) {
+                    PaymentModal paymentModal = new PaymentModal(addOrder, this.txt_deposit.getText(), new MainMenuView(CommonSetting.COMPANY), true);
+                    paymentModal.setVisible(true);
+
+                    payment = paymentModal.getOrderPayment();
+
+                    deposit = new Deposit(addOrder, addOrder.getEmployee(), Double.parseDouble(this.txt_deposit.getText()), addOrder.getCreated());
+                    deposit.setServiceOrderPayment(payment);
+                }
+
+                orderNote = new OrderNote(addOrder, addOrder.getEmployee(), CommonConstant.ORDER_CREATED_NOTE, new Date());
+
+                long idOrderAdded = this._orderController.addServiceOrder(
+                        addOrder, listOrderFault, listOrderProdServ, payment, deposit, orderNote);
+
                 if (idOrderAdded > 0) {
-                    addOrder.setIdServiceOrder(idOrderAdded);
-
-                    listOrderFault = getOrderFault(addOrder);
-                    if (listOrderFault != null) {
-                        for (ServiceOrderFault faultItem : listOrderFault) {
-                            long idOrderFaultAdded = _orderFaultController.addOrderFault(faultItem);
-                            System.out.println("Fault Added: " + idOrderAdded);
-
-                            if (idOrderFaultAdded > 0) {
-                                isAdded = true;
-                            } else {
-                                isAdded = false;
-                                System.out.println("Error to add fault!");
-                                return;
-                            }
-                        }
-                    }
-
-                    listOrderProdServ = getOrderProdServ(addOrder);
-                    if (listOrderProdServ != null) {
-                        for (ServiceOrderProdServ prodServItem : listOrderProdServ) {
-                            long idOrderProdServAdded = _orderProdServController.addOrderProdServ(prodServItem);
-                            System.out.println("ProdServ Added: " + idOrderProdServAdded);
-
-                            if (idOrderProdServAdded > 0) {
-                                isAdded = true;
-                            } else {
-                                isAdded = false;
-                                System.out.println("Error to add ProdServ");
-                                return;
-                            }
-                        }
-                    }
-
-                    if (!this.txt_deposit.getText().trim().isEmpty()) {
-
-                        PaymentModal paymentModal = new PaymentModal(addOrder, this.txt_deposit.getText(), new MainMenuView(CommonSetting.COMPANY), true);
-                        paymentModal.setVisible(true);
-
-                        Deposit deposit = new Deposit(addOrder, addOrder.getEmployee(), Double.parseDouble(this.txt_deposit.getText()), addOrder.getCreated());
-                        deposit.setServiceOrderPayment(paymentModal.getOrderPayment());
-
-                        long idDepositAdded = this._depositController.addDeposit(deposit);
-                        if (idDepositAdded > 0) {
-
-                            isAdded = true;
-                        } else {
-                            JOptionPane.showMessageDialog(this, CommonConstant.ERROR_ADD_DEPOSIT, this.getTitle(), JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                    }
+                    isAdded = true;
                 }
 
                 if (isAdded) {
-                    // Add creating note
-                    OrderNote orderNote = new OrderNote(addOrder, addOrder.getEmployee(), CommonConstant.ORDER_CREATED_NOTE, new Date());
-                    _orderNoteController.addOrderNote(orderNote);
-
                     JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_SAVE);
                     clearFields();
 
-                    // Gera e exibe o relatório
                     new ReportGenerator().generateServiceOrderReport(addOrder, listOrderFault, listOrderProdServ);
-
-                    //new ReportGenerator().generateReport(savedOrder, listOrderFault, listOrderProdServ);
                 }
-
             } catch (BusinessException e) {
                 JOptionPane.showMessageDialog(this, e.getMessage(), this.getTitle(), JOptionPane.ERROR_MESSAGE);
                 e.printStackTrace();
-                return;
             }
         }
     }//GEN-LAST:event_btn_save_orderActionPerformed

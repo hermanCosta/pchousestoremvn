@@ -39,6 +39,12 @@ public class SalePayment implements Serializable {
 
     @Column(name = "AMOUNT_PAID")
     private double amountPaid;
+    
+     @Column(name = "CARD_AMOUNT")
+    private Double cardAmount;
+    
+    @Column(name = "CASH_AMOUNT")
+    private Double cashAmount;
 
     @Column(name = "CHANGE_AMOUNT")
     private double changeAmount;
@@ -50,11 +56,13 @@ public class SalePayment implements Serializable {
     public SalePayment() {
     }
 
-    public SalePayment(Sale sale, PayMethod payMethod, double amountDue, double amountPaid, double changeAmount, Date dtTransaction) {
+    public SalePayment(Sale sale, PayMethod payMethod, double amountDue, double amountPaid, Double cardAmount, Double cashAmount, double changeAmount, Date dtTransaction) {
         this.sale = sale;
         this.payMethod = payMethod;
         this.amountDue = amountDue;
-        this.amountPaid = amountPaid;
+        this.amountPaid = (cashAmount != null ? cashAmount : 0) + (cardAmount != null ? cardAmount : 0);
+        this.cardAmount = cardAmount;
+        this.cashAmount = cashAmount;
         this.changeAmount = changeAmount;
         this.dtTransaction = dtTransaction;
     }
@@ -95,6 +103,22 @@ public class SalePayment implements Serializable {
 
     public double getAmountPaid() {
         return amountPaid;
+    }
+
+    public Double getCardAmount() {
+        return cardAmount;
+    }
+
+    public void setCardAmount(Double cardAmount) {
+        this.cardAmount = cardAmount;
+    }
+
+    public Double getCashAmount() {
+        return cashAmount;
+    }
+
+    public void setCashAmount(Double cashAmount) {
+        this.cashAmount = cashAmount;
     }
 
     public void setAmountPaid(double amountPaid) {

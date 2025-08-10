@@ -3,7 +3,11 @@ package com.pchouse.pchousestoremvn.controllers;
 import com.pchouse.pchousestoremvn.dao.SaleDAO;
 import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Company;
+import com.pchouse.pchousestoremvn.models.Deposit;
+import com.pchouse.pchousestoremvn.models.OrderNote;
 import com.pchouse.pchousestoremvn.models.Sale;
+import com.pchouse.pchousestoremvn.models.SalePayment;
+import com.pchouse.pchousestoremvn.models.SaleProdServ;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +26,7 @@ public class SaleController {
         }
     }
 
-// Add a new sale to the database
+    // Add a new sale to the database
     public long addSale(Sale pSale) throws BusinessException {
         try {
             return SALE_DAO.addSaleDAO(pSale);
@@ -33,7 +37,7 @@ public class SaleController {
         }
     }
 
-// Get sale details by ID
+    // Get sale details by ID
     public Sale getItemSale(long pIdSale) {
         try {
             return SALE_DAO.getItemSaleDAO(pIdSale);
@@ -44,7 +48,7 @@ public class SaleController {
         }
     }
 
-// Retrieve all sales for a specific company
+    // Retrieve all sales for a specific company
     public List<Sale> getAllSales(Company pCompany) {
         try {
             return SALE_DAO.getAllSaleDAO(pCompany);
@@ -55,7 +59,7 @@ public class SaleController {
         }
     }
 
-// Search sales for a specific company based on a search term
+    // Search sales for a specific company based on a search term
     public List<Sale> searchSale(Company pCompany, String pSearch) {
         try {
             return SALE_DAO.searchSaleDAO(pCompany, pSearch);
@@ -66,7 +70,7 @@ public class SaleController {
         }
     }
 
-// Update an existing sale
+    // Update an existing sale
     public boolean updateSale(Sale pSaleModel) {
         try {
             return SALE_DAO.updateSaleDAO(pSaleModel);
@@ -74,6 +78,20 @@ public class SaleController {
             System.err.println("Error updating sale: " + e.getMessage());
             e.printStackTrace();
             return false;
+        }
+    }
+
+    public long addOrderSale(
+        Sale sale,
+        List<SaleProdServ> items,
+        SalePayment payment,
+        Deposit deposit,
+        OrderNote note
+    ) throws BusinessException {
+        try {
+            return SALE_DAO.addOrderSaleDAO(sale, items, payment, deposit, note);
+        } catch (Exception e) {
+            throw new BusinessException("Failed to add sale with payment", e);
         }
     }
 }

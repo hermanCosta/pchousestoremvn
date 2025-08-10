@@ -38,18 +38,12 @@ public class Sale implements Serializable {
     @Column(name = "TOTAL", nullable = false)
     private double total;
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "REMAINING")
+    private Double remaining;
+    
+        @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "CREATED", nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private Date created;
-
-    @Column(name = "CASH")
-    private Double cash;
-
-    @Column(name = "CARD")
-    private Double card;
-
-    @Column(name = "AMOUNT_PAID", insertable = false, updatable = false)
-    private Double amountPaid;
 
     @Column(name = "STATUS", nullable = false)
     private String status;
@@ -57,17 +51,14 @@ public class Sale implements Serializable {
     public Sale() {
     }
 
-    public Sale(Customer customer, Employee employee, Company company, double total, Date created, Double cash,
-                Double card, String status) {
+    public Sale(Customer customer, Employee employee, Company company, double total, Double remaining, Date created, String status) {
         this.customer = customer;
         this.employee = employee;
         this.company = company;
         this.total = total;
+        this.remaining = remaining;
         this.created = created;
-        this.cash = cash;
-        this.card = card;
         this.status = status;
-        this.amountPaid = (cash != null ? cash : 0) + (card != null ? card : 0);
     }
 
     public long getIdSale() {
@@ -112,6 +103,17 @@ public class Sale implements Serializable {
         }
         this.total = total;
     }
+    
+        public Double getRemaining() {
+        return remaining;
+    }
+
+    public void setRemaining(Double remaining) {
+        if (remaining != null && remaining < 0) {
+            throw new IllegalArgumentException("Remaining cannot be negative.");
+        }
+        this.remaining = remaining;
+    }
 
     public Date getCreated() {
         return created;
@@ -119,32 +121,6 @@ public class Sale implements Serializable {
 
     public void setCreated(Date created) {
         this.created = created;
-    }
-
-    public Double getCash() {
-        return cash;
-    }
-
-    public void setCash(Double cash) {
-        if (cash != null && cash < 0) {
-            throw new IllegalArgumentException("Cash cannot be negative.");
-        }
-        this.cash = cash;
-    }
-
-    public Double getCard() {
-        return card;
-    }
-
-    public void setCard(Double card) {
-        if (card != null && card < 0) {
-            throw new IllegalArgumentException("Card payment cannot be negative.");
-        }
-        this.card = card;
-    }
-
-    public double getAmountPaid() {
-        return amountPaid;
     }
 
     public String getStatus() {
@@ -157,17 +133,15 @@ public class Sale implements Serializable {
 
     @Override
     public String toString() {
-        return "Sale{" +
-                "idSale=" + idSale +
-                ", customer=" + customer +
-                ", employee=" + employee +
-                ", company=" + company +
-                ", total=" + total +
-                ", created=" + created +
-                ", cash=" + cash +
-                ", card=" + card +
-                ", amountPaid=" + amountPaid +
-                ", status='" + status + '\'' +
-                '}';
+        return "Sale{"
+                + "idSale=" + idSale
+                + ", customer=" + customer
+                + ", employee=" + employee
+                + ", company=" + company
+                + ", total=" + total
+                + ", created=" + created
+                + ", remaining=" + remaining
+                + ", status='" + status + '\''
+                + '}';
     }
 }

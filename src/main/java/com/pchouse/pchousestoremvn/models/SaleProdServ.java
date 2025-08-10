@@ -20,13 +20,13 @@ public class SaleProdServ implements Serializable {
     @Column(name = "ID_SALE_PROD_SERV")
     private long idSaleProdServ;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "ID_SALE", referencedColumnName = "ID_SALE")
     private Sale sale;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "ID_PROD_SERV", referencedColumnName = "ID_PROD_SERV")
-    private ProductService productService;
+    private ProductService prodServ;
 
     @Column(name = "QTY", nullable = false)
     private int qty;
@@ -45,7 +45,7 @@ public class SaleProdServ implements Serializable {
             throw new IllegalArgumentException("Total cannot be negative.");
         }
         this.sale = sale;
-        this.productService = productService;
+        this.prodServ = productService;
         this.qty = qty;
         this.total = total;
     }
@@ -67,11 +67,11 @@ public class SaleProdServ implements Serializable {
     }
 
     public ProductService getProdServ() {
-        return productService;
+        return prodServ;
     }
 
     public void setProdServ(ProductService productService) {
-        this.productService = productService;
+        this.prodServ = productService;
     }
 
     public int getQty() {
@@ -96,12 +96,25 @@ public class SaleProdServ implements Serializable {
         this.total = total;
     }
 
+    // Getters para o JasperReport
+    public String getDescription() {
+        return prodServ != null ? prodServ.getProdServName() : "";
+    }
+
+    public Double getUnitPrice() {
+        return prodServ != null ? prodServ.getPrice() : 0.0;
+    }
+
+    public Integer getQuantity() {
+        return qty;
+    }
+    
     @Override
     public String toString() {
         return "SaleProdServ{" +
                 "idSaleProdServ=" + idSaleProdServ +
                 ", sale=" + sale +
-                ", saleProdServ=" + productService +
+                ", saleProdServ=" + prodServ +
                 ", qty=" + qty +
                 ", total=" + total +
                 '}';

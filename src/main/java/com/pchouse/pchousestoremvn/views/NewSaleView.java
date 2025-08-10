@@ -20,7 +20,9 @@ import com.pchouse.pchousestoremvn.models.ProductService;
 import com.pchouse.pchousestoremvn.models.Sale;
 import com.pchouse.pchousestoremvn.models.SaleProdServ;
 import com.pchouse.pchousestoremvn.models.OrderNote;
+import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
+import com.pchouse.pchousestoremvn.util.ReportGenerator;
 import com.pchouse.pchousestoremvn.views.modals.CustomerModal;
 import com.pchouse.pchousestoremvn.views.modals.PaymentModal;
 import java.awt.Frame;
@@ -142,81 +144,6 @@ public class NewSaleView extends javax.swing.JInternalFrame {
         this.txt_first_name.requestFocus();
     }
 
-//    private Sale getSaleFields() {
-//        Sale saleDetails = null;
-//        Customer customer = null;
-//        String password;
-//        Employee employee;
-//        boolean isNewCustomer = true;
-//
-//        if (this.txt_first_name.getText().trim().isEmpty() || this.txt_last_name.getText().trim().isEmpty()
-//                || this.txt_contact.getText().trim().isEmpty()
-//                || this.table_view_products.getRowCount() == 0) {
-//            JOptionPane.showMessageDialog(this, CommonConstant.WARN_EMPTY_FIELDS, this.getTitle(), JOptionPane.WARNING_MESSAGE);
-//
-//            return saleDetails;
-//        } else {
-//            password = CommonExtension.requestUserPassword();
-//            employee = _employeeController.getEmployeeByPass(password);
-//            if (employee != null) {
-//                int idCustomer = CommonExtension.setIdExtension(this.hdn_txt_customer_id);
-//
-//                if (idCustomer > 0) {
-//                    isNewCustomer = false;
-//                    customer = this._customerController.getCustomerById(idCustomer);
-//                    if (!customer.getPerson().getFirstName().equals(this.txt_first_name.getText())
-//                            || !customer.getPerson().getLastName().equals(this.txt_last_name.getText())
-//                            || !CommonExtension.formatContactNo(customer.getPerson().getContactNo()).equals(CommonExtension.formatContactNo(this.txt_contact.getText()))
-//                            || !customer.getPerson().getEmail().equals(this.txt_email.getText())) {
-//
-//                        JOptionPane.showMessageDialog(this, CommonConstant.WARN_CUSTOMER_MATCHING, this.getTitle(), JOptionPane.WARNING_MESSAGE);
-//                        CustomerModal customerModal = new CustomerModal(this, new MainMenuView(CommonSetting.COMPANY), true, customer);
-//                        customerModal.setVisible(true);
-//                        this.hdn_txt_customer_id.setText("");
-//                        return saleDetails;
-//                    }
-//                }
-//
-//                if (isNewCustomer) {
-//                    Customer checkCustomer = _customerController.searchCustomerByContactNo(this.txt_contact.getText().replace("(", "").replace(")", "").replace("-", "").replace(" ", ""));
-//
-//                    if (checkCustomer != null) {
-//                        JOptionPane.showMessageDialog(this, CommonConstant.WARN_EXIST_PERSON, this.getTitle(), JOptionPane.WARNING_MESSAGE);
-//
-//                        CustomerModal customerModal = new CustomerModal(this, _parentFrame, true, checkCustomer);
-//                        customerModal.setLocationRelativeTo(this);
-//                        customerModal.setVisible(true);
-//
-//                        return saleDetails;
-//                    } else {
-//
-//                        Person person = new Person(
-//                                this.txt_first_name.getText().toUpperCase(),
-//                                this.txt_last_name.getText().toUpperCase(),
-//                                this.txt_contact.getText().replace("(", "").replace(")", "").replace("-", "").replace(" ", ""),
-//                                this.txt_email.getText().toLowerCase());
-//
-//                        customer = new Customer(person, CommonSetting.COMPANY);
-//                    }
-//                }
-//
-//                saleDetails = new Sale(
-//                        customer,
-//                        employee,
-//                        CommonSetting.COMPANY,
-//                        CommonExtension.formatEuroToDouble(this.lbl_total_field.getText()),
-//                        new Date(),
-//                        null,
-//                        null,
-//                        OrderStatus.FINISHED.toString());
-//
-//            } else {
-//                JOptionPane.showMessageDialog(this, CommonConstant.NOT_AUTHORIZED, null, JOptionPane.ERROR_MESSAGE);
-//            }
-//        }
-//
-//        return saleDetails;
-//    }
     private Sale getSaleFields() {
         if (!validateRequiredFields()) {
             JOptionPane.showMessageDialog(this, CommonConstant.WARN_EMPTY_FIELDS, this.getTitle(), JOptionPane.WARNING_MESSAGE);
@@ -297,15 +224,15 @@ public class NewSaleView extends javax.swing.JInternalFrame {
 
     private Sale createSale(Customer customer, Employee employee) {
         double totalAmount = CommonExtension.formatEuroToDouble(lbl_total_field.getText());
+        double remaining = CommonExtension.formatEuroToDouble(lbl_due_field.getText());
 
         return new Sale(
                 customer,
                 employee,
                 CommonSetting.COMPANY,
                 totalAmount,
+                remaining,
                 new Date(),
-                null,
-                null,
                 OrderStatus.FINISHED.toString()
         );
     }
@@ -654,8 +581,10 @@ public class NewSaleView extends javax.swing.JInternalFrame {
         lbl_due.setText("Due:");
 
         lbl_total_field.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
+        lbl_total_field.setText("totalAmount");
 
         lbl_due_field.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
+        lbl_due_field.setText("dueAmount");
 
         javax.swing.GroupLayout panel_total_amountLayout = new javax.swing.GroupLayout(panel_total_amount);
         panel_total_amount.setLayout(panel_total_amountLayout);
@@ -850,7 +779,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
                             .addComponent(lbl_search_prod_serv_icon, javax.swing.GroupLayout.Alignment.TRAILING))
                         .addComponent(layered_pane_list_prod_serv, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(panel_input_detail, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(panel_total_amount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(panel_sale_buttons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -870,46 +799,67 @@ public class NewSaleView extends javax.swing.JInternalFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(panel_sale_details, javax.swing.GroupLayout.DEFAULT_SIZE, 602, Short.MAX_VALUE)
+                .addComponent(panel_sale_details, javax.swing.GroupLayout.PREFERRED_SIZE, 602, Short.MAX_VALUE)
                 .addContainerGap())
         );
+
+        getAccessibleContext().setAccessibleName("New Sale");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_save_saleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_save_saleActionPerformed
         Sale addSale = getSaleFields();
+        List<SaleProdServ> listSaleItems = getSaleProdServ(addSale);
+        boolean isAdded = false;
 
-        if (addSale == null) {
-            return;
-        }
+        if (addSale != null) {
+            try {
+                // Optionally find existing customer or other entities here if needed
+                // For example: Customer customer = _customerController.findByContact(addSale.getCustomer().getContact());
+                // if (customer != null) addSale.setCustomer(customer);
 
-        try {
-            long idSale = _saleController.addSale(addSale);
+                SalePayment payment = null;
+                Deposit deposit = null;
+                OrderNote saleNote = null;
 
-            if (idSale <= 0) {
-                showError("Erro ao salvar a venda.");
-                return;
+                if (!this.txt_deposit.getText().trim().isEmpty()) {
+                    PaymentModal paymentModal = new PaymentModal(addSale, this.txt_deposit.getText(), new MainMenuView(CommonSetting.COMPANY), true);
+                    paymentModal.setVisible(true);
+
+                    payment = paymentModal.getSalePayment();
+
+                    if (payment == null) {
+                        showError("Payment was not completed.");
+                        return;
+                    }
+
+                    deposit = new Deposit(addSale, addSale.getEmployee(), Double.parseDouble(this.txt_deposit.getText()), addSale.getCreated());
+                    deposit.setSalePayment(payment);
+                }
+
+                saleNote = new OrderNote(addSale, addSale.getEmployee(), CommonConstant.SALE_CREATED_NOTE, new Date());
+
+                long idSaleAdded = this._saleController.addOrderSale(
+                        addSale, listSaleItems, payment, deposit, saleNote);
+
+                if (idSaleAdded > 0) {
+                    isAdded = true;
+                    addSale.setIdSale(idSaleAdded);
+                }
+
+                if (isAdded) {
+                    JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_SAVE);
+                    clearFields();
+
+                    // If you want to generate report similarly to service order:
+                    new ReportGenerator().generateSaleOrderReport(addSale, listSaleItems, payment);
+                }
+
+            } catch (BusinessException e) {
+                JOptionPane.showMessageDialog(this, e.getMessage(), this.getTitle(), JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
             }
-
-            addSale.setIdSale(idSale);
-
-            if (!saveSaleItems(addSale)) {
-                return;
-            }
-
-            if (!processDepositIfExists(addSale)) {
-                return;
-            }
-
-            saveSaleNote(addSale);
-
-            JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_SAVE);
-            clearFields();
-
-        } catch (BusinessException e) {
-            e.printStackTrace();
-            showError(e.getMessage());
         }
     }//GEN-LAST:event_btn_save_saleActionPerformed
 

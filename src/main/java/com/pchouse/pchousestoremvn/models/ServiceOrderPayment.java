@@ -40,6 +40,12 @@ public class ServiceOrderPayment implements Serializable {
     @Column(name = "AMOUNT_PAID")
     private double amountPaid;
 
+     @Column(name = "CARD_AMOUNT")
+    private Double cardAmount;
+    
+    @Column(name = "CASH_AMOUNT")
+    private Double cashAmount;
+    
     @Column(name = "CHANGE_AMOUNT")
     private double changeAmount;
 
@@ -50,11 +56,13 @@ public class ServiceOrderPayment implements Serializable {
     public ServiceOrderPayment() {
     }
 
-    public ServiceOrderPayment(ServiceOrder serviceOrder, PayMethod payMethod, double amountDue, double amountPaid, double changeAmount, Date dtTransaction) {
+    public ServiceOrderPayment(ServiceOrder serviceOrder, PayMethod payMethod, double amountDue, double amountPaid, Double cardAmount, Double cashAmount, double changeAmount, Date dtTransaction) {
         this.serviceOrder = serviceOrder;
         this.payMethod = payMethod;
         this.amountDue = amountDue;
         this.amountPaid = amountPaid;
+        this.cardAmount = cardAmount;
+        this.cashAmount = cashAmount;
         this.changeAmount = changeAmount;
         this.dtTransaction = dtTransaction;
     }
@@ -99,6 +107,22 @@ public class ServiceOrderPayment implements Serializable {
 
     public void setAmountPaid(double amountPaid) {
         this.amountPaid = amountPaid;
+    }
+
+    public Double getCardAmount() {
+        return cardAmount;
+    }
+
+    public void setCardAmount(Double cardAmount) {
+        this.cardAmount = cardAmount;
+    }
+
+    public Double getCashAmount() {
+        return cashAmount;
+    }
+
+    public void setCashAmount(Double cashAmount) {
+        this.cashAmount = cashAmount;
     }
 
     public double getChangeAmount() {

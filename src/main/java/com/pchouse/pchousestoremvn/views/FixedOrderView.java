@@ -178,7 +178,7 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
                 _serviceOrderModel.setStatus(newStatus);
                 _serviceOrderModel.setEmployee(employee);
 
-                boolean isOrderUpdated = this._orderController.updateOrder(_serviceOrderModel);
+                boolean isOrderUpdated = this._orderController.updateServiceOrderStatus(_serviceOrderModel);
                 if (isOrderUpdated) {
                     OrderNote orderNote = new OrderNote(
                             _serviceOrderModel,
@@ -918,7 +918,7 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
 
                         _serviceOrderModel.setTotal(Double.parseDouble(this.lbl_total_field.getText()));
                         _serviceOrderModel.setDue(Double.parseDouble(this.lbl_due_field.getText()));
-                        _orderController.updateOrder(_serviceOrderModel);
+                        _orderController.updateServiceOrderStatus(_serviceOrderModel);
                     } else {
                         JOptionPane.showMessageDialog(this, CommonConstant.ERROR_DELETE_ITEM, this.getTitle(), JOptionPane.ERROR_MESSAGE);
                     }

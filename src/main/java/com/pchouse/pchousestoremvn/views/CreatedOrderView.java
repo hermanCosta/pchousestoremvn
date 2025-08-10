@@ -15,6 +15,7 @@ import com.pchouse.pchousestoremvn.controllers.OrderNoteController;
 import com.pchouse.pchousestoremvn.controllers.ServiceOrderProdServController;
 import com.pchouse.pchousestoremvn.controllers.ProductServiceController;
 import com.pchouse.pchousestoremvn.enums.OrderStatus;
+import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Customer;
 import com.pchouse.pchousestoremvn.models.Deposit;
 import com.pchouse.pchousestoremvn.models.Device;
@@ -390,7 +391,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
                 _serviceOrderModel.setStatus(newStatus);
                 _serviceOrderModel.setEmployee(employee);
 
-                boolean isOrderUpdated = this._orderController.updateOrder(_serviceOrderModel);
+                boolean isOrderUpdated = this._orderController.updateServiceOrderStatus(_serviceOrderModel);
                 if (isOrderUpdated) {
                     OrderNote orderNote = new OrderNote(
                             _serviceOrderModel,
@@ -808,7 +809,6 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
         lbl_deposit.setText("Deposit:");
 
         txt_deposit.setFont(new java.awt.Font("sansserif", 0, 13)); // NOI18N
-        txt_deposit.setForeground(new java.awt.Color(51, 51, 255));
         txt_deposit.setNextFocusableComponent(btn_save_order);
         txt_deposit.setPreferredSize(new java.awt.Dimension(100, 25));
         txt_deposit.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -1192,121 +1192,56 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
 
     private void btn_save_orderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_save_orderActionPerformed
         ServiceOrder updateOrder = getOrderFields();
-
+        List<ServiceOrderFault> listOrderFault = getOrderFault(updateOrder);
+        List<ServiceOrderProdServ> listOrderProdServ = getOrderProdServ(updateOrder);
         boolean isUpdated = false;
 
         if (updateOrder != null) {
-
-            Device device = _deviceController.searchDeviceBySerialNumber(updateOrder.getDevice().getSerialNumber());
-            if (device != null) {
-                updateOrder.setDevice(device);
-                isUpdated = true;
-            } else {
-                long idDeviceAdded = _deviceController.addDevice(updateOrder.getDevice());
-                if (idDeviceAdded > 0) {
-                    isUpdated = true;
-                    System.out.println("Device Added: " + idDeviceAdded);
-                } else {
-                    System.err.println("Error to add Device!");
-                    return;
-                }
-            }
-
-            boolean isOrderUpdated = this._orderController.updateOrder(updateOrder);
-            if (isOrderUpdated) {
-
-                List<ServiceOrderFault> listOrderFault = getOrderFault(updateOrder);
-                if (listOrderFault != null) {
-                    for (ServiceOrderFault orderFaultItem : listOrderFault) {
-
-                        if (orderFaultItem.getIdServiceOrderFault() == 0) {
-                            long idOrderFaultAdded = _orderFaultController.addOrderFault(orderFaultItem);
-                            if (idOrderFaultAdded > 0) {
-                                isUpdated = true;
-                                System.out.println("Fault Added: " + idOrderFaultAdded);
-
-                            } else {
-                                isUpdated = false;
-                                System.err.println("Error to add fault!");
-                                return;
-                            }
-                        }
-                    }
+            try {
+                // Try to find existing device by serial number
+                Device device = _deviceController.searchDeviceBySerialNumber(updateOrder.getDevice().getSerialNumber());
+                if (device != null) {
+                    updateOrder.setDevice(device);
                 }
 
-                List<ServiceOrderProdServ> listOrderProdServ = getOrderProdServ(updateOrder);
-                if (listOrderProdServ != null) {
-                    for (ServiceOrderProdServ OrderProdServItem : listOrderProdServ) {
-
-                        if (OrderProdServItem.getIdServiceOrderProdServ() == 0) {
-                            long idOrderProdServAdded = _orderProdServController.addOrderProdServ(OrderProdServItem);
-                            if (idOrderProdServAdded > 0) {
-                                isUpdated = true;
-                                System.out.println("ProdServ Added: " + idOrderProdServAdded);
-                            } else {
-                                isUpdated = false;
-                                System.err.println("Error to add ProdServ");
-                                return;
-                            }
-                        }
-                    }
-                }
+                ServiceOrderPayment payment = null;
+                Deposit deposit = null;
+                OrderNote orderNote = null;
 
                 if (!this.txt_deposit.getText().trim().isEmpty()) {
-
-                    PaymentModal paymentModal = new PaymentModal(updateOrder, this.txt_deposit.getText(), _parentFrame, true);
-                    paymentModal.setLocationRelativeTo(this);
+                    PaymentModal paymentModal = new PaymentModal(updateOrder, this.txt_deposit.getText(), new MainMenuView(CommonSetting.COMPANY), true);
                     paymentModal.setVisible(true);
 
-                    // Get the returned object directly from the modal
-                    ServiceOrderPayment selectedPayment = paymentModal.getOrderPayment();
+                    payment = paymentModal.getOrderPayment();
 
-                    if (selectedPayment != null) {
-                        CommonExtension.orderPayment = selectedPayment;
-                    } else {
-                        System.err.println("No payment returned from modal.");
-                    }
-
-                    Deposit deposit = new Deposit(updateOrder, updateOrder.getEmployee(), Double.parseDouble(this.txt_deposit.getText()), updateOrder.getCreated());
-                    deposit.setServiceOrderPayment(paymentModal.getOrderPayment());
-
-                    long idDepositAdded = this._depositController.addDeposit(deposit);
-                    if (idDepositAdded > 0) {
-                        isUpdated = true;
-                    }
+                    deposit = new Deposit(updateOrder, updateOrder.getEmployee(),
+                            Double.parseDouble(this.txt_deposit.getText()),
+                            updateOrder.getCreated());
+                    deposit.setServiceOrderPayment(payment);
                 }
-            }
 
-            if (isUpdated) {
-                OrderNote orderNote = new OrderNote(updateOrder, updateOrder.getEmployee(), CommonConstant.ORDER_UPDATED_NOTE, new Date());
-                long idOrderNote = _orderNoteController.addOrderNote(orderNote);
+                orderNote = new OrderNote(updateOrder, updateOrder.getEmployee(), CommonConstant.ORDER_UPDATED_NOTE, new Date());
 
-                if (idOrderNote > 0) {
+                boolean updated = this._orderController.updateServiceOrder(
+                        updateOrder, listOrderFault, listOrderProdServ, payment, deposit, orderNote);
+
+                if (updated) {
+                    isUpdated = true;
+                }
+
+                if (isUpdated) {
                     JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_UPDATE);
-                } else {
-                    JOptionPane.showMessageDialog(this, CommonConstant.ERROR_ADD_NOTE, null, JOptionPane.ERROR_MESSAGE);
                 }
-
-                _listOrderDeposit = _depositController.getOrderDeposit(updateOrder);
-                _listServiceOrderFault = _orderFaultController.getOrderFaults(updateOrder);
-                _listServiceOrderProdServ = _orderProdServController.getOrderProdServ(updateOrder);
-
-                loadOrderDeposit(_listOrderDeposit);
-                loadOrderFault(_listServiceOrderFault);
-                loadOrderProdServ(_listServiceOrderProdServ);
-
-                //Clear deposit field only
-                this.txt_deposit.setText("");
-            } else {
-                JOptionPane.showMessageDialog(this, CommonConstant.ERROR_UPDATE, null, JOptionPane.ERROR_MESSAGE);
+            } catch (BusinessException e) {
+                JOptionPane.showMessageDialog(this, e.getMessage(), this.getTitle(), JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
             }
         }
     }//GEN-LAST:event_btn_save_orderActionPerformed
 
     private void btn_printActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_printActionPerformed
-        // Gera e exibe o relatório
+        // Genarate and display the report
         new ReportGenerator().generateServiceOrderReport(_serviceOrderModel, _listServiceOrderFault, _listServiceOrderProdServ);
-        //new ReportGenerator().generateServiceOrderReportTest();
     }//GEN-LAST:event_btn_printActionPerformed
 
     private void txt_brandKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_brandKeyPressed
@@ -1400,25 +1335,26 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
     private void table_view_faultsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table_view_faultsMouseClicked
         if (evt.getClickCount() == 2) {
             int selectedRow = this.table_view_faults.getSelectedRow();
+            this._dtmFault.removeRow(table_view_faults.getSelectedRow());
 
-            if (this._dtmFault.getValueAt(selectedRow, 2) != null) {
-                String password = CommonExtension.requestUserPassword();
-                Employee employee = _employeeController.getEmployeeByPass(password);
-                if (employee != null) {
-
-                    long idOrderFaultDeleted = this._orderFaultController.deleteOrderFault((long) this._dtmFault.getValueAt(selectedRow, 2));
-
-                    if (idOrderFaultDeleted > 0) {
-                        this._dtmFault.removeRow(table_view_faults.getSelectedRow());
-                    } else {
-                        JOptionPane.showMessageDialog(this, CommonConstant.ERROR_DELETE_ITEM, this.getTitle(), JOptionPane.ERROR_MESSAGE);
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(this, CommonConstant.NOT_AUTHORIZED, this.getTitle(), JOptionPane.ERROR_MESSAGE);
-                }
-            } else {
-                this._dtmFault.removeRow(table_view_faults.getSelectedRow());
-            }
+//            if (this._dtmFault.getValueAt(selectedRow, 2) != null) {
+//                String password = CommonExtension.requestUserPassword();
+//                Employee employee = _employeeController.getEmployeeByPass(password);
+//                if (employee != null) {
+//
+//                    long idOrderFaultDeleted = this._orderFaultController.deleteOrderFault((long) this._dtmFault.getValueAt(selectedRow, 2));
+//
+//                    if (idOrderFaultDeleted > 0) {
+//                        this._dtmFault.removeRow(table_view_faults.getSelectedRow());
+//                    } else {
+//                        JOptionPane.showMessageDialog(this, CommonConstant.ERROR_DELETE_ITEM, this.getTitle(), JOptionPane.ERROR_MESSAGE);
+//                    }
+//                } else {
+//                    JOptionPane.showMessageDialog(this, CommonConstant.NOT_AUTHORIZED, this.getTitle(), JOptionPane.ERROR_MESSAGE);
+//                }
+//            } else {
+//                this._dtmFault.removeRow(table_view_faults.getSelectedRow());
+//            }
         }
     }//GEN-LAST:event_table_view_faultsMouseClicked
 
@@ -1468,31 +1404,32 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
     private void table_view_productsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table_view_productsMouseClicked
         if (evt.getClickCount() == 2) {
             int selectedRow = this.table_view_products.getSelectedRow();
+            this._dtmProdServ.removeRow(table_view_products.getSelectedRow());
 
-            if (this._dtmProdServ.getValueAt(selectedRow, 5) != null) {
-                String password = CommonExtension.requestUserPassword();
-                Employee employee = _employeeController.getEmployeeByPass(password);
-
-                if (employee != null) {
-                    long idDeleteOrderProdServ = this._orderProdServController.deleteOrderProdServ((long) this._dtmProdServ.getValueAt(selectedRow, 5));
-
-                    if (idDeleteOrderProdServ > 0) {
-                        this._dtmProdServ.removeRow(this.table_view_products.getSelectedRow());
-                        // Sum price column and set into total textField
-                        getPriceSum();
-
-                        _serviceOrderModel.setTotal(Double.parseDouble(this.lbl_total_field.getText()));
-                        _serviceOrderModel.setDue(Double.parseDouble(this.lbl_due_field.getText()));
-                        _orderController.updateOrder(_serviceOrderModel);
-                    } else {
-                        JOptionPane.showMessageDialog(this, CommonConstant.ERROR_DELETE_ITEM, this.getTitle(), JOptionPane.ERROR_MESSAGE);
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(this, CommonConstant.NOT_AUTHORIZED, this.getTitle(), JOptionPane.ERROR_MESSAGE);
-                }
-            } else {
-                this._dtmProdServ.removeRow(this.table_view_products.getSelectedRow());
-            }
+//            if (this._dtmProdServ.getValueAt(selectedRow, 5) != null) {
+//                String password = CommonExtension.requestUserPassword();
+//                Employee employee = _employeeController.getEmployeeByPass(password);
+//
+//                if (employee != null) {
+//                    long idDeleteOrderProdServ = this._orderProdServController.deleteOrderProdServ((long) this._dtmProdServ.getValueAt(selectedRow, 5));
+//
+//                    if (idDeleteOrderProdServ > 0) {
+//                        this._dtmProdServ.removeRow(this.table_view_products.getSelectedRow());
+//                        // Sum price column and set into total textField
+//                        getPriceSum();
+//
+//                        _serviceOrderModel.setTotal(Double.parseDouble(this.lbl_total_field.getText()));
+//                        _serviceOrderModel.setDue(Double.parseDouble(this.lbl_due_field.getText()));
+//                        _orderController.updateOrder(_serviceOrderModel);
+//                    } else {
+//                        JOptionPane.showMessageDialog(this, CommonConstant.ERROR_DELETE_ITEM, this.getTitle(), JOptionPane.ERROR_MESSAGE);
+//                    }
+//                } else {
+//                    JOptionPane.showMessageDialog(this, CommonConstant.NOT_AUTHORIZED, this.getTitle(), JOptionPane.ERROR_MESSAGE);
+//                }
+//            } else {
+//                this._dtmProdServ.removeRow(this.table_view_products.getSelectedRow());
+//            }
         }
     }//GEN-LAST:event_table_view_productsMouseClicked
 

@@ -5,6 +5,9 @@ import com.pchouse.pchousestoremvn.common.CommonExtension;
 import com.pchouse.pchousestoremvn.controllers.ServiceOrderPaymentController;
 import com.pchouse.pchousestoremvn.controllers.SalePaymentController;
 import com.pchouse.pchousestoremvn.enums.PayMethod;
+import static com.pchouse.pchousestoremvn.enums.PayMethod.CARD;
+import static com.pchouse.pchousestoremvn.enums.PayMethod.CASH;
+import static com.pchouse.pchousestoremvn.enums.PayMethod.COMBINE;
 import com.pchouse.pchousestoremvn.models.Sale;
 import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
@@ -21,10 +24,12 @@ public class PaymentModal extends javax.swing.JDialog {
     private ServiceOrderPayment _orderPayment;
     private SalePayment _salePayment;
     private String _amountToPay;
+    private boolean paymentSuccessful = false;
 
     public PaymentModal(ServiceOrder serviceOrder, String amountToPay, java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        initListeners();
 
         this._orderPaymentController = new ServiceOrderPaymentController();
         this._salePaymentController = new SalePaymentController();
@@ -37,6 +42,7 @@ public class PaymentModal extends javax.swing.JDialog {
     public PaymentModal(Sale sale, String amountToPay, java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        initListeners();
 
         this._orderPaymentController = new ServiceOrderPaymentController();
         this._salePaymentController = new SalePaymentController();
@@ -46,66 +52,164 @@ public class PaymentModal extends javax.swing.JDialog {
         loadOrderPaymentFields(sale.getIdSale(), amountToPay);
     }
 
+    private void initListeners() {
+        txt_card_amount.setText("");
+        txt_cash_amount.setText("");
+        combo_box_pay_method.addActionListener(e -> {
+            Object selected = combo_box_pay_method.getSelectedItem();
+            if (selected == null) {
+                return;
+            }
+
+            PayMethod method = (PayMethod) selected;
+
+            switch (method) {
+                case CARD -> {
+                    lbl_cash_payment.setEnabled(false);
+                    txt_cash_amount.setEnabled(false);
+                    lbl_card_payment.setEnabled(true);
+                    txt_card_amount.setEnabled(true);
+                }
+                case CASH -> {
+                    lbl_cash_payment.setEnabled(true);
+                    txt_cash_amount.setEnabled(true);
+                    lbl_card_payment.setEnabled(false);
+                    txt_card_amount.setEnabled(false);
+                }
+                case COMBINE -> {
+                    lbl_cash_payment.setEnabled(true);
+                    txt_cash_amount.setEnabled(true);
+                    lbl_card_payment.setEnabled(true);
+                    txt_card_amount.setEnabled(true);
+                }
+            }
+
+            // Optional: Refresh UI if needed
+            lbl_cash_payment.getParent().revalidate();
+            lbl_cash_payment.getParent().repaint();
+        });
+    }
+
     public ServiceOrderPayment getOrderPayment() {
-        return _orderPayment;
+        return this._orderPayment;
     }
 
     public SalePayment getSalePayment() {
-        return _salePayment;
+        return this._salePayment;
     }
 
     private void loadOrderPaymentFields(long id, String amount) {
         this.lbl_order_value.setText(String.valueOf(id));
         this.lbl_amount_value.setText(CommonExtension.formatEuroCurrency(Double.parseDouble(amount)));
-        this.txt_payment_value.setText("");
+        this.txt_card_amount.setText("");
         this.lbl_change_value.setText("");
     }
 
-    public void confirmPayment() {
-        String paymentValueText = this.txt_payment_value.getText().trim();
+    public boolean confirmPayment() {
         Object selectedItem = this.combo_box_pay_method.getSelectedItem();
-
-        if (selectedItem == null || selectedItem.toString().isEmpty() || paymentValueText.isEmpty()) {
-            return;
-        }
-
-        double paymentValue;
-        double amountToPay;
-
-        try {
-            paymentValue = Double.parseDouble(paymentValueText);
-            amountToPay = Double.parseDouble(_amountToPay);
-        } catch (NumberFormatException e) {
-            return;
-        }
-
-        if (paymentValue < amountToPay) {
-            JOptionPane.showMessageDialog(this, CommonConstant.ERROR_ORDER_DIVERG_PAYMENT);
-            return;
+        if (selectedItem == null) {
+            JOptionPane.showMessageDialog(this, "Please select a payment method.");
+            return false;
         }
 
         PayMethod selectedPayMethod = (PayMethod) selectedItem;
+        double amountToPay;
 
-        double changeAmount = paymentValue - amountToPay;
+        try {
+            amountToPay = Double.parseDouble(_amountToPay);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Invalid amount to pay.");
+            return false;
+        }
 
-        if (_serviceOrderModel != null) {
-            _orderPayment = new ServiceOrderPayment(
-                    _serviceOrderModel,
-                    selectedPayMethod,
-                    amountToPay,
-                    paymentValue,
-                    changeAmount,
-                    _serviceOrderModel.getCreated()
-            );
-        } else if (_saleModel != null) {
+        double cardAmount = 0.0;
+        double cashAmount = 0.0;
+
+        try {
+            switch (selectedPayMethod) {
+                case CARD -> {
+                    cardAmount = Double.parseDouble(txt_card_amount.getText().trim());
+                }
+                case CASH -> {
+                    cashAmount = Double.parseDouble(txt_cash_amount.getText().trim());
+                }
+                case COMBINE -> {
+                    cardAmount = Double.parseDouble(txt_card_amount.getText().trim());
+                    cashAmount = Double.parseDouble(txt_cash_amount.getText().trim());
+                }
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Invalid payment amounts.");
+            return false;
+        }
+
+        if (cardAmount < 0 || cashAmount < 0) {
+            JOptionPane.showMessageDialog(this, "Payment amounts cannot be negative.");
+            return false;
+        }
+
+        double totalPaid = cardAmount + cashAmount;
+        double changeAmount = totalPaid - amountToPay;
+
+        if (totalPaid < amountToPay) {
+            JOptionPane.showMessageDialog(this, CommonConstant.ERROR_ORDER_DIVERG_PAYMENT);
+            return false;
+        }
+
+        // Update UI labels
+        lbl_total_paid_amount.setText(String.format("%.2f", totalPaid));
+        lbl_change_value.setText(String.format("%.2f", changeAmount));
+
+        if (_saleModel != null) {
             _salePayment = new SalePayment(
                     _saleModel,
                     selectedPayMethod,
                     amountToPay,
-                    paymentValue,
+                    totalPaid,
+                    cardAmount,
+                    cashAmount,
                     changeAmount,
                     _saleModel.getCreated()
             );
+        } else if (_serviceOrderModel != null) {
+            _orderPayment = new ServiceOrderPayment(
+                    _serviceOrderModel,
+                    selectedPayMethod,
+                    amountToPay,
+                    totalPaid,
+                    cardAmount,
+                    cashAmount,
+                    changeAmount,
+                    _serviceOrderModel.getCreated()
+            );
+        } else {
+            JOptionPane.showMessageDialog(this, "No sale or service order selected.");
+            return false;
+        }
+
+        return true;
+    }
+
+    private void calculateChangeAndTotal() {
+        double amountToPay = CommonExtension.formatEuroToDouble(this.lbl_amount_value.getText());
+        boolean clearField = false;
+
+        if (!this.txt_card_amount.getText().trim().isEmpty()) {
+            double cash = CommonExtension.parseTextFieldToDouble(this.txt_card_amount);
+            double card = CommonExtension.parseTextFieldToDouble(this.txt_cash_amount);
+            double total = card + cash;
+
+            this.lbl_total_paid_amount.setText(CommonExtension.formatEuroCurrency(total));
+
+            if (total > amountToPay) {
+                this.lbl_change_value.setText(CommonExtension.formatEuroCurrency(total - amountToPay));
+            } else {
+                clearField = true;
+            }
+        }
+
+        if (clearField) {
+            this.lbl_change_value.setText("");
         }
     }
 
@@ -123,11 +227,15 @@ public class PaymentModal extends javax.swing.JDialog {
         combo_box_pay_method = new javax.swing.JComboBox<PayMethod>();
         lbl_amount = new javax.swing.JLabel();
         lbl_amount_value = new javax.swing.JLabel();
-        lbl_payment = new javax.swing.JLabel();
-        txt_payment_value = new javax.swing.JTextField();
+        lbl_card_payment = new javax.swing.JLabel();
+        txt_card_amount = new javax.swing.JTextField();
         panel_fault_buttons = new javax.swing.JPanel();
         btn_pay = new javax.swing.JButton();
         btn_cancel = new javax.swing.JButton();
+        lbl_cash_payment = new javax.swing.JLabel();
+        txt_cash_amount = new javax.swing.JTextField();
+        lbl_total_paid = new javax.swing.JLabel();
+        lbl_total_paid_amount = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Payment");
@@ -184,14 +292,14 @@ public class PaymentModal extends javax.swing.JDialog {
         lbl_amount_value.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lbl_amount_value.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
 
-        lbl_payment.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        lbl_payment.setText("Payment:");
+        lbl_card_payment.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        lbl_card_payment.setText("Card Payment:");
 
-        txt_payment_value.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        txt_payment_value.setText("payValue");
-        txt_payment_value.addKeyListener(new java.awt.event.KeyAdapter() {
+        txt_card_amount.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        txt_card_amount.setText("cardAmount");
+        txt_card_amount.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
-                txt_payment_valueKeyReleased(evt);
+                txt_card_amountKeyReleased(evt);
             }
         });
 
@@ -228,7 +336,7 @@ public class PaymentModal extends javax.swing.JDialog {
                 .addComponent(btn_pay)
                 .addGap(18, 18, 18)
                 .addComponent(btn_cancel)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(243, Short.MAX_VALUE))
         );
         panel_fault_buttonsLayout.setVerticalGroup(
             panel_fault_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -242,42 +350,65 @@ public class PaymentModal extends javax.swing.JDialog {
                 .addContainerGap())
         );
 
+        lbl_cash_payment.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        lbl_cash_payment.setText("Cash Payment:");
+        lbl_cash_payment.setEnabled(false);
+
+        txt_cash_amount.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        txt_cash_amount.setText("cashAmount");
+        txt_cash_amount.setEnabled(false);
+        txt_cash_amount.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txt_cash_amountKeyReleased(evt);
+            }
+        });
+
+        lbl_total_paid.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        lbl_total_paid.setText("Total Paid:");
+
+        lbl_total_paid_amount.setFont(new java.awt.Font("Dialog", 1, 15)); // NOI18N
+        lbl_total_paid_amount.setText("totalPaidAmount");
+
         javax.swing.GroupLayout panel_notesLayout = new javax.swing.GroupLayout(panel_notes);
         panel_notes.setLayout(panel_notesLayout);
         panel_notesLayout.setHorizontalGroup(
             panel_notesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_notesLayout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(panel_notesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panel_notesLayout.createSequentialGroup()
+                        .addContainerGap()
                         .addGroup(panel_notesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(panel_note_input, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(panel_fault_buttons, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(panel_notesLayout.createSequentialGroup()
-                                .addGroup(panel_notesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addGroup(panel_notesLayout.createSequentialGroup()
-                                        .addComponent(lbl_payment)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(txt_payment_value, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(panel_notesLayout.createSequentialGroup()
-                                        .addComponent(lbl_order_no)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(lbl_order_value, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(50, 50, 50))
-                                    .addGroup(panel_notesLayout.createSequentialGroup()
-                                        .addComponent(lbl_pay_method)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(combo_box_pay_method, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addGap(0, 0, Short.MAX_VALUE)))
-                        .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_notesLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(lbl_order_no)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(lbl_order_value, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(panel_notesLayout.createSequentialGroup()
+                                .addComponent(lbl_pay_method)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(combo_box_pay_method, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(lbl_amount_value, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(panel_notesLayout.createSequentialGroup()
+                                .addComponent(lbl_card_payment)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txt_card_amount))))
+                    .addGroup(panel_notesLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(lbl_cash_payment)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txt_cash_amount))
+                    .addGroup(panel_notesLayout.createSequentialGroup()
+                        .addGap(188, 188, 188)
                         .addComponent(lbl_amount)
-                        .addGap(195, 195, 195))))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_notesLayout.createSequentialGroup()
-                .addContainerGap(75, Short.MAX_VALUE)
-                .addComponent(lbl_amount_value, javax.swing.GroupLayout.PREFERRED_SIZE, 334, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(75, 75, 75))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(panel_notesLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(lbl_total_paid)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lbl_total_paid_amount, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         panel_notesLayout.setVerticalGroup(
             panel_notesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -286,18 +417,26 @@ public class PaymentModal extends javax.swing.JDialog {
                 .addGroup(panel_notesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbl_order_no)
                     .addComponent(lbl_order_value, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, 14, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(lbl_amount)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lbl_amount_value, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(panel_notesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(combo_box_pay_method, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lbl_pay_method))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panel_notesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txt_payment_value, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lbl_payment))
+                    .addComponent(txt_card_amount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lbl_card_payment))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(panel_notesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txt_cash_amount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lbl_cash_payment))
                 .addGap(18, 18, 18)
-                .addComponent(lbl_amount)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lbl_amount_value, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(panel_notesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lbl_total_paid_amount, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lbl_total_paid))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(panel_note_input, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -316,9 +455,9 @@ public class PaymentModal extends javax.swing.JDialog {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(panel_notes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(panel_notes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -327,57 +466,67 @@ public class PaymentModal extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_payActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_payActionPerformed
-        confirmPayment();
+        if (!confirmPayment()) {
+            // If confirmation failed, return early, do NOT close modal
+            return;
+        }
 
-        // Tenta obter o pagamento de service ordem
+        // Prepare the payment data in memory
         ServiceOrderPayment addOrderPayment = getOrderPayment();
-
-        // Tenta obter o pagamento de venda
         SalePayment addSalePayment = getSalePayment();
 
         if (addOrderPayment != null) {
-            long idOrderPaymentAdded = _orderPaymentController.addOrderPayment(addOrderPayment);
-            if (idOrderPaymentAdded > 0) {
-                addOrderPayment.setIdOrderPayment(idOrderPaymentAdded);
-                this._orderPayment = addOrderPayment;
-                this.dispose();
-            } else {
-                JOptionPane.showMessageDialog(this, CommonConstant.ERROR_ORDER_PAYMENT, null, JOptionPane.ERROR_MESSAGE);
-            }
+            this._orderPayment = addOrderPayment;  // Save to field to retrieve later
+            this._salePayment = null;               // Clear sale payment if any
+            this.dispose();                        // Close modal
         } else if (addSalePayment != null) {
-            long idSalePaymentAdded = _salePaymentController.addOrderPayment(addSalePayment);
-            if (idSalePaymentAdded > 0) {
-                addSalePayment.setIdSalePayment(idSalePaymentAdded);
-                this._salePayment = addSalePayment;
-                this.dispose();
-            } else {
-                JOptionPane.showMessageDialog(this, CommonConstant.ERROR_ORDER_PAYMENT, null, JOptionPane.ERROR_MESSAGE);
-            }
+            this._salePayment = addSalePayment;
+            this._orderPayment = null;
+            this.dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "Invalid payment data", "Error", JOptionPane.ERROR_MESSAGE);
         }
+
+//        confirmPayment();
+//
+//        // Tenta obter o pagamento de service ordem
+//        ServiceOrderPayment addOrderPayment = getOrderPayment();
+//
+//        // Tenta obter o pagamento de venda
+//        SalePayment addSalePayment = getSalePayment();
+//
+//        if (addOrderPayment != null) {
+//            long idOrderPaymentAdded = _orderPaymentController.addOrderPayment(addOrderPayment);
+//            if (idOrderPaymentAdded > 0) {
+//                addOrderPayment.setIdOrderPayment(idOrderPaymentAdded);
+//                this._orderPayment = addOrderPayment;
+//                this.dispose();
+//            } else {
+//                JOptionPane.showMessageDialog(this, CommonConstant.ERROR_ORDER_PAYMENT, null, JOptionPane.ERROR_MESSAGE);
+//            }
+//        } else if (addSalePayment != null) {
+//            long idSalePaymentAdded = _salePaymentController.addOrderPayment(addSalePayment);
+//            if (idSalePaymentAdded > 0) {
+//                addSalePayment.setIdSalePayment(idSalePaymentAdded);
+//                this._salePayment = addSalePayment;
+//                this.dispose();
+//            } else {
+//                JOptionPane.showMessageDialog(this, CommonConstant.ERROR_ORDER_PAYMENT, null, JOptionPane.ERROR_MESSAGE);
+//            }
+//        }
     }//GEN-LAST:event_btn_payActionPerformed
 
     private void btn_cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelActionPerformed
         this.dispose();
     }//GEN-LAST:event_btn_cancelActionPerformed
 
-    private void txt_payment_valueKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_payment_valueKeyReleased
-        double amountToPay = CommonExtension.formatEuroToDouble(this.lbl_amount_value.getText());
-        boolean clearField = false;
+    private void txt_card_amountKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_card_amountKeyReleased
+        calculateChangeAndTotal();
+    }//GEN-LAST:event_txt_card_amountKeyReleased
 
-        if (!this.txt_payment_value.getText().trim().isEmpty()) {
-            double payment = Double.parseDouble(this.txt_payment_value.getText());
-
-            if (payment > amountToPay) {
-                this.lbl_change_value.setText(CommonExtension.formatEuroCurrency(payment - amountToPay));
-            } else {
-                clearField = true;
-            }
-        }
-
-        if (clearField) {
-            this.lbl_change_value.setText("");
-        }
-    }//GEN-LAST:event_txt_payment_valueKeyReleased
+    private void txt_cash_amountKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_cash_amountKeyReleased
+        calculateChangeAndTotal();
+    }//GEN-LAST:event_txt_cash_amountKeyReleased
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_cancel;
@@ -385,15 +534,19 @@ public class PaymentModal extends javax.swing.JDialog {
     private javax.swing.JComboBox<PayMethod> combo_box_pay_method;
     private javax.swing.JLabel lbl_amount;
     private javax.swing.JLabel lbl_amount_value;
+    private javax.swing.JLabel lbl_card_payment;
+    private javax.swing.JLabel lbl_cash_payment;
     private javax.swing.JLabel lbl_change;
     private javax.swing.JLabel lbl_change_value;
     private javax.swing.JLabel lbl_order_no;
     private javax.swing.JLabel lbl_order_value;
     private javax.swing.JLabel lbl_pay_method;
-    private javax.swing.JLabel lbl_payment;
+    private javax.swing.JLabel lbl_total_paid;
+    private javax.swing.JLabel lbl_total_paid_amount;
     private javax.swing.JPanel panel_fault_buttons;
     private javax.swing.JPanel panel_note_input;
     private javax.swing.JPanel panel_notes;
-    private javax.swing.JTextField txt_payment_value;
+    private javax.swing.JTextField txt_card_amount;
+    private javax.swing.JTextField txt_cash_amount;
     // End of variables declaration//GEN-END:variables
 }
