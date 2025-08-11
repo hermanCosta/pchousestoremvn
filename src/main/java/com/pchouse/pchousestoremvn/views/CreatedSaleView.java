@@ -4,7 +4,6 @@ import com.pchouse.pchousestoremvn.common.CommonConstant;
 import com.pchouse.pchousestoremvn.common.CommonExtension;
 import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.common.CommonStrings;
-import com.pchouse.pchousestoremvn.controllers.SaleController;
 import com.pchouse.pchousestoremvn.models.Customer;
 import com.pchouse.pchousestoremvn.models.Deposit;
 import com.pchouse.pchousestoremvn.models.Sale;
@@ -18,22 +17,19 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 import java.util.List;
-import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 public class CreatedSaleView extends javax.swing.JInternalFrame {
 
-    private long hdnCustomerId;
     private Sale _saleModel;
     private List<SaleProdServ> _listSaleProdServs;
+    private List<SalePayment> _salePayments;
     public SalePayment _orderPayment = null;
-    private final SaleController _saleController;
     private final DefaultTableModel _dtmProdServ;
-    private final DefaultListModel _defaultListModelProdServ;
     Frame _parentFrame = JOptionPane.getFrameForComponent(this);
 
-    public CreatedSaleView(Sale saleModel, List<SaleProdServ> listSaleProdServ, List<Deposit> listOrderDeposit) {
+    public CreatedSaleView(Sale saleModel, List<SaleProdServ> listSaleProdServ, List<Deposit> listOrderDeposit, List<SalePayment> salePayments) {
         initComponents();
 
         CommonExtension.checkEmailFormat(this.txt_email);
@@ -42,20 +38,18 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
 
         this._saleModel = saleModel;
         this._listSaleProdServs = listSaleProdServ;
-        this._saleController = new SaleController();
+        this._salePayments = salePayments;
         this._dtmProdServ = (DefaultTableModel) this.table_view_products.getModel();
-        this._defaultListModelProdServ = new DefaultListModel();
 
-        loadSaleFields(saleModel, listSaleProdServ, listOrderDeposit);
+        loadSaleFields(saleModel, listSaleProdServ);
     }
 
-    private void loadSaleFields(Sale orderModel, List<SaleProdServ> listSaleProdServ, List<Deposit> listOrderDeposit) {
+    private void loadSaleFields(Sale orderModel, List<SaleProdServ> listSaleProdServ) {
         setCustomerFields(orderModel.getCustomer());
 
         this.lbl_auto_sale_no.setText(CommonStrings.formatOrderNumber(orderModel.getIdSale()));
         this.lbl_total_field.setText(CommonExtension.formatEuroCurrency(orderModel.getTotal()));
 
-        loadOrderDeposit(listOrderDeposit);
         loadSaleProdServ(listSaleProdServ);
     }
 
@@ -83,16 +77,6 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
             this.txt_last_name.setText(customer.getPerson().getLastName());
             this.txt_contact.setText(customer.getPerson().getContactNo());
             this.txt_email.setText(customer.getPerson().getEmail());
-        }
-    }
-
-    private void loadOrderDeposit(List<Deposit> listOrderDeposit) {
-        if (listOrderDeposit != null) {
-            double totalDeposit = 0;
-            for (Deposit orderDeposit : listOrderDeposit) {
-                totalDeposit += orderDeposit.getAmount();
-            }
-            //this.lbl_deposit_paid.setText(CommonExtension.formatEuroCurrency(totalDeposit));
         }
     }
 
@@ -512,7 +496,7 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
     private void btn_printActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_printActionPerformed
         
         // Genarate and display the report
-        //new ReportGenerator().generateSaleOrderReport(_saleModel, _listSaleProdServs);
+        new ReportGenerator().generateSaleOrderReport(_saleModel, _listSaleProdServs, _salePayments);
     }//GEN-LAST:event_btn_printActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

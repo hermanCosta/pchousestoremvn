@@ -23,8 +23,7 @@ import java.util.stream.Collectors;
 
 public class ReportGenerator {
 
-    public void generateServiceOrderReport(ServiceOrder order, List<ServiceOrderFault> faults,List<ServiceOrderProdServ> prodServs) 
-    {
+    public void generateServiceOrderReport(ServiceOrder order, List<ServiceOrderFault> faults, List<ServiceOrderProdServ> prodServs) {
         try {
             // Paths to your reports
             String mainReportPath = "/com/pchouse/pchousestoremvn/reports/ServiceOrderReport.jasper";
@@ -77,7 +76,7 @@ public class ReportGenerator {
             parameters.put("deposit", order.getTotal() - order.getDue());
             parameters.put("remaining", order.getDue());
             parameters.put("createdDate", order.getCreated());
-            
+
             parameters.put("faultsConcatenated", faultsConcatenated);
             parameters.put("prodServDataSource", prodServDataSource);
 
@@ -100,8 +99,31 @@ public class ReportGenerator {
         }
     }
 
-    public void generateSaleOrderReport(Sale sale, List<SaleProdServ> prodServs, SalePayment salePayment) {
+    public void generateSaleOrderReport(Sale sale, List<SaleProdServ> prodServs, List<SalePayment> salePayments) {
         try {
+            // Sum amounts by payment method
+            double totalCash = 0.0;
+            double totalCard = 0.0;
+
+            for (SalePayment payment : salePayments) {
+                if (payment.getPayMethod() != null) {
+                    switch (payment.getPayMethod()) {
+                        case CASH:
+                            totalCash += payment.getCashAmount();
+                            break;
+                        case CARD:
+                            totalCard += payment.getCardAmount();
+                            break;
+                        case COMBINE:
+                            totalCash += payment.getCashAmount();
+                             totalCard += payment.getCardAmount();
+                             break;
+                        default:
+                            break; // ignore other payment methods
+                    }
+                }
+            }
+
             // Paths to your reports
             String mainReportPath = "/com/pchouse/pchousestoremvn/reports/SaleOrderReport.jasper";
             String headerSubreportPath = "/com/pchouse/pchousestoremvn/reports/subreport_header.jasper";
@@ -141,9 +163,12 @@ public class ReportGenerator {
             parameters.put("customerEmail", sale.getCustomer().getPerson().getEmail());
             parameters.put("createdDate", sale.getCreated());
             parameters.put("total", sale.getTotal());
-            parameters.put("payMethod", salePayment.getPayMethod());
-            parameters.put("createdDate", sale.getCreated());
-            
+
+            // Set summed payment method values
+            parameters.put("payMethodCash", totalCash);
+            parameters.put("payMethodCard", totalCard);
+            parameters.put("change", salePayments.get(0).getChangeAmount());
+
             parameters.put("prodServDataSource", prodServDataSource);
 
             // Set subreport directory parameter (useful for subreports inside main report)
@@ -152,7 +177,7 @@ public class ReportGenerator {
             // Load main report
             JasperReport mainReport = (JasperReport) JRLoader.loadObject(getClass().getResource(mainReportPath));
 
-            // Fill main report with parameters and an empty datasource (or your datasource)
+            // Fill main report
             JasperPrint jasperPrint = JasperFillManager.fillReport(mainReport, parameters, new JREmptyDataSource());
 
             // View the filled report

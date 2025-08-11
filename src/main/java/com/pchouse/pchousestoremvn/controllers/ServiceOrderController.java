@@ -85,7 +85,7 @@ public class ServiceOrderController {
     public long addServiceOrder(ServiceOrder order,
             List<ServiceOrderFault> faults,
             List<ServiceOrderProdServ> prodServs,
-            ServiceOrderPayment payment,
+            List<ServiceOrderPayment> payment,
             Deposit deposit,
             OrderNote orderNote) throws BusinessException {
 
@@ -102,11 +102,11 @@ public class ServiceOrderController {
             ServiceOrder order,
             List<ServiceOrderFault> faults,
             List<ServiceOrderProdServ> prodServs,
-            ServiceOrderPayment payment,
+            List<ServiceOrderPayment> payments,
             Deposit deposit,
             OrderNote orderNote) throws BusinessException {
         try {
-            return ORDER_DAO.updateServiceOrderDAO(order, faults, prodServs, payment, deposit, orderNote);
+            return ORDER_DAO.updateServiceOrderDAO(order, faults, prodServs, payments, deposit, orderNote);
         } catch (BusinessException e) {
             e.printStackTrace();
             throw new BusinessException("Error updating order: " + e.getMessage());

@@ -19,7 +19,7 @@ import jakarta.persistence.TypedQuery;
 import java.util.List;
 
 public class OrderDAO {
-
+    
     public long getLastOrderIdDAO() {
         EntityManager em = JPAUtil.getEntityManager();
         long orderId = 0;
@@ -35,27 +35,27 @@ public class OrderDAO {
         }
         return orderId;
     }
-
+    
     public long addOrderDAO(ServiceOrder pOrderModel) throws BusinessException {
         EntityManager em = JPAUtil.getEntityManager();
         long idServiceOrderAdded = 0;
         try {
             em.getTransaction().begin();
-
+            
             Customer customer = pOrderModel.getCustomer();
             Person person = customer.getPerson();
             Device device = pOrderModel.getDevice();
-
+            
             if (device != null && device.getIdDevice() == 0) {
                 em.persist(device);
                 em.flush();
             }
-
+            
             if (person.getIdPerson() == 0) {
                 em.persist(person);
                 em.flush();
             }
-
+            
             if (customer.getIdCustomer() == 0) {
                 em.persist(customer);
                 em.flush();
@@ -63,7 +63,7 @@ public class OrderDAO {
                 // If customer already exists, attach managed entity
                 customer = em.find(Customer.class, customer.getIdCustomer());
             }
-
+            
             pOrderModel.setCustomer(customer); // assign the managed or new customer
 
             // Certificar-se de que a Company está anexada ao contexto antes de persistir
@@ -80,13 +80,13 @@ public class OrderDAO {
             e.printStackTrace();
             em.getTransaction().rollback();
             throw new BusinessException("Failed to add order: " + e.getMessage(), e);
-
+            
         } finally {
             em.close();
         }
         return idServiceOrderAdded;
     }
-
+    
     public ServiceOrder getItemOrderDAO(long pIdOrder) {
         EntityManager em = JPAUtil.getEntityManager();
         ServiceOrder itemOrder = null;
@@ -100,7 +100,7 @@ public class OrderDAO {
         }
         return itemOrder;
     }
-
+    
     public List<ServiceOrder> getAllOrderDAO(Company pCompany) {
         EntityManager em = JPAUtil.getEntityManager();
         List<ServiceOrder> listOrder = null;
@@ -117,7 +117,7 @@ public class OrderDAO {
         }
         return listOrder;
     }
-
+    
     public List<ServiceOrder> searchOrderDAO(Company pCompany, String pSearch) {
         EntityManager em = JPAUtil.getEntityManager();
         List<ServiceOrder> listOrder = null;
@@ -141,11 +141,11 @@ public class OrderDAO {
         }
         return listOrder;
     }
-
+    
     public boolean updateServiceOrderStatusDAO(ServiceOrder pOrderModel) {
         EntityManager em = JPAUtil.getEntityManager();
         boolean success = false;
-
+        
         try {
             em.getTransaction().begin();
 
@@ -158,17 +158,17 @@ public class OrderDAO {
             // Reattach Customer, Customer's Company, and Person
             if (pOrderModel.getCustomer() != null) {
                 Customer detachedCustomer = pOrderModel.getCustomer();
-
+                
                 if (detachedCustomer.getCompany() != null) {
                     Company managedCustomerCompany = em.getReference(Company.class, detachedCustomer.getCompany().getIdCompany());
                     detachedCustomer.setCompany(managedCustomerCompany);
                 }
-
+                
                 if (detachedCustomer.getPerson() != null) {
                     Person managedPerson = em.getReference(Person.class, detachedCustomer.getPerson().getIdPerson());
                     detachedCustomer.setPerson(managedPerson);
                 }
-
+                
                 Customer managedCustomer = em.getReference(Customer.class, detachedCustomer.getIdCustomer());
                 pOrderModel.setCustomer(managedCustomer);
             }
@@ -189,7 +189,7 @@ public class OrderDAO {
             em.merge(pOrderModel);
             em.getTransaction().commit();
             success = true;
-
+            
         } catch (Exception e) {
             System.err.println("Error updating order: " + e.getMessage());
             e.printStackTrace();
@@ -197,19 +197,19 @@ public class OrderDAO {
         } finally {
             em.close();
         }
-
+        
         return success;
     }
-
+    
     public long addServiceOrderDAO(ServiceOrder order,
             List<ServiceOrderFault> faults,
             List<ServiceOrderProdServ> prodServs,
-            ServiceOrderPayment payment,
+            List<ServiceOrderPayment> payments,
             Deposit deposit,
             OrderNote orderNote) throws BusinessException {
         EntityManager em = JPAUtil.getEntityManager();
         long idOrderAdded = 0;
-
+        
         try {
             em.getTransaction().begin();
 
@@ -223,7 +223,7 @@ public class OrderDAO {
                 Employee managedEmployee = em.getReference(Employee.class, order.getEmployee().getIdEmployee());
                 order.setEmployee(managedEmployee);
             }
-
+            
             if (device != null && device.getIdDevice() == 0) {
                 em.persist(device);
                 em.flush();
@@ -239,7 +239,7 @@ public class OrderDAO {
                 customer = em.find(Customer.class, customer.getIdCustomer());
             }
             order.setCustomer(customer);
-
+            
             if (order.getCompany() != null) {
                 Company managedCompany = em.find(Company.class, order.getCompany().getIdCompany());
                 order.setCompany(managedCompany);
@@ -266,13 +266,7 @@ public class OrderDAO {
                 }
             }
 
-            // Persist payment
-            if (payment != null) {
-                payment.setServiceOrder(managedOrder);
-                em.persist(payment);
-            }
-
-            // Persist deposit (if any)
+            // Persist deposit
             if (deposit != null) {
                 deposit.setServiceOrder(managedOrder);
 
@@ -281,8 +275,17 @@ public class OrderDAO {
                     Employee managedEmployee = em.getReference(Employee.class, order.getEmployee().getIdEmployee());
                     deposit.setEmployee(managedEmployee);
                 }
-
+                
                 em.persist(deposit);
+            }
+
+            // Persist payment
+            if (payments != null) {
+                for (ServiceOrderPayment payment : payments) {
+                    payment.setDeposit(deposit);
+                    payment.setServiceOrder(managedOrder);
+                    em.persist(payment);
+                }
             }
 
             // Persist order note
@@ -294,14 +297,14 @@ public class OrderDAO {
                     Employee managedEmployee = em.getReference(Employee.class, order.getEmployee().getIdEmployee());
                     orderNote.setEmployee(managedEmployee);
                 }
-
+                
                 em.persist(orderNote);
             }
-
+            
             em.getTransaction().commit();
             
             return idOrderAdded;
-
+            
         } catch (Exception e) {
             e.printStackTrace();
             em.getTransaction().rollback();
@@ -310,17 +313,17 @@ public class OrderDAO {
             em.close();
         }
     }
-
+    
     public boolean updateServiceOrderDAO(ServiceOrder order,
             List<ServiceOrderFault> faults,
             List<ServiceOrderProdServ> prodServs,
-            ServiceOrderPayment payment,
+            List<ServiceOrderPayment> payments,
             Deposit deposit,
             OrderNote orderNote) throws BusinessException {
-
+        
         EntityManager em = JPAUtil.getEntityManager();
         boolean success = false;
-
+        
         try {
             em.getTransaction().begin();
 
@@ -340,7 +343,7 @@ public class OrderDAO {
             Customer customer = order.getCustomer();
             Person person = customer.getPerson();
             Device device = order.getDevice();
-
+            
             if (device != null) {
                 if (device.getIdDevice() == 0) {
                     em.persist(device);
@@ -350,14 +353,14 @@ public class OrderDAO {
                 }
                 order.setDevice(device);
             }
-
+            
             if (person.getIdPerson() == 0) {
                 em.persist(person);
                 em.flush();
             } else {
                 person = em.merge(person);
             }
-
+            
             if (customer.getIdCustomer() == 0) {
                 em.persist(customer);
                 em.flush();
@@ -382,7 +385,7 @@ public class OrderDAO {
             if (faults != null) {
                 for (ServiceOrderFault fault : faults) {
                     fault.setServiceOrder(managedOrder);
-                    fault.setIdServiceOrderFault(0); 
+                    fault.setIdServiceOrderFault(0);
                     em.persist(fault);
                 }
             }
@@ -391,15 +394,9 @@ public class OrderDAO {
             if (prodServs != null) {
                 for (ServiceOrderProdServ prodServ : prodServs) {
                     prodServ.setServiceOrder(managedOrder);
-                    prodServ.setIdServiceOrderProdServ(0); 
+                    prodServ.setIdServiceOrderProdServ(0);
                     em.persist(prodServ);
                 }
-            }
-
-            // Persist payment if any (usually payments are new records)
-            if (payment != null) {
-                payment.setServiceOrder(managedOrder);
-                em.persist(payment);
             }
 
             // Persist deposit if any (same as payment — usually new record)
@@ -412,6 +409,15 @@ public class OrderDAO {
                 em.persist(deposit);
             }
 
+            // Persist payment if any (usually payments are new records)
+            if (payments != null) {
+                for (ServiceOrderPayment payment : payments) {
+                    payment.setServiceOrder(managedOrder);
+                    payment.setDeposit(deposit);
+                    em.persist(payment);
+                }
+            }
+
             // Persist order note if any
             if (orderNote != null) {
                 orderNote.setServiceOrder(managedOrder);
@@ -421,10 +427,10 @@ public class OrderDAO {
                 }
                 em.persist(orderNote);
             }
-
+            
             em.getTransaction().commit();
             success = true;
-
+            
         } catch (Exception e) {
             e.printStackTrace();
             em.getTransaction().rollback();

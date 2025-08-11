@@ -1,6 +1,5 @@
 package com.pchouse.pchousestoremvn.views.modals;
 
-import com.pchouse.pchousestoremvn.common.CommonExtension;
 import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.controllers.CustomerController;
 import com.pchouse.pchousestoremvn.controllers.ServiceOrderController;
@@ -28,6 +27,8 @@ import javax.swing.text.MaskFormatter;
 
 public class CustomerModal extends javax.swing.JDialog {
 
+    private long hdnCustomerId;
+    private long hdnPersonId;
     private Customer _customer;
     private NewOrderView _newOrderView;
     private CreatedOrderView _createdOrderView;
@@ -46,7 +47,8 @@ public class CustomerModal extends javax.swing.JDialog {
         this(parent, modal, customer);
         this._createdOrderView = createdOrderView;
     }
-//CustomerModal(this, new MainMenuView(CommonSetting.COMPANY), true, null);
+
+    //CustomerModal(this, new MainMenuView(CommonSetting.COMPANY), true, null);
     public CustomerModal(NewSaleView newSaleView, Frame parent, boolean modal, Customer customer) {
         this(parent, modal, customer);
         this._newSaleView = newSaleView;
@@ -67,26 +69,6 @@ public class CustomerModal extends javax.swing.JDialog {
         loadCustomerListTable();
     }
 
-//    public CustomerModal(NewOrderView newOrderView, CreatedOrderView createdOrderView, NewSaleView newSaleView, java.awt.Frame parent, boolean modal, Customer customer) {
-//    //public CustomerModal(JInternalFrame newOrderView, CreatedOrderView createdOrderView, java.awt.Frame parent, boolean modal, Customer customer) {
-//        super(parent, modal);
-//        initComponents();
-//
-//        CommonSetting.tableSettings(this.table_view_customers);
-//
-//        this._newOrderView = newOrderView;
-//        this._createdOrderView = createdOrderView;
-//        this._newSaleView = newSaleView;
-//        this.txt_contact.setFocusLostBehavior(JFormattedTextField.PERSIST);
-//
-//        this._orderController = new OrderController();
-//        this._customerController = new CustomerController();
-//        this._dtmCustomer = (DefaultTableModel) this.table_view_customers.getModel();
-//        this._customer = customer;
-//
-//        //checkEmailFormat();
-//        loadCustomerListTable();
-//    }
     private void loadCustomerListTable() {
         this._dtmCustomer.setRowCount(0);
 
@@ -138,11 +120,11 @@ public class CustomerModal extends javax.swing.JDialog {
                     this.txt_contact.getText().replace("(", "").replace(")", "").replace("-", "").replace(" ", ""),
                     this.txt_email.getText().toLowerCase());
 
-            person.setIdPerson(CommonExtension.setIdExtension(this.hdn_txt_person_id));
+            person.setIdPerson(hdnPersonId);
 
             getCustomer = new Customer(person, CommonSetting.COMPANY);
 
-            int idCustomer = CommonExtension.setIdExtension(this.hdn_txt_customer_id);
+            long idCustomer = hdnCustomerId;
             getCustomer.setIdCustomer(idCustomer);
 
             return getCustomer;
@@ -151,8 +133,8 @@ public class CustomerModal extends javax.swing.JDialog {
 
     private void setCustomerFields(Customer pCustomer) {
         this.txt_contact.setFormatterFactory(null);
-        this.hdn_txt_person_id.setText(String.valueOf(pCustomer.getPerson().getIdPerson()));
-        this.hdn_txt_customer_id.setText(String.valueOf(pCustomer.getIdCustomer()));
+        this.hdnPersonId = pCustomer.getPerson().getIdPerson();
+        this.hdnCustomerId = pCustomer.getIdCustomer();
         this.txt_first_name.setText(pCustomer.getPerson().getFirstName());
         this.txt_last_name.setText(pCustomer.getPerson().getLastName());
         this.txt_contact.setText(pCustomer.getPerson().getContactNo());
@@ -212,8 +194,8 @@ public class CustomerModal extends javax.swing.JDialog {
     }
 
     private void cleanFields() {
-        this.hdn_txt_customer_id.setText("");
-        this.hdn_txt_person_id.setText("");
+        this.hdnCustomerId = 0;
+        this.hdnPersonId = 0;
         this.txt_first_name.setText("");
         this.txt_last_name.setText("");
         this.txt_contact.setText("");
@@ -286,7 +268,6 @@ public class CustomerModal extends javax.swing.JDialog {
         txt_last_name = new javax.swing.JTextField();
         lbl_last_name = new javax.swing.JLabel();
         lbl_contact = new javax.swing.JLabel();
-        hdn_txt_customer_id = new javax.swing.JTextField();
         txt_first_name = new javax.swing.JTextField();
         btn_copy = new javax.swing.JButton();
         lbl_email = new javax.swing.JLabel();
@@ -294,7 +275,6 @@ public class CustomerModal extends javax.swing.JDialog {
         lbl_first_name_star = new javax.swing.JLabel();
         lbl_last_name_star = new javax.swing.JLabel();
         lbl_contact_star = new javax.swing.JLabel();
-        hdn_txt_person_id = new javax.swing.JTextField();
         panel_customer_buttons = new javax.swing.JPanel();
         btn_select = new javax.swing.JButton();
         btn_update = new javax.swing.JButton();
@@ -381,11 +361,6 @@ public class CustomerModal extends javax.swing.JDialog {
         lbl_contact.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
         lbl_contact.setText("Contact No.");
 
-        hdn_txt_customer_id.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        hdn_txt_customer_id.setEnabled(false);
-        hdn_txt_customer_id.setMinimumSize(new java.awt.Dimension(80, 32));
-        hdn_txt_customer_id.setPreferredSize(new java.awt.Dimension(0, 0));
-
         txt_first_name.setMinimumSize(new java.awt.Dimension(80, 32));
         txt_first_name.setPreferredSize(new java.awt.Dimension(300, 25));
 
@@ -417,11 +392,6 @@ public class CustomerModal extends javax.swing.JDialog {
         lbl_contact_star.setForeground(java.awt.Color.red);
         lbl_contact_star.setText("*");
 
-        hdn_txt_person_id.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        hdn_txt_person_id.setEnabled(false);
-        hdn_txt_person_id.setMinimumSize(new java.awt.Dimension(80, 32));
-        hdn_txt_person_id.setPreferredSize(new java.awt.Dimension(0, 0));
-
         javax.swing.GroupLayout panel_customer_inputLayout = new javax.swing.GroupLayout(panel_customer_input);
         panel_customer_input.setLayout(panel_customer_inputLayout);
         panel_customer_inputLayout.setHorizontalGroup(
@@ -436,45 +406,41 @@ public class CustomerModal extends javax.swing.JDialog {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(lbl_last_name))
                             .addGroup(panel_customer_inputLayout.createSequentialGroup()
-                                .addGroup(panel_customer_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(hdn_txt_customer_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(lbl_first_name_star))
+                                .addComponent(lbl_first_name_star)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(lbl_first_name)))
                         .addGroup(panel_customer_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panel_customer_inputLayout.createSequentialGroup()
+                                .addGap(13, 13, 13)
+                                .addComponent(txt_first_name, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(panel_customer_inputLayout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(panel_customer_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(txt_last_name, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)
+                                .addGroup(panel_customer_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txt_last_name, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addGroup(panel_customer_inputLayout.createSequentialGroup()
-                                        .addComponent(txt_contact, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(txt_contact, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(btn_international_number, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(btn_copy, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_customer_inputLayout.createSequentialGroup()
-                                .addGap(13, 13, 13)
-                                .addComponent(txt_first_name, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                        .addComponent(btn_copy, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                        .addContainerGap())
                     .addGroup(panel_customer_inputLayout.createSequentialGroup()
-                        .addComponent(lbl_contact_star)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lbl_contact))
-                    .addGroup(panel_customer_inputLayout.createSequentialGroup()
-                        .addComponent(lbl_email)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txt_email, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))))
-            .addGroup(panel_customer_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(panel_customer_inputLayout.createSequentialGroup()
-                    .addGap(16, 16, 16)
-                    .addComponent(hdn_txt_person_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(552, Short.MAX_VALUE)))
+                        .addGroup(panel_customer_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panel_customer_inputLayout.createSequentialGroup()
+                                .addComponent(lbl_contact_star)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lbl_contact)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(panel_customer_inputLayout.createSequentialGroup()
+                                .addComponent(lbl_email)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txt_email, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGap(6, 6, 6))))
         );
         panel_customer_inputLayout.setVerticalGroup(
             panel_customer_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_customer_inputLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(hdn_txt_customer_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(12, 12, 12)
                 .addGroup(panel_customer_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbl_first_name)
                     .addComponent(txt_first_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -484,25 +450,19 @@ public class CustomerModal extends javax.swing.JDialog {
                     .addComponent(lbl_last_name)
                     .addComponent(lbl_last_name_star)
                     .addComponent(txt_last_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panel_customer_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGap(7, 7, 7)
+                .addGroup(panel_customer_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panel_customer_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(lbl_contact_star)
                         .addComponent(lbl_contact)
                         .addComponent(txt_contact, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(panel_customer_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(btn_international_number, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btn_copy, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(7, 7, 7)
+                    .addComponent(btn_international_number, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btn_copy, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_customer_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbl_email)
                     .addComponent(txt_email, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
-            .addGroup(panel_customer_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(panel_customer_inputLayout.createSequentialGroup()
-                    .addGap(16, 16, 16)
-                    .addComponent(hdn_txt_person_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(122, Short.MAX_VALUE)))
         );
 
         panel_customer_buttons.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -722,8 +682,6 @@ public class CustomerModal extends javax.swing.JDialog {
     private javax.swing.JButton btn_international_number;
     private javax.swing.JButton btn_select;
     private javax.swing.JButton btn_update;
-    private javax.swing.JTextField hdn_txt_customer_id;
-    private javax.swing.JTextField hdn_txt_person_id;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lbl_contact;
     private javax.swing.JLabel lbl_contact_star;

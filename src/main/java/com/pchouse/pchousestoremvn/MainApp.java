@@ -1,14 +1,19 @@
 package com.pchouse.pchousestoremvn;
 
 import com.formdev.flatlaf.FlatDarkLaf;
+import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.views.LoginView;
+import com.pchouse.pchousestoremvn.views.MenuViewTest;
 
 import javax.swing.*;
 
 public class MainApp {
 
     private static JFrame janelaAtual;
-
+    
+    public void testMethod() {
+        
+    }
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(new FlatDarkLaf());
@@ -27,4 +32,5 @@ public class MainApp {
         janelaAtual = new LoginView(); // Pode ser qualquer JFrame: LoginView, MainMenu, etc.
         janelaAtual.setVisible(true);
     }
+
 }

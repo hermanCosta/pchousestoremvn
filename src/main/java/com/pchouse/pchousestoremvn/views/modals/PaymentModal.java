@@ -2,8 +2,6 @@ package com.pchouse.pchousestoremvn.views.modals;
 
 import com.pchouse.pchousestoremvn.common.CommonConstant;
 import com.pchouse.pchousestoremvn.common.CommonExtension;
-import com.pchouse.pchousestoremvn.controllers.ServiceOrderPaymentController;
-import com.pchouse.pchousestoremvn.controllers.SalePaymentController;
 import com.pchouse.pchousestoremvn.enums.PayMethod;
 import static com.pchouse.pchousestoremvn.enums.PayMethod.CARD;
 import static com.pchouse.pchousestoremvn.enums.PayMethod.CASH;
@@ -12,6 +10,8 @@ import com.pchouse.pchousestoremvn.models.Sale;
 import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 
@@ -19,20 +19,15 @@ public class PaymentModal extends javax.swing.JDialog {
 
     private ServiceOrder _serviceOrderModel;
     private Sale _saleModel;
-    private final ServiceOrderPaymentController _orderPaymentController;
-    private final SalePaymentController _salePaymentController;
-    private ServiceOrderPayment _orderPayment;
-    private SalePayment _salePayment;
+    private List<ServiceOrderPayment> _serviceOrderPayments = new ArrayList<>();
+    private List<SalePayment> salePayments = new ArrayList<>();
     private String _amountToPay;
-    private boolean paymentSuccessful = false;
 
     public PaymentModal(ServiceOrder serviceOrder, String amountToPay, java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         initListeners();
 
-        this._orderPaymentController = new ServiceOrderPaymentController();
-        this._salePaymentController = new SalePaymentController();
         this._serviceOrderModel = serviceOrder;
         this._amountToPay = amountToPay;
 
@@ -44,8 +39,6 @@ public class PaymentModal extends javax.swing.JDialog {
         initComponents();
         initListeners();
 
-        this._orderPaymentController = new ServiceOrderPaymentController();
-        this._salePaymentController = new SalePaymentController();
         this._saleModel = sale;
         this._amountToPay = amountToPay;
 
@@ -90,12 +83,12 @@ public class PaymentModal extends javax.swing.JDialog {
         });
     }
 
-    public ServiceOrderPayment getOrderPayment() {
-        return this._orderPayment;
+    public List<SalePayment> getSalePayments() {
+        return this.salePayments; // a list populated when payment is confirmed
     }
 
-    public SalePayment getSalePayment() {
-        return this._salePayment;
+    public List<ServiceOrderPayment> getServiceOrderPayments() {
+        return this._serviceOrderPayments;
     }
 
     private void loadOrderPaymentFields(long id, String amount) {
@@ -160,28 +153,72 @@ public class PaymentModal extends javax.swing.JDialog {
         lbl_total_paid_amount.setText(String.format("%.2f", totalPaid));
         lbl_change_value.setText(String.format("%.2f", changeAmount));
 
+        // Clear previous payments if any
+        salePayments.clear();
+        _serviceOrderPayments.clear();
+
         if (_saleModel != null) {
-            _salePayment = new SalePayment(
-                    _saleModel,
-                    selectedPayMethod,
-                    amountToPay,
-                    totalPaid,
-                    cardAmount,
-                    cashAmount,
-                    changeAmount,
-                    _saleModel.getCreated()
-            );
+            switch (selectedPayMethod) {
+                case CARD ->
+                    salePayments.add(new SalePayment(
+                            _saleModel, null, CARD,
+                            amountToPay, totalPaid,
+                            cardAmount, 0.0, changeAmount,
+                            _saleModel.getCreated()
+                    ));
+                case CASH ->
+                    salePayments.add(new SalePayment(
+                            _saleModel, null, CASH,
+                            amountToPay, totalPaid,
+                            0.0, cashAmount, changeAmount,
+                            _saleModel.getCreated()
+                    ));
+                case COMBINE -> {
+                    salePayments.add(new SalePayment(
+                            _saleModel, null, CARD,
+                            cardAmount, cardAmount,
+                            cardAmount, 0.0, 0.0,
+                            _saleModel.getCreated()
+                    ));
+                    salePayments.add(new SalePayment(
+                            _saleModel, null, CASH,
+                            cashAmount, cashAmount,
+                            0.0, cashAmount, 0.0,
+                            _saleModel.getCreated()
+                    ));
+                }
+            }
         } else if (_serviceOrderModel != null) {
-            _orderPayment = new ServiceOrderPayment(
-                    _serviceOrderModel,
-                    selectedPayMethod,
-                    amountToPay,
-                    totalPaid,
-                    cardAmount,
-                    cashAmount,
-                    changeAmount,
-                    _serviceOrderModel.getCreated()
-            );
+            switch (selectedPayMethod) {
+                case CARD ->
+                    _serviceOrderPayments.add(new ServiceOrderPayment(
+                            _serviceOrderModel, null, CARD,
+                            amountToPay, totalPaid,
+                            cardAmount, 0.0, changeAmount,
+                            _serviceOrderModel.getCreated()
+                    ));
+                case CASH ->
+                    _serviceOrderPayments.add(new ServiceOrderPayment(
+                            _serviceOrderModel, null, CASH,
+                            amountToPay, totalPaid,
+                            0.0, cashAmount, changeAmount,
+                            _serviceOrderModel.getCreated()
+                    ));
+                case COMBINE -> {
+                    _serviceOrderPayments.add(new ServiceOrderPayment(
+                            _serviceOrderModel, null, CARD,
+                            cardAmount, cardAmount,
+                            cardAmount, 0.0, 0.0,
+                            _serviceOrderModel.getCreated()
+                    ));
+                    _serviceOrderPayments.add(new ServiceOrderPayment(
+                            _serviceOrderModel, null, CASH,
+                            cashAmount, cashAmount,
+                            0.0, cashAmount, 0.0,
+                            _serviceOrderModel.getCreated()
+                    ));
+                }
+            }
         } else {
             JOptionPane.showMessageDialog(this, "No sale or service order selected.");
             return false;
@@ -467,53 +504,21 @@ public class PaymentModal extends javax.swing.JDialog {
 
     private void btn_payActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_payActionPerformed
         if (!confirmPayment()) {
-            // If confirmation failed, return early, do NOT close modal
-            return;
+            return; // early exit if confirm failed
         }
 
-        // Prepare the payment data in memory
-        ServiceOrderPayment addOrderPayment = getOrderPayment();
-        SalePayment addSalePayment = getSalePayment();
-
-        if (addOrderPayment != null) {
-            this._orderPayment = addOrderPayment;  // Save to field to retrieve later
-            this._salePayment = null;               // Clear sale payment if any
-            this.dispose();                        // Close modal
-        } else if (addSalePayment != null) {
-            this._salePayment = addSalePayment;
-            this._orderPayment = null;
+        if (!_serviceOrderPayments.isEmpty()) {
+            // Save list of service order payments
+            // For example: pass this list back to caller
+            this._serviceOrderPayments = new ArrayList<>(_serviceOrderPayments);
+            this.dispose();
+        } else if (!salePayments.isEmpty()) {
+            // Save list of sale payments
+            this.salePayments = new ArrayList<>(salePayments);
             this.dispose();
         } else {
             JOptionPane.showMessageDialog(this, "Invalid payment data", "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-//        confirmPayment();
-//
-//        // Tenta obter o pagamento de service ordem
-//        ServiceOrderPayment addOrderPayment = getOrderPayment();
-//
-//        // Tenta obter o pagamento de venda
-//        SalePayment addSalePayment = getSalePayment();
-//
-//        if (addOrderPayment != null) {
-//            long idOrderPaymentAdded = _orderPaymentController.addOrderPayment(addOrderPayment);
-//            if (idOrderPaymentAdded > 0) {
-//                addOrderPayment.setIdOrderPayment(idOrderPaymentAdded);
-//                this._orderPayment = addOrderPayment;
-//                this.dispose();
-//            } else {
-//                JOptionPane.showMessageDialog(this, CommonConstant.ERROR_ORDER_PAYMENT, null, JOptionPane.ERROR_MESSAGE);
-//            }
-//        } else if (addSalePayment != null) {
-//            long idSalePaymentAdded = _salePaymentController.addOrderPayment(addSalePayment);
-//            if (idSalePaymentAdded > 0) {
-//                addSalePayment.setIdSalePayment(idSalePaymentAdded);
-//                this._salePayment = addSalePayment;
-//                this.dispose();
-//            } else {
-//                JOptionPane.showMessageDialog(this, CommonConstant.ERROR_ORDER_PAYMENT, null, JOptionPane.ERROR_MESSAGE);
-//            }
-//        }
     }//GEN-LAST:event_btn_payActionPerformed
 
     private void btn_cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelActionPerformed

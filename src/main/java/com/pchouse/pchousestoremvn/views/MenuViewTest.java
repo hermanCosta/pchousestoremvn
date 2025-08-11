@@ -17,13 +17,12 @@ public class MenuViewTest extends JFrame {
     private JDesktopPane desktopPane;
     private JPanel sidePanel;
     private JLabel lblShopName;
-    private JLabel lblShopAddress;
-    private JLabel lblShopTel;
     private JLabel lblTimeStamp;
+    private static JFrame jFrameWindow;
     Company _company;
 
     public MenuViewTest(Company company) {
-        setTitle("pcHouseStore - Main Menu");
+        setTitle("PC House Store - Main Menu");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(1280, 720);
         setLocationRelativeTo(null);
@@ -161,18 +160,19 @@ public class MenuViewTest extends JFrame {
         setJMenuBar(menuBar);
 
         if (isDevMode()) {
-            JButton btnReloadUI = new JButton("⟳ Recarregar UI");
+            JButton btnReloadUI = new JButton("Reload UI");
             btnReloadUI.setAlignmentX(Component.CENTER_ALIGNMENT);
             btnReloadUI.setFocusable(false);
             btnReloadUI.setBackground(new Color(200, 80, 80));
             btnReloadUI.setForeground(Color.WHITE);
             btnReloadUI.setFont(new Font("SansSerif", Font.BOLD, 14));
-            btnReloadUI.setMaximumSize(new Dimension(180, 40));
+            btnReloadUI.setMaximumSize(new Dimension(150, 35));
             btnReloadUI.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
             btnReloadUI.addActionListener(e -> {
                 this.dispose();
-                com.pchouse.pchousestoremvn.MainApp.carregarTelaInicial(); // Recarrega toda a aplicação
+                reloadMenuView();
+                //com.pchouse.pchousestoremvn.MainApp.carregarTelaInicial();
             });
 
             sidePanel.add(Box.createVerticalStrut(30)); // espaço antes do botão
@@ -251,11 +251,19 @@ public class MenuViewTest extends JFrame {
     }
 
     private void menuItemOrdersActionPerformed(ActionEvent evt) {
-        //openInternalFrame(new OrderListView());
         openInternalFrame(new OrderSaleListView());
     }
 
     private boolean isDevMode() {
         return Boolean.getBoolean("devMode");
+    }
+    
+    public static void reloadMenuView() {
+        if (jFrameWindow != null) {
+            jFrameWindow.dispose();  // Fecha a janela anterior se existir
+        }
+
+        jFrameWindow = new MenuViewTest(CommonSetting.COMPANY);
+        jFrameWindow.setVisible(true);
     }
 }

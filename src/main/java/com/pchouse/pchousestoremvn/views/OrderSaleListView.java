@@ -9,12 +9,14 @@ import com.pchouse.pchousestoremvn.controllers.DepositController;
 import com.pchouse.pchousestoremvn.controllers.OrderNoteController;
 import com.pchouse.pchousestoremvn.controllers.ServiceOrderController;
 import com.pchouse.pchousestoremvn.controllers.SaleController;
+import com.pchouse.pchousestoremvn.controllers.SalePaymentController;
 import com.pchouse.pchousestoremvn.controllers.SaleProdServController;
 import com.pchouse.pchousestoremvn.controllers.ServiceOrderFaultController;
 import com.pchouse.pchousestoremvn.controllers.ServiceOrderProdServController;
 import com.pchouse.pchousestoremvn.enums.OrderStatus;
 import com.pchouse.pchousestoremvn.models.Deposit;
 import com.pchouse.pchousestoremvn.models.Sale;
+import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.models.SaleProdServ;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderFault;
@@ -37,6 +39,7 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
     private final ServiceOrderProdServController _serviceOrderProdServController;
     private final SaleController _saleController;
     private final SaleProdServController _saleProdServController;
+    private final SalePaymentController _salePaymentController;
     private final DefaultTableModel _dtmOrder;
     private final DefaultTableModel _dtmSale;
 
@@ -50,6 +53,7 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
         this._serviceOrderController = new ServiceOrderController();
         this._saleController = new SaleController();
         this._saleProdServController = new SaleProdServController();
+        this._salePaymentController = new SalePaymentController();
         this._dtmOrder = (DefaultTableModel) this.table_view_order_list.getModel();
         this._dtmSale = (DefaultTableModel) this.table_view_sale_list.getModel();
 
@@ -202,8 +206,9 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
                 Sale saleModel = _saleController.getItemSale(saleId);
                 List<SaleProdServ> listSaleProdServ = _saleProdServController.getSaleProdServ(saleModel);
                 List<Deposit> listSaleDeposit = _orderDepositController.getSaleDeposit(saleModel);
+                List<SalePayment> salePayments = _salePaymentController.getSalePayments(saleModel);
 
-                CreatedSaleView createdSaleView = new CreatedSaleView(saleModel, listSaleProdServ, listSaleDeposit);
+                CreatedSaleView createdSaleView = new CreatedSaleView(saleModel, listSaleProdServ, listSaleDeposit, salePayments);
                 openInternalFrame(createdSaleView, "Sale: " + saleId);
 
             } catch (Exception e) {

@@ -30,6 +30,9 @@ public class SalePayment implements Serializable {
     @JoinColumn(name = "ID_SALE", referencedColumnName = "ID_SALE")
     private Sale sale;
 
+    @JoinColumn(name = "ID_DEPOSIT", referencedColumnName = "ID_DEPOSIT")
+    private Deposit deposit;
+    
     @Enumerated(EnumType.STRING)
     @Column(name = "PAY_METHOD")
     private PayMethod payMethod; 
@@ -56,8 +59,9 @@ public class SalePayment implements Serializable {
     public SalePayment() {
     }
 
-    public SalePayment(Sale sale, PayMethod payMethod, double amountDue, double amountPaid, Double cardAmount, Double cashAmount, double changeAmount, Date dtTransaction) {
+    public SalePayment(Sale sale, Deposit deposit, PayMethod payMethod, double amountDue, double amountPaid, Double cardAmount, Double cashAmount, double changeAmount, Date dtTransaction) {
         this.sale = sale;
+        this.deposit = deposit;
         this.payMethod = payMethod;
         this.amountDue = amountDue;
         this.amountPaid = (cashAmount != null ? cashAmount : 0) + (cardAmount != null ? cardAmount : 0);
@@ -83,6 +87,14 @@ public class SalePayment implements Serializable {
 
     public void setSale(Sale sale) {
         this.sale = sale;
+    }
+
+    public Deposit getDeposit() {
+        return deposit;
+    }
+
+    public void setDeposit(Deposit deposit) {
+        this.deposit = deposit;
     }
 
     public PayMethod getPayMethod() {

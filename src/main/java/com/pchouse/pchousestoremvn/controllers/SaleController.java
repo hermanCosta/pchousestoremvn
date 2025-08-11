@@ -84,12 +84,12 @@ public class SaleController {
     public long addOrderSale(
         Sale sale,
         List<SaleProdServ> items,
-        SalePayment payment,
+        List<SalePayment> payments,
         Deposit deposit,
         OrderNote note
     ) throws BusinessException {
         try {
-            return SALE_DAO.addOrderSaleDAO(sale, items, payment, deposit, note);
+            return SALE_DAO.addOrderSaleDAO(sale, items, payments, deposit, note);
         } catch (Exception e) {
             throw new BusinessException("Failed to add sale with payment", e);
         }

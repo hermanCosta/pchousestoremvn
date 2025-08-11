@@ -190,7 +190,7 @@ public class SaleDAO {
     public long addOrderSaleDAO(
             Sale sale,
             List<SaleProdServ> items,
-            SalePayment payment,
+            List<SalePayment> payments,
             Deposit deposit,
             OrderNote note) throws Exception {
 
@@ -241,16 +241,10 @@ public class SaleDAO {
                 }
             }
 
-            // Persist SalePayment
-            if (payment != null) {
-                payment.setSale(sale);
-                em.persist(payment);
-            }
-
             // Persist Deposit
             if (deposit != null) {
                 deposit.setSale(sale);
-                deposit.setSalePayment(payment);
+                //deposit.setSalePayment(payment);
 
                 // Reattach Employee for Deposit
                 if (deposit.getEmployee() != null) {
@@ -261,6 +255,16 @@ public class SaleDAO {
                 em.persist(deposit);
             }
 
+                        // Persist SalePayment
+            if (payments != null) {
+
+                for (SalePayment payment : payments) {
+                    payment.setDeposit(deposit);
+                    payment.setSale(sale);
+                    em.persist(payment);
+                }
+            }
+            
             // Persist OrderNote
             if (note != null) {
                 note.setSale(sale);

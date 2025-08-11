@@ -15,6 +15,7 @@ import javax.swing.table.DefaultTableModel;
 
 public class RefurbCustomView extends javax.swing.JInternalFrame {
 
+    private long hdnRefurbId;
     private final DefaultTableModel _dtmRefurb;
     private final RefurbController _refurbController;
     private List<Refurb> _listRefurb;
@@ -67,7 +68,7 @@ public class RefurbCustomView extends javax.swing.JInternalFrame {
                 || this.txt_model.getText().trim().isEmpty()
                 || this.txt_price.getText().trim().isEmpty()) {
 
-             JOptionPane.showMessageDialog(this, CommonConstant.WARN_EMPTY_FIELDS, this.getTitle(), JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, CommonConstant.WARN_EMPTY_FIELDS, this.getTitle(), JOptionPane.WARNING_MESSAGE);
             return getRefurb;
 
         } else if (!validateCustomFields(this.lbl_custom_1, this.txt_custom_1)
@@ -103,7 +104,7 @@ public class RefurbCustomView extends javax.swing.JInternalFrame {
                     CommonExtension.joinCustomFields(this.lbl_custom_6, this.txt_custom_6),
                     CommonSetting.COMPANY);
 
-            int idRefurb = CommonExtension.setIdExtension(this.hdn_txt_refurb_id);
+            long idRefurb = hdnRefurbId;
             getRefurb.setIdRefurb(idRefurb);
 
             return getRefurb;
@@ -111,7 +112,7 @@ public class RefurbCustomView extends javax.swing.JInternalFrame {
     }
 
     private void setRefurbFields(Refurb refurbProd) {
-        this.hdn_txt_refurb_id.setText(String.valueOf(refurbProd.getIdRefurb()));
+        this.hdnRefurbId = refurbProd.getIdRefurb();
         this.txt_category.setText(refurbProd.getCategory());
         this.txt_brand.setText(refurbProd.getBrand());
         this.txt_model.setText(refurbProd.getModel());
@@ -223,7 +224,7 @@ public class RefurbCustomView extends javax.swing.JInternalFrame {
     }
 
     private void clearPanelFields() {
-        this.hdn_txt_refurb_id.setText("");
+        this.hdnRefurbId = 0;
         this.txt_category.setText("");
         this.txt_brand.setText("");
         this.txt_model.setText("");
@@ -277,7 +278,6 @@ public class RefurbCustomView extends javax.swing.JInternalFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         table_view_refurb = new javax.swing.JTable();
         panel_refurb_basic_info = new javax.swing.JPanel();
-        hdn_txt_refurb_id = new javax.swing.JTextField();
         lbl_brand_star = new javax.swing.JLabel();
         lbl_brand = new javax.swing.JLabel();
         txt_brand = new javax.swing.JTextField();
@@ -394,12 +394,6 @@ public class RefurbCustomView extends javax.swing.JInternalFrame {
         panel_refurb_basic_info.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         panel_refurb_basic_info.setPreferredSize(new java.awt.Dimension(275, 236));
         panel_refurb_basic_info.setVerifyInputWhenFocusTarget(false);
-
-        hdn_txt_refurb_id.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        hdn_txt_refurb_id.setEnabled(false);
-        hdn_txt_refurb_id.setMinimumSize(new java.awt.Dimension(12, 20));
-        hdn_txt_refurb_id.setPreferredSize(new java.awt.Dimension(0, 0));
-        hdn_txt_refurb_id.setRequestFocusEnabled(false);
 
         lbl_brand_star.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
         lbl_brand_star.setForeground(java.awt.Color.red);
@@ -526,21 +520,17 @@ public class RefurbCustomView extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txt_brand, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(panel_refurb_basic_infoLayout.createSequentialGroup()
-                        .addGroup(panel_refurb_basic_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(hdn_txt_refurb_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(panel_refurb_basic_infoLayout.createSequentialGroup()
-                                .addComponent(lbl_category_star)
-                                .addGap(5, 5, 5)
-                                .addComponent(lbl_category)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txt_category, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(lbl_category_star)
+                        .addGap(5, 5, 5)
+                        .addComponent(lbl_category)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txt_category, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 3, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panel_refurb_basic_infoLayout.setVerticalGroup(
             panel_refurb_basic_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_refurb_basic_infoLayout.createSequentialGroup()
-                .addComponent(hdn_txt_refurb_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(8, 8, 8)
                 .addGroup(panel_refurb_basic_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txt_category, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -806,7 +796,7 @@ public class RefurbCustomView extends javax.swing.JInternalFrame {
         panel_refurb_label.setMaximumSize(new java.awt.Dimension(555, 200));
         panel_refurb_label.setPreferredSize(new java.awt.Dimension(430, 220));
 
-        lbl_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/app_icon.png"))); // NOI18N
+        lbl_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/logo_slogan_small.png"))); // NOI18N
 
         txt_bran_mod_scr_label.setFont(new java.awt.Font("sansserif", 1, 15)); // NOI18N
         txt_bran_mod_scr_label.setHorizontalAlignment(javax.swing.JTextField.CENTER);
@@ -899,7 +889,7 @@ public class RefurbCustomView extends javax.swing.JInternalFrame {
             .addGroup(panel_label_designLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(panel_refurb_label, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(13, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout panel_refurbsLayout = new javax.swing.GroupLayout(panel_refurbs);
@@ -1019,12 +1009,12 @@ public class RefurbCustomView extends javax.swing.JInternalFrame {
 
         if (updateRefurb != null) {
             int confirmEditing = JOptionPane.showConfirmDialog(this, CommonConstant.CONFIRM_DELETE, this.getTitle(), JOptionPane.YES_NO_OPTION);
-            
+
             if (confirmEditing == 0) {
                 boolean isUpdated = this._refurbController.updateRefurbProduct(updateRefurb);
 
                 if (isUpdated) {
-                    
+
                     getItemRefurbProd(updateRefurb.getIdRefurb());
                     clearPanelFields();
                     clearPanelLabel();
@@ -1042,7 +1032,7 @@ public class RefurbCustomView extends javax.swing.JInternalFrame {
             long idRefurbAdded = this._refurbController.addRefurbProduct(addRefurbProd);
 
             if (idRefurbAdded > 0) {
-                
+
                 getItemRefurbProd(idRefurbAdded);
                 clearPanelFields();
                 clearPanelLabel();
@@ -1194,7 +1184,6 @@ public class RefurbCustomView extends javax.swing.JInternalFrame {
     private javax.swing.JButton btn_update;
     private javax.swing.JEditorPane editor_pane_label;
     private javax.swing.JEditorPane editor_pane_refurb_notes;
-    private javax.swing.JTextField hdn_txt_refurb_id;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lbl_brand;

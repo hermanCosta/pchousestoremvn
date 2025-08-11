@@ -5,14 +5,11 @@ import com.pchouse.pchousestoremvn.common.CommonExtension;
 import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.common.CommonStrings;
 import com.pchouse.pchousestoremvn.controllers.CustomerController;
-import com.pchouse.pchousestoremvn.controllers.DepositController;
 import com.pchouse.pchousestoremvn.controllers.DeviceController;
 import com.pchouse.pchousestoremvn.controllers.EmployeeController;
 import com.pchouse.pchousestoremvn.controllers.FaultController;
 import com.pchouse.pchousestoremvn.controllers.ServiceOrderController;
-import com.pchouse.pchousestoremvn.controllers.ServiceOrderFaultController;
 import com.pchouse.pchousestoremvn.controllers.OrderNoteController;
-import com.pchouse.pchousestoremvn.controllers.ServiceOrderProdServController;
 import com.pchouse.pchousestoremvn.controllers.ProductServiceController;
 import com.pchouse.pchousestoremvn.enums.OrderStatus;
 import com.pchouse.pchousestoremvn.exception.BusinessException;
@@ -51,28 +48,26 @@ import javax.swing.text.MaskFormatter;
 
 public class CreatedOrderView extends javax.swing.JInternalFrame {
 
+    private long hdnCustomerId;
     private List<ProductService> _listProdServ;
     private List<Fault> _listFault;
+    private final ServiceOrder _serviceOrderModel;
+    private final List<ServiceOrderFault> _listServiceOrderFault;
+    private final List<ServiceOrderProdServ> _listServiceOrderProdServ;
+    private final List<Deposit> _listOrderDeposit;
     private final ServiceOrderController _orderController;
     private final ProductServiceController _productServiceController;
     private final FaultController _faultController;
     private final CustomerController _customerController;
-    private final DepositController _depositController;
     private final EmployeeController _employeeController;
-    private final ServiceOrderProdServController _orderProdServController;
-    private final ServiceOrderFaultController _orderFaultController;
     private final OrderNoteController _orderNoteController;
     private final DeviceController _deviceController;
     private final DefaultTableModel _dtmProdServ;
     private final DefaultTableModel _dtmFault;
     private final DefaultListModel _defaultListModelProdServ;
     private final DefaultListModel _defaultListModelFault;
-    Frame _parentFrame = JOptionPane.getFrameForComponent(this);
 
-    private ServiceOrder _serviceOrderModel;
-    private List<ServiceOrderFault> _listServiceOrderFault;
-    private List<ServiceOrderProdServ> _listServiceOrderProdServ;
-    private List<Deposit> _listOrderDeposit;
+    Frame _parentFrame = JOptionPane.getFrameForComponent(this);
 
     public CreatedOrderView(ServiceOrder orderModel, List<ServiceOrderFault> listOrderFault, List<ServiceOrderProdServ> listOrderProdServ, List<Deposit> listOrderDeposit) {
         initComponents();
@@ -89,10 +84,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
         this._productServiceController = new ProductServiceController();
         this._faultController = new FaultController();
         this._customerController = new CustomerController();
-        this._depositController = new DepositController();
         this._employeeController = new EmployeeController();
-        this._orderProdServController = new ServiceOrderProdServController();
-        this._orderFaultController = new ServiceOrderFaultController();
         this._orderNoteController = new OrderNoteController();
         this._deviceController = new DeviceController();
         this._dtmProdServ = (DefaultTableModel) this.table_view_products.getModel();
@@ -167,7 +159,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
     public void setCustomerFields(Customer customer) {
         if (customer != null) {
             this.txt_contact.setFormatterFactory(null);
-            this.hdn_txt_customer_id.setText(String.valueOf(customer.getIdCustomer()));
+            this.hdnCustomerId = customer.getIdCustomer();
             this.txt_first_name.setText(customer.getPerson().getFirstName());
             this.txt_last_name.setText(customer.getPerson().getLastName());
             this.txt_contact.setText(customer.getPerson().getContactNo());
@@ -239,7 +231,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
             employee = _employeeController.getEmployeeByPass(password);
             if (employee != null) {
 
-                int idCustomer = CommonExtension.setIdExtension(this.hdn_txt_customer_id);
+                long idCustomer = hdnCustomerId;
 
                 if (idCustomer > 0) {
                     isNewCustomer = false;
@@ -253,7 +245,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
                         JOptionPane.showMessageDialog(this, CommonConstant.WARN_CUSTOMER_MATCHING, this.getTitle(), JOptionPane.WARNING_MESSAGE);
                         CustomerModal customerModal = new CustomerModal(this, new MainMenuView(CommonSetting.COMPANY), true, customer);
                         customerModal.setVisible(true);
-                        this.hdn_txt_customer_id.setText("");
+                        this.hdnCustomerId = 0;
                         return getOrderDetails;
                     }
                 }
@@ -467,7 +459,6 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
         lbl_bad_sectors_star = new javax.swing.JLabel();
         lbl_bad_sectors = new javax.swing.JLabel();
         lbl_dev_brand_star = new javax.swing.JLabel();
-        hdn_txt_customer_id = new javax.swing.JTextField();
         btn_international_number1 = new javax.swing.JButton();
         spn_bad_sectors = new javax.swing.JSpinner();
         panel_total_amount = new javax.swing.JPanel();
@@ -644,11 +635,6 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
         lbl_dev_brand_star.setForeground(java.awt.Color.red);
         lbl_dev_brand_star.setText("*");
 
-        hdn_txt_customer_id.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        hdn_txt_customer_id.setEnabled(false);
-        hdn_txt_customer_id.setMinimumSize(new java.awt.Dimension(80, 32));
-        hdn_txt_customer_id.setPreferredSize(new java.awt.Dimension(0, 0));
-
         btn_international_number1.setBackground(new java.awt.Color(0, 0, 0));
         btn_international_number1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_international_number.png"))); // NOI18N
         btn_international_number1.setPreferredSize(new java.awt.Dimension(35, 25));
@@ -729,11 +715,6 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
                                 .addComponent(lbl_first_name)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(panel_input_detailLayout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(hdn_txt_customer_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(437, Short.MAX_VALUE)))
         );
         panel_input_detailLayout.setVerticalGroup(
             panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -788,16 +769,11 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
                             .addComponent(lbl_bad_sectors_star)
                             .addComponent(spn_bad_sectors, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(7, 7, 7)
-                        .addComponent(scroll_pane_notes, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE))
+                        .addComponent(scroll_pane_notes, javax.swing.GroupLayout.DEFAULT_SIZE, 129, Short.MAX_VALUE))
                     .addGroup(panel_input_detailLayout.createSequentialGroup()
                         .addComponent(btn_international_number1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_input_detailLayout.createSequentialGroup()
-                    .addContainerGap(27, Short.MAX_VALUE)
-                    .addComponent(hdn_txt_customer_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(373, Short.MAX_VALUE)))
         );
 
         panel_total_amount.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -1204,7 +1180,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
                     updateOrder.setDevice(device);
                 }
 
-                ServiceOrderPayment payment = null;
+                List<ServiceOrderPayment> payments = null;
                 Deposit deposit = null;
                 OrderNote orderNote = null;
 
@@ -1212,18 +1188,17 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
                     PaymentModal paymentModal = new PaymentModal(updateOrder, this.txt_deposit.getText(), new MainMenuView(CommonSetting.COMPANY), true);
                     paymentModal.setVisible(true);
 
-                    payment = paymentModal.getOrderPayment();
+                    payments = paymentModal.getServiceOrderPayments();
 
                     deposit = new Deposit(updateOrder, updateOrder.getEmployee(),
                             Double.parseDouble(this.txt_deposit.getText()),
                             updateOrder.getCreated());
-                    deposit.setServiceOrderPayment(payment);
                 }
 
                 orderNote = new OrderNote(updateOrder, updateOrder.getEmployee(), CommonConstant.ORDER_UPDATED_NOTE, new Date());
 
                 boolean updated = this._orderController.updateServiceOrder(
-                        updateOrder, listOrderFault, listOrderProdServ, payment, deposit, orderNote);
+                        updateOrder, listOrderFault, listOrderProdServ, payments, deposit, orderNote);
 
                 if (updated) {
                     isUpdated = true;
@@ -1320,7 +1295,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txt_search_faultKeyReleased
 
     private void btn_seacrh_customerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_seacrh_customerActionPerformed
-        this.hdn_txt_customer_id.setText("");
+        this.hdnCustomerId = 0;
         CustomerModal customerModal = new CustomerModal(this, new MainMenuView(CommonSetting.COMPANY), true, null);
         customerModal.setVisible(true);
     }//GEN-LAST:event_btn_seacrh_customerActionPerformed
@@ -1549,7 +1524,6 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
     private void txt_depositKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_depositKeyReleased
         double totalPrice = CommonExtension.formatEuroToDouble(this.lbl_total_field.getText());
         if (!this.txt_deposit.getText().trim().isEmpty()) {
-            //double totalPrice = CommonExtension.formatEuroToDouble(this.lbl_total_field.getText());
             double depositPaid = CommonExtension.formatEuroToDouble(this.lbl_deposit_paid.getText());
             double deposit = Double.parseDouble(this.txt_deposit.getText());
 
@@ -1579,7 +1553,6 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
     private javax.swing.JButton btn_save_order;
     private javax.swing.JButton btn_seacrh_customer;
     private javax.swing.JEditorPane editor_pane_notes;
-    private javax.swing.JTextField hdn_txt_customer_id;
     private javax.swing.JLayeredPane layered_pane_list_fault;
     private javax.swing.JLayeredPane layered_pane_list_prod_serv;
     private javax.swing.JLabel lbl_auto_order_no;

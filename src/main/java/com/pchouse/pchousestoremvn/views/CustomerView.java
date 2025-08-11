@@ -1,7 +1,6 @@
 package com.pchouse.pchousestoremvn.views;
 
 import com.pchouse.pchousestoremvn.common.CommonConstant;
-import com.pchouse.pchousestoremvn.common.CommonExtension;
 import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.controllers.CustomerController;
 import com.pchouse.pchousestoremvn.controllers.PersonController;
@@ -25,6 +24,8 @@ import javax.swing.text.MaskFormatter;
 
 public class CustomerView extends javax.swing.JInternalFrame {
 
+    private long hdnCustomerId;
+    private long hdnPersonId;
     private final DefaultTableModel _dtmCustomer;
     private final CustomerController _customerController;
     private List<Customer> _listCustomer;
@@ -80,10 +81,10 @@ public class CustomerView extends javax.swing.JInternalFrame {
                     this.txt_contact.getText().replace("(", "").replace(")", "").replace("-", "").replace(" ", ""),
                     this.txt_email.getText().toLowerCase());
 
-            person.setIdPerson(CommonExtension.setIdExtension(this.hdn_txt_person_id));
+            person.setIdPerson(hdnPersonId);
             getCustomer = new Customer(person, CommonSetting.COMPANY);
 
-            int idCustomer = CommonExtension.setIdExtension(this.hdn_txt_customer_id);
+            long idCustomer = hdnCustomerId;
             getCustomer.setIdCustomer(idCustomer);
 
             return getCustomer;
@@ -144,8 +145,8 @@ public class CustomerView extends javax.swing.JInternalFrame {
 
     private void setCustomerFields(Customer pCustomer) {
         this.txt_contact.setFormatterFactory(null);
-        this.hdn_txt_customer_id.setText(String.valueOf(pCustomer.getIdCustomer()));
-        this.hdn_txt_person_id.setText(String.valueOf(pCustomer.getPerson().getIdPerson()));
+        this.hdnCustomerId = pCustomer.getIdCustomer();
+        this.hdnPersonId = pCustomer.getPerson().getIdPerson();
         this.txt_first_name.setText(pCustomer.getPerson().getFirstName());
         this.txt_last_name.setText(pCustomer.getPerson().getLastName());
         this.txt_contact.setText(pCustomer.getPerson().getContactNo());
@@ -153,8 +154,8 @@ public class CustomerView extends javax.swing.JInternalFrame {
     }
 
     private void clearFields() {
-        this.hdn_txt_customer_id.setText("");
-        this.hdn_txt_person_id.setText("");
+        this.hdnCustomerId = 0;
+        this.hdnPersonId = 0;
         this.txt_first_name.setText("");
         this.txt_last_name.setText("");
         this.txt_contact.setText("");

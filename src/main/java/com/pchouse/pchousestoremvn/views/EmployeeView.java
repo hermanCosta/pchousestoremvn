@@ -25,6 +25,8 @@ import javax.swing.text.MaskFormatter;
 
 public class EmployeeView extends javax.swing.JInternalFrame {
 
+    private long hdnEmployeeId;
+    private long hdnPersonId;
     private final DefaultTableModel _dtmEmployee;
     private final EmployeeController _employeeController;
     private List<Employee> _listEmployee;
@@ -91,11 +93,11 @@ public class EmployeeView extends javax.swing.JInternalFrame {
                     this.txt_contact.getText().replace("(", "").replace(")", "").replace("-", "").replace(" ", ""),
                     this.txt_email.getText().toLowerCase());
 
-            person.setIdPerson(CommonExtension.setIdExtension(this.hdn_txt_person_id));
+            person.setIdPerson(hdnPersonId);
 
             getEmployee = new Employee(person, this.txt_username.getText().toUpperCase(), this.combo_box_access_level.getSelectedItem().toString().toUpperCase());
 
-            getEmployee.setIdEmployee(CommonExtension.setIdExtension(this.hdn_txt_employee_id));
+            getEmployee.setIdEmployee(hdnEmployeeId);
             getEmployee.setPassword(CommonExtension.encryptPassword(this.txt_password));
 
             return getEmployee;
@@ -104,8 +106,8 @@ public class EmployeeView extends javax.swing.JInternalFrame {
 
     private void setEmployeeFields(Employee pEmployee) {
         this.txt_contact.setFormatterFactory(null);
-        this.hdn_txt_employee_id.setText(String.valueOf(pEmployee.getIdEmployee()));
-        this.hdn_txt_person_id.setText(String.valueOf(pEmployee.getPerson().getIdPerson()));
+        this.hdnEmployeeId = pEmployee.getIdEmployee();
+        this.hdnPersonId = pEmployee.getPerson().getIdPerson();
         this.txt_first_name.setText(pEmployee.getPerson().getFirstName());
         this.txt_last_name.setText(pEmployee.getPerson().getLastName());
         this.txt_contact.setText(pEmployee.getPerson().getContactNo());
@@ -172,8 +174,8 @@ public class EmployeeView extends javax.swing.JInternalFrame {
 
     private void clearFields() {
         this.txt_search_employee.setText("");
-        this.hdn_txt_employee_id.setText("");
-        this.hdn_txt_person_id.setText("");
+        this.hdnEmployeeId = 0;
+        this.hdnPersonId = 0;
         this.txt_first_name.setText("");
         this.txt_last_name.setText("");
         this.txt_contact.setText("");
@@ -250,7 +252,6 @@ public class EmployeeView extends javax.swing.JInternalFrame {
         txt_last_name = new javax.swing.JTextField();
         lbl_last_name = new javax.swing.JLabel();
         lbl_contact = new javax.swing.JLabel();
-        hdn_txt_employee_id = new javax.swing.JTextField();
         txt_first_name = new javax.swing.JTextField();
         btn_copy = new javax.swing.JButton();
         lbl_email = new javax.swing.JLabel();
@@ -270,7 +271,6 @@ public class EmployeeView extends javax.swing.JInternalFrame {
         combo_box_access_level = new javax.swing.JComboBox<>();
         txt_password = new javax.swing.JPasswordField();
         txt_confirm_pwd = new javax.swing.JPasswordField();
-        hdn_txt_person_id = new javax.swing.JTextField();
         panel_employee_buttons = new javax.swing.JPanel();
         btn_add = new javax.swing.JButton();
         btn_update = new javax.swing.JButton();
@@ -379,11 +379,6 @@ public class EmployeeView extends javax.swing.JInternalFrame {
         lbl_contact.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
         lbl_contact.setText("Contact No.");
 
-        hdn_txt_employee_id.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        hdn_txt_employee_id.setEnabled(false);
-        hdn_txt_employee_id.setMinimumSize(new java.awt.Dimension(80, 32));
-        hdn_txt_employee_id.setPreferredSize(new java.awt.Dimension(0, 0));
-
         txt_first_name.setMinimumSize(new java.awt.Dimension(80, 32));
         txt_first_name.setNextFocusableComponent(txt_last_name);
         txt_first_name.setPreferredSize(new java.awt.Dimension(300, 25));
@@ -458,11 +453,6 @@ public class EmployeeView extends javax.swing.JInternalFrame {
         txt_confirm_pwd.setNextFocusableComponent(combo_box_access_level);
         txt_confirm_pwd.setPreferredSize(new java.awt.Dimension(102, 25));
 
-        hdn_txt_person_id.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        hdn_txt_person_id.setEnabled(false);
-        hdn_txt_person_id.setMinimumSize(new java.awt.Dimension(80, 32));
-        hdn_txt_person_id.setPreferredSize(new java.awt.Dimension(0, 0));
-
         javax.swing.GroupLayout panel_employee_inputLayout = new javax.swing.GroupLayout(panel_employee_input);
         panel_employee_input.setLayout(panel_employee_inputLayout);
         panel_employee_inputLayout.setHorizontalGroup(
@@ -477,9 +467,7 @@ public class EmployeeView extends javax.swing.JInternalFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(lbl_last_name))
                             .addGroup(panel_employee_inputLayout.createSequentialGroup()
-                                .addGroup(panel_employee_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(hdn_txt_employee_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(lbl_first_name_star))
+                                .addComponent(lbl_first_name_star)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(lbl_first_name)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -530,20 +518,13 @@ public class EmployeeView extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(combo_box_access_level, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(panel_employee_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(panel_employee_inputLayout.createSequentialGroup()
-                    .addGap(16, 16, 16)
-                    .addComponent(hdn_txt_person_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(1000, Short.MAX_VALUE)))
         );
         panel_employee_inputLayout.setVerticalGroup(
             panel_employee_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_employee_inputLayout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(12, 12, 12)
                 .addGroup(panel_employee_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(panel_employee_inputLayout.createSequentialGroup()
-                        .addComponent(hdn_txt_employee_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panel_employee_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lbl_first_name)
                             .addComponent(txt_first_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -585,11 +566,6 @@ public class EmployeeView extends javax.swing.JInternalFrame {
                         .addComponent(lbl_access_level_star)
                         .addComponent(combo_box_access_level, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
-            .addGroup(panel_employee_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(panel_employee_inputLayout.createSequentialGroup()
-                    .addGap(16, 16, 16)
-                    .addComponent(hdn_txt_person_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(122, Short.MAX_VALUE)))
         );
 
         panel_employee_buttons.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -677,7 +653,7 @@ public class EmployeeView extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txt_search_employee, javax.swing.GroupLayout.DEFAULT_SIZE, 972, Short.MAX_VALUE))
                     .addComponent(panel_employee_buttons, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(panel_employee_input, javax.swing.GroupLayout.DEFAULT_SIZE, 1020, Short.MAX_VALUE)
+                    .addComponent(panel_employee_input, javax.swing.GroupLayout.DEFAULT_SIZE, 1010, Short.MAX_VALUE)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
@@ -703,14 +679,14 @@ public class EmployeeView extends javax.swing.JInternalFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(panel_employees, javax.swing.GroupLayout.DEFAULT_SIZE, 1036, Short.MAX_VALUE)
+                .addComponent(panel_employees, javax.swing.GroupLayout.DEFAULT_SIZE, 1026, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(panel_employees, javax.swing.GroupLayout.DEFAULT_SIZE, 616, Short.MAX_VALUE)
+                .addComponent(panel_employees, javax.swing.GroupLayout.DEFAULT_SIZE, 602, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -835,8 +811,6 @@ public class EmployeeView extends javax.swing.JInternalFrame {
     private javax.swing.JButton btn_international_number;
     private javax.swing.JButton btn_update;
     private javax.swing.JComboBox<String> combo_box_access_level;
-    private javax.swing.JTextField hdn_txt_employee_id;
-    private javax.swing.JTextField hdn_txt_person_id;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lbl_access_level;
     private javax.swing.JLabel lbl_access_level_star;

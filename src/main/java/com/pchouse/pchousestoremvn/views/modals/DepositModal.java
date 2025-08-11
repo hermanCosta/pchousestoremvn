@@ -3,10 +3,15 @@ package com.pchouse.pchousestoremvn.views.modals;
 import com.pchouse.pchousestoremvn.common.CommonExtension;
 import com.pchouse.pchousestoremvn.common.CommonStrings;
 import com.pchouse.pchousestoremvn.controllers.DepositController;
+import com.pchouse.pchousestoremvn.controllers.SalePaymentController;
+import com.pchouse.pchousestoremvn.controllers.ServiceOrderPaymentController;
 import com.pchouse.pchousestoremvn.enums.PayMethod;
 import com.pchouse.pchousestoremvn.models.Deposit;
 import com.pchouse.pchousestoremvn.models.Sale;
+import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
+import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -14,10 +19,14 @@ import javax.swing.table.DefaultTableModel;
 public class DepositModal extends javax.swing.JDialog {
 
     private final DepositController _depositController;
+    private final SalePaymentController _salePaymentController;
+    private final ServiceOrderPaymentController _serviceOrderPaymentController;
     private final DefaultTableModel _dtmOrderDeposit;
     private List<Deposit> _listOrderDeposit;
     private ServiceOrder _serviceOrderModel;
     private Sale _saleModel;
+    private List<SalePayment> _listSalePayments;
+    private List<ServiceOrderPayment> _listServiceOrderPayment;
 
     public DepositModal(ServiceOrder serviceOrderModel, java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -25,6 +34,8 @@ public class DepositModal extends javax.swing.JDialog {
 
         this._serviceOrderModel = serviceOrderModel;
         this._depositController = new DepositController();
+        this._salePaymentController = new SalePaymentController();
+        this._serviceOrderPaymentController = new ServiceOrderPaymentController();
         this._dtmOrderDeposit = (DefaultTableModel) this.table_view_deposits.getModel();
         loadOrderDepositListTable();
     }
@@ -35,50 +46,51 @@ public class DepositModal extends javax.swing.JDialog {
 
         this._saleModel = saleModel;
         this._depositController = new DepositController();
+        this._salePaymentController = new SalePaymentController();
+        this._serviceOrderPaymentController = new ServiceOrderPaymentController();
         this._dtmOrderDeposit = (DefaultTableModel) this.table_view_deposits.getModel();
         loadOrderDepositListTable();
     }
 
     private void loadOrderDepositListTable() {
         try {
-            long idOrderFormat = 0;
             if (_serviceOrderModel != null) {
                 this._listOrderDeposit = this._depositController.getOrderDeposit(_serviceOrderModel);
+                this._listServiceOrderPayment = this._serviceOrderPaymentController.getServiceOrderPayments(_serviceOrderModel);
                 this.lbl_order_deposit_id.setText(CommonStrings.formatOrderNumber(_serviceOrderModel.getIdServiceOrder()));
             } else if (_saleModel != null) {
                 this._listOrderDeposit = this._depositController.getSaleDeposit(_saleModel);
+                this._listSalePayments = _salePaymentController.getSalePayments(_saleModel);
                 this.lbl_order_deposit_id.setText(CommonStrings.formatOrderNumber(_saleModel.getIdSale()));
             }
 
-            if (_listOrderDeposit.size() > 0) {
+            double totalDeposit = 0;
+
+            if (this._listOrderDeposit != null && !_listOrderDeposit.isEmpty()) {
                 _dtmOrderDeposit.setRowCount(0);
-                double totalDeposit = 0;
 
-                if (this._listOrderDeposit != null) {
-                    for (Deposit depositItem : _listOrderDeposit) {
-                        PayMethod payMethod = null;
-                                if (_serviceOrderModel != null) {
-                                    payMethod = depositItem.getServiceOrderPayment().getPayMethod();
-                                    } else if (_saleModel != null){
-                                        payMethod = depositItem.getSalePayment().getPayMethod();
-                                    }
-                        
-                        _dtmOrderDeposit.addRow(
-                                new Object[]{
-                                    depositItem.getIdDeposit(),
-                                    CommonStrings.formatDateToString(depositItem.getCreated()),
-                                    CommonExtension.formatEuroCurrency(depositItem.getAmount()),
-                                    payMethod,
-                                    depositItem.getEmployee().getUsername()
-                                }
-                        );
+                for (Deposit depositItem : _listOrderDeposit) {
+                    String payMethodDisplay = "";
 
-                        totalDeposit += depositItem.getAmount();
+                    if (_serviceOrderModel != null) {
+                        payMethodDisplay = getPayMethodsForDepositServiceOrder(depositItem);
+                    } else if (_saleModel != null) {
+                        payMethodDisplay = getPayMethodsForDepositSale(depositItem);
                     }
-                }
 
-                this.lbl_total.setText(CommonExtension.formatEuroCurrency(totalDeposit));
+                    _dtmOrderDeposit.addRow(new Object[]{
+                        depositItem.getIdDeposit(),
+                        CommonStrings.formatDateToString(depositItem.getCreated()),
+                        CommonExtension.formatEuroCurrency(depositItem.getAmount()),
+                        payMethodDisplay,
+                        depositItem.getEmployee().getUsername()
+                    });
+
+                    totalDeposit += depositItem.getAmount();
+                }
             }
+
+            this.lbl_total.setText(CommonExtension.formatEuroCurrency(totalDeposit));
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(
@@ -88,6 +100,46 @@ public class DepositModal extends javax.swing.JDialog {
                     JOptionPane.ERROR_MESSAGE
             );
             e.printStackTrace();
+        }
+    }
+
+    private String getPayMethodsForDepositServiceOrder(Deposit depositItem) {
+        List<PayMethod> payMethodsForDeposit = new ArrayList<>();
+
+        for (ServiceOrderPayment sop : this._listServiceOrderPayment) {
+            if (sop.getServiceOrder().getIdServiceOrder() == depositItem.getServiceOrder().getIdServiceOrder()) {
+                if (!payMethodsForDeposit.contains(sop.getPayMethod())) {
+                    payMethodsForDeposit.add(sop.getPayMethod());
+                }
+            }
+        }
+
+        return formatPayMethods(payMethodsForDeposit);
+    }
+
+    private String getPayMethodsForDepositSale(Deposit depositItem) {
+        List<PayMethod> payMethodsForDeposit = new ArrayList<>();
+
+        for (SalePayment sp : this._listSalePayments) {
+            if (sp.getSale().getIdSale() == depositItem.getSale().getIdSale()) {
+                if (!payMethodsForDeposit.contains(sp.getPayMethod())) {
+                    payMethodsForDeposit.add(sp.getPayMethod());
+                }
+            }
+        }
+
+        return formatPayMethods(payMethodsForDeposit);
+    }
+
+    private String formatPayMethods(List<PayMethod> payMethods) {
+        if (payMethods.isEmpty()) {
+            return "Unknown";
+        } else if (payMethods.size() == 1) {
+            return payMethods.get(0).name();
+        } else {
+            return String.join(" | ", payMethods.stream()
+                    .map(Enum::name)
+                    .toList());
         }
     }
 
@@ -137,10 +189,10 @@ public class DepositModal extends javax.swing.JDialog {
             table_view_deposits.getColumnModel().getColumn(0).setMinWidth(0);
             table_view_deposits.getColumnModel().getColumn(0).setPreferredWidth(0);
             table_view_deposits.getColumnModel().getColumn(0).setMaxWidth(0);
-            table_view_deposits.getColumnModel().getColumn(1).setPreferredWidth(120);
+            table_view_deposits.getColumnModel().getColumn(1).setPreferredWidth(150);
             table_view_deposits.getColumnModel().getColumn(1).setMaxWidth(150);
-            table_view_deposits.getColumnModel().getColumn(2).setPreferredWidth(120);
-            table_view_deposits.getColumnModel().getColumn(2).setMaxWidth(120);
+            table_view_deposits.getColumnModel().getColumn(2).setPreferredWidth(100);
+            table_view_deposits.getColumnModel().getColumn(2).setMaxWidth(100);
             table_view_deposits.getColumnModel().getColumn(3).setPreferredWidth(80);
             table_view_deposits.getColumnModel().getColumn(3).setMaxWidth(100);
         }

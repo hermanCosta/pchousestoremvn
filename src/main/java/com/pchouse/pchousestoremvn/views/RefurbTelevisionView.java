@@ -15,6 +15,7 @@ import javax.swing.table.DefaultTableModel;
 
 public class RefurbTelevisionView extends javax.swing.JInternalFrame {
 
+    private long hdnRefurbId;
     private final DefaultTableModel _dtmRefurb;
     private final RefurbController _refurbController;
     private List<Refurb> _listRefurb;
@@ -102,7 +103,7 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
                     CommonExtension.joinCustomFields(this.lbl_custom_6, this.txt_custom_6),
                     CommonSetting.COMPANY);
 
-            int idRefurb = CommonExtension.setIdExtension(this.hdn_txt_refurb_id);
+            long idRefurb = hdnRefurbId;
             getRefurb.setIdRefurb(idRefurb);
 
             return getRefurb;
@@ -110,7 +111,7 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
     }
 
     private void setRefurbFields(Refurb refurbProd) {
-        this.hdn_txt_refurb_id.setText(String.valueOf(refurbProd.getIdRefurb()));
+        this.hdnRefurbId = refurbProd.getIdRefurb();
         this.txt_brand.setText(refurbProd.getBrand());
         this.txt_model.setText(refurbProd.getModel());
         this.txt_price.setText(CommonExtension.formatToPriceField(refurbProd.getPrice()));
@@ -220,7 +221,7 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
     }
 
     private void clearPanelFields() {
-        this.hdn_txt_refurb_id.setText("");
+        this.hdnRefurbId = 0;
         this.txt_brand.setText("");
         this.txt_model.setText("");
         this.txt_price.setText("");
@@ -274,7 +275,6 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         table_view_refurb = new javax.swing.JTable();
         panel_refurb_basic_info = new javax.swing.JPanel();
-        hdn_txt_refurb_id = new javax.swing.JTextField();
         lbl_brand_star = new javax.swing.JLabel();
         lbl_brand = new javax.swing.JLabel();
         txt_brand = new javax.swing.JTextField();
@@ -388,12 +388,6 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
         panel_refurb_basic_info.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         panel_refurb_basic_info.setPreferredSize(new java.awt.Dimension(275, 236));
         panel_refurb_basic_info.setVerifyInputWhenFocusTarget(false);
-
-        hdn_txt_refurb_id.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        hdn_txt_refurb_id.setEnabled(false);
-        hdn_txt_refurb_id.setMinimumSize(new java.awt.Dimension(12, 20));
-        hdn_txt_refurb_id.setPreferredSize(new java.awt.Dimension(0, 0));
-        hdn_txt_refurb_id.setRequestFocusEnabled(false);
 
         lbl_brand_star.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
         lbl_brand_star.setForeground(java.awt.Color.red);
@@ -510,9 +504,6 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txt_brand, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(panel_refurb_basic_infoLayout.createSequentialGroup()
-                        .addComponent(hdn_txt_refurb_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(panel_refurb_basic_infoLayout.createSequentialGroup()
                         .addComponent(lbl_screen)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txt_screen, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
@@ -521,8 +512,7 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
         panel_refurb_basic_infoLayout.setVerticalGroup(
             panel_refurb_basic_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_refurb_basic_infoLayout.createSequentialGroup()
-                .addComponent(hdn_txt_refurb_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(6, 6, 6)
                 .addGroup(panel_refurb_basic_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txt_brand, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lbl_brand)
@@ -699,7 +689,7 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
         panel_refurb_label.setMaximumSize(new java.awt.Dimension(555, 200));
         panel_refurb_label.setPreferredSize(new java.awt.Dimension(432, 316));
 
-        lbl_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/app_icon.png"))); // NOI18N
+        lbl_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/logo_slogan_small.png"))); // NOI18N
 
         txt_bran_mod_scr_label.setFont(new java.awt.Font("sansserif", 1, 15)); // NOI18N
         txt_bran_mod_scr_label.setHorizontalAlignment(javax.swing.JTextField.CENTER);
@@ -787,7 +777,7 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
             panel_label_designLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_label_designLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(panel_refurb_label, javax.swing.GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE)
+                .addComponent(panel_refurb_label, javax.swing.GroupLayout.DEFAULT_SIZE, 431, Short.MAX_VALUE)
                 .addContainerGap())
         );
         panel_label_designLayout.setVerticalGroup(
@@ -1003,12 +993,12 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
         Refurb updateRefurb = getRefurbFields();
 
         if (updateRefurb != null) {
-            int confirmEditing = JOptionPane.showConfirmDialog(this, CommonConstant.CONFIRM_UPDATE,this.getTitle(), JOptionPane.YES_NO_OPTION);
+            int confirmEditing = JOptionPane.showConfirmDialog(this, CommonConstant.CONFIRM_UPDATE, this.getTitle(), JOptionPane.YES_NO_OPTION);
             if (confirmEditing == 0) {
                 boolean isUpdated = this._refurbController.updateRefurbProduct(updateRefurb);
 
                 if (isUpdated) {
-                    
+
                     getItemRefurbProd(updateRefurb.getIdRefurb());
                     clearPanelFields();
                     clearPanelLabel();
@@ -1026,7 +1016,7 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
             long idRefurbAdded = this._refurbController.addRefurbProduct(addRefurbProd);
 
             if (idRefurbAdded > 0) {
-                
+
                 getItemRefurbProd(idRefurbAdded);
                 clearPanelFields();
                 clearPanelLabel();
@@ -1174,7 +1164,6 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
     private javax.swing.JButton btn_update;
     private javax.swing.JEditorPane editor_pane_label;
     private javax.swing.JEditorPane editor_pane_refurb_notes;
-    private javax.swing.JTextField hdn_txt_refurb_id;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lbl_brand;

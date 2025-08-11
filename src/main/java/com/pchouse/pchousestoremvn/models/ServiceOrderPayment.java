@@ -30,9 +30,12 @@ public class ServiceOrderPayment implements Serializable {
     @JoinColumn(name = "ID_SERVICE_ORDER", referencedColumnName = "ID_SERVICE_ORDER")
     private ServiceOrder serviceOrder;
 
+    @JoinColumn(name = "ID_DEPOSIT", referencedColumnName = "ID_DEPOSIT")
+    private Deposit deposit;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "PAY_METHOD")
-    private PayMethod payMethod; 
+    private PayMethod payMethod;
 
     @Column(name = "AMOUNT_DUE")
     private double amountDue;
@@ -40,12 +43,12 @@ public class ServiceOrderPayment implements Serializable {
     @Column(name = "AMOUNT_PAID")
     private double amountPaid;
 
-     @Column(name = "CARD_AMOUNT")
+    @Column(name = "CARD_AMOUNT")
     private Double cardAmount;
-    
+
     @Column(name = "CASH_AMOUNT")
     private Double cashAmount;
-    
+
     @Column(name = "CHANGE_AMOUNT")
     private double changeAmount;
 
@@ -56,8 +59,9 @@ public class ServiceOrderPayment implements Serializable {
     public ServiceOrderPayment() {
     }
 
-    public ServiceOrderPayment(ServiceOrder serviceOrder, PayMethod payMethod, double amountDue, double amountPaid, Double cardAmount, Double cashAmount, double changeAmount, Date dtTransaction) {
+    public ServiceOrderPayment(ServiceOrder serviceOrder, Deposit deposit, PayMethod payMethod, double amountDue, double amountPaid, Double cardAmount, Double cashAmount, double changeAmount, Date dtTransaction) {
         this.serviceOrder = serviceOrder;
+        this.deposit = deposit;
         this.payMethod = payMethod;
         this.amountDue = amountDue;
         this.amountPaid = amountPaid;
@@ -68,7 +72,6 @@ public class ServiceOrderPayment implements Serializable {
     }
 
     // Getters and setters
-
     public long getIdOrderPayment() {
         return idServiceOrderPayment;
     }
@@ -83,6 +86,14 @@ public class ServiceOrderPayment implements Serializable {
 
     public void setServiceOrder(ServiceOrder serviceOrder) {
         this.serviceOrder = serviceOrder;
+    }
+
+    public Deposit getDeposit() {
+        return deposit;
+    }
+
+    public void setDeposit(Deposit deposit) {
+        this.deposit = deposit;
     }
 
     public PayMethod getPayMethod() {

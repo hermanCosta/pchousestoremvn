@@ -11,6 +11,7 @@ import javax.swing.table.DefaultTableModel;
 
 public class FaultView extends javax.swing.JInternalFrame {
 
+    private long hdnFaultId;
     private final DefaultTableModel _dtmFault;
     private final FaultController _faultController;
     private List<Fault> _listFaults;
@@ -73,7 +74,7 @@ public class FaultView extends javax.swing.JInternalFrame {
         } else {
             getFault = new Fault(this.txt_fault_description.getText().toUpperCase());
 
-            int idFault = CommonExtension.setIdExtension(this.hdn_txt_fault_id);
+            long idFault = hdnFaultId;
             getFault.setIdFault(idFault);
 
             return getFault;
@@ -81,7 +82,7 @@ public class FaultView extends javax.swing.JInternalFrame {
     }
 
     private void setFaultFields(Fault pFault) {
-        this.hdn_txt_fault_id.setText(String.valueOf(pFault.getIdFault()));
+        hdnFaultId = pFault.getIdFault();
         this.txt_fault_description.setText(pFault.getDescription());
     }
 
@@ -101,7 +102,7 @@ public class FaultView extends javax.swing.JInternalFrame {
     }
 
     private void clearFields() {
-        this.hdn_txt_fault_id.setText("");
+        this.hdnFaultId = 0;
         this.txt_search_fault.setText("");
         this.txt_fault_description.setText("");
     }
@@ -116,7 +117,6 @@ public class FaultView extends javax.swing.JInternalFrame {
         txt_search_fault = new javax.swing.JTextField();
         lbl_search_icon = new javax.swing.JLabel();
         panel_fault_input = new javax.swing.JPanel();
-        hdn_txt_fault_id = new javax.swing.JTextField();
         lbl_fault = new javax.swing.JLabel();
         txt_fault_description = new javax.swing.JTextField();
         lbl_first_name_star = new javax.swing.JLabel();
@@ -180,11 +180,6 @@ public class FaultView extends javax.swing.JInternalFrame {
 
         panel_fault_input.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        hdn_txt_fault_id.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        hdn_txt_fault_id.setEnabled(false);
-        hdn_txt_fault_id.setMinimumSize(new java.awt.Dimension(80, 32));
-        hdn_txt_fault_id.setPreferredSize(new java.awt.Dimension(0, 0));
-
         lbl_fault.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
         lbl_fault.setText("Fault");
 
@@ -201,25 +196,21 @@ public class FaultView extends javax.swing.JInternalFrame {
             panel_fault_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_fault_inputLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panel_fault_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(hdn_txt_fault_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lbl_first_name_star))
+                .addComponent(lbl_first_name_star)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lbl_fault)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txt_fault_description, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(txt_fault_description, javax.swing.GroupLayout.DEFAULT_SIZE, 939, Short.MAX_VALUE)
                 .addContainerGap())
         );
         panel_fault_inputLayout.setVerticalGroup(
             panel_fault_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_fault_inputLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panel_fault_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panel_fault_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lbl_fault)
-                        .addComponent(lbl_first_name_star, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(txt_fault_description, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(hdn_txt_fault_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(panel_fault_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lbl_fault)
+                    .addComponent(lbl_first_name_star, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txt_fault_description, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -334,14 +325,14 @@ public class FaultView extends javax.swing.JInternalFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(panel_faults, javax.swing.GroupLayout.DEFAULT_SIZE, 1036, Short.MAX_VALUE)
+                .addComponent(panel_faults, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(panel_faults, javax.swing.GroupLayout.DEFAULT_SIZE, 616, Short.MAX_VALUE)
+                .addComponent(panel_faults, javax.swing.GroupLayout.DEFAULT_SIZE, 602, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -440,7 +431,6 @@ public class FaultView extends javax.swing.JInternalFrame {
     private javax.swing.JButton btn_clear_fields;
     private javax.swing.JButton btn_delete;
     private javax.swing.JButton btn_update;
-    private javax.swing.JTextField hdn_txt_fault_id;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lbl_fault;
     private javax.swing.JLabel lbl_first_name_star;

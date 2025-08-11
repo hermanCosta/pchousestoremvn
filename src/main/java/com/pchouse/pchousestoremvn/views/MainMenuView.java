@@ -435,10 +435,10 @@ public class MainMenuView extends javax.swing.JFrame {
     }//GEN-LAST:event_menu_item_customActionPerformed
 
     private void menu_item_ordersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menu_item_ordersActionPerformed
-        OrderListView orderView = new OrderListView();
-        this.desktop_pane_menu.removeAll();
-        this.desktop_pane_menu.add(orderView).setVisible(true);
-        CommonSetting.setMaxInternalFrame(orderView);
+//        OrderListView orderView = new OrderListView();
+//        this.desktop_pane_menu.removeAll();
+//        this.desktop_pane_menu.add(orderView).setVisible(true);
+//        CommonSetting.setMaxInternalFrame(orderView);
     }//GEN-LAST:event_menu_item_ordersActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
