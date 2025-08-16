@@ -16,9 +16,12 @@ public class CommonConstant {
     public static final String CONFIRM_ORDER_FIXED = "Are you sure you want to mark this Service Order as FIXED?";
     public static final String CONFIRM_ORDER_NOT_FIXED = "Are you sure you want to mark this Service Order as NOT FIXED?";
     public static final String CONFIRM_ORDER_IN_PROGRESS = "Are you sure you want to mark this Service Order as IN PROGRESS?";
+    public static final String CONFIRM_REFUND_SALE = "Are you sure you want to REFUND this Sale?";
+    public static final String CONFIRM_REFUND_ORDER = "Are you sure you want to REFUND this Order?";
     
     public static final String SUCCESS_SAVE = "Saved succesfully";
     public static final String SUCCESS_UPDATE = "Updated succesfully";
+    public static final String SUCCESS_REFUND = "Refunded succesfully";
 
     public static final String ERROR_SAVE = " Error, could not be saved";
     public static final String ERROR_UPDATE = "Error, could not be updated";
@@ -26,6 +29,7 @@ public class CommonConstant {
     public static final String ERROR_LOGIN = "Error, please check username or password";
     public static final String ERROR_ADD_DEPOSIT = "Deposit could not be saved";
     public static final String ERROR_ADD_NOTE = "Update note could not be saved ";
+    public static final String ERROR_REFUND = "Refund could not be completed";
 
     public static final String ORDER_CREATED_NOTE = "ORDER CREATED";
     public static final String ORDER_UPDATED_NOTE = "ORDER UPDATED";
@@ -34,8 +38,10 @@ public class CommonConstant {
     public static final String ORDER_NOT_FIXED_NOTE = "ORDER NOT FIXED";
     public static final String ORDER_PICKED_NOTE = "ORDER PICKED";
     public static final String ORDER_BACKED_IN_PROGRESS_NOTE = "ORDER BACKED TO IN PROGRESS";
+    public static final String ORDER_REFUND_NOTE = "ORDER REFUNDED";
 
     public static final String SALE_CREATED_NOTE = "SALE CREATED";
+    public static final String SALE_REFUND_NOTE = "SALE REFUNDED";
 
     public static final String WARN_EMPTY_FIELDS = "Please, check empty fields";
     public static final String WARN_EXIST_PERSON = "There is another person associated to this contact numer";

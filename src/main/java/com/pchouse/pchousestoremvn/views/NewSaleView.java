@@ -226,7 +226,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
                 totalAmount,
                 remaining,
                 new Date(),
-                OrderStatus.FINISHED.toString()
+                OrderStatus.FINISHED
         );
     }
 

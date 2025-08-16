@@ -255,7 +255,7 @@ public class SaleDAO {
                 em.persist(deposit);
             }
 
-                        // Persist SalePayment
+            // Persist SalePayment
             if (payments != null) {
 
                 for (SalePayment payment : payments) {
@@ -264,7 +264,7 @@ public class SaleDAO {
                     em.persist(payment);
                 }
             }
-            
+
             // Persist OrderNote
             if (note != null) {
                 note.setSale(sale);

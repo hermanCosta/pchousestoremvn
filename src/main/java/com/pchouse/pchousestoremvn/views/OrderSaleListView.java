@@ -181,6 +181,9 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
                 } else if(orderModel.getStatus() == OrderStatus.NOT_FIXED){
                     NotFixedOrderView notFixedOrderView = new NotFixedOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
                     openInternalFrame(notFixedOrderView, "Order Not Fixed" + orderId);
+                } else if(orderModel.getStatus() == OrderStatus.REFUNDED){
+                    RefundOrderView refundOrderView = new RefundOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
+                    openInternalFrame(refundOrderView, "Order Refunded" + orderId);
                 }
 
             } catch (Exception e) {
@@ -208,8 +211,13 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
                 List<Deposit> listSaleDeposit = _orderDepositController.getSaleDeposit(saleModel);
                 List<SalePayment> salePayments = _salePaymentController.getSalePayments(saleModel);
 
-                CreatedSaleView createdSaleView = new CreatedSaleView(saleModel, listSaleProdServ, listSaleDeposit, salePayments);
+                if (saleModel.getStatus() == OrderStatus.FINISHED) {
+                    CreatedSaleView createdSaleView = new CreatedSaleView(saleModel, listSaleProdServ, listSaleDeposit, salePayments);
                 openInternalFrame(createdSaleView, "Sale: " + saleId);
+                } else if(saleModel.getStatus() == OrderStatus.REFUNDED){
+                    RefundSaleView refundSaleView = new RefundSaleView(saleModel, listSaleProdServ, listSaleDeposit, salePayments);
+                    openInternalFrame(refundSaleView, "Refunded Sale" + saleId);
+                }
 
             } catch (Exception e) {
                 e.printStackTrace();

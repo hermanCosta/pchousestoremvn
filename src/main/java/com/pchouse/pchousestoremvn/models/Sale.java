@@ -1,8 +1,11 @@
 package com.pchouse.pchousestoremvn.models;
 
+import com.pchouse.pchousestoremvn.enums.OrderStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -40,18 +43,19 @@ public class Sale implements Serializable {
 
     @Column(name = "REMAINING")
     private Double remaining;
-    
-        @Temporal(TemporalType.TIMESTAMP)
+
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "CREATED", nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private Date created;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "STATUS", nullable = false)
-    private String status;
+    private OrderStatus status;
 
     public Sale() {
     }
 
-    public Sale(Customer customer, Employee employee, Company company, double total, Double remaining, Date created, String status) {
+    public Sale(Customer customer, Employee employee, Company company, double total, Double remaining, Date created, OrderStatus status) {
         this.customer = customer;
         this.employee = employee;
         this.company = company;
@@ -103,8 +107,8 @@ public class Sale implements Serializable {
         }
         this.total = total;
     }
-    
-        public Double getRemaining() {
+
+    public Double getRemaining() {
         return remaining;
     }
 
@@ -123,11 +127,11 @@ public class Sale implements Serializable {
         this.created = created;
     }
 
-    public String getStatus() {
+    public OrderStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(OrderStatus status) {
         this.status = status;
     }
 

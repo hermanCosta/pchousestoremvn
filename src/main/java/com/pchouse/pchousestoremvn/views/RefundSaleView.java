@@ -6,7 +6,6 @@ import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.common.CommonStrings;
 import com.pchouse.pchousestoremvn.controllers.EmployeeController;
 import com.pchouse.pchousestoremvn.controllers.RefundController;
-import com.pchouse.pchousestoremvn.enums.OrderStatus;
 import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Customer;
 import com.pchouse.pchousestoremvn.models.Deposit;
@@ -22,24 +21,24 @@ import com.pchouse.pchousestoremvn.views.modals.NoteModal;
 import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
+import java.awt.event.KeyEvent;
 import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
-public class CreatedSaleView extends javax.swing.JInternalFrame {
+public class RefundSaleView extends javax.swing.JInternalFrame {
 
     private Sale _saleModel;
     private List<SaleProdServ> _listSaleProdServs;
     private List<SalePayment> _salePayments;
-    private List<Deposit> _orderDeposits;
     public SalePayment _orderPayment = null;
     private final EmployeeController _employeeController;
     private final RefundController _refundController;
     private final DefaultTableModel _dtmProdServ;
     Frame _parentFrame = JOptionPane.getFrameForComponent(this);
 
-    public CreatedSaleView(Sale saleModel, List<SaleProdServ> listSaleProdServ, List<Deposit> listOrderDeposit, List<SalePayment> salePayments) {
+    public RefundSaleView(Sale saleModel, List<SaleProdServ> listSaleProdServ, List<Deposit> listOrderDeposit, List<SalePayment> salePayments) {
         initComponents();
 
         CommonExtension.checkEmailFormat(this.txt_email);
@@ -49,7 +48,6 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
         this._saleModel = saleModel;
         this._listSaleProdServs = listSaleProdServ;
         this._salePayments = salePayments;
-        this._orderDeposits = listOrderDeposit;
         this._employeeController = new EmployeeController();
         this._refundController = new RefundController();
         this._dtmProdServ = (DefaultTableModel) this.table_view_products.getModel();
@@ -102,7 +100,7 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
         this.lbl_total_field.setText(CommonExtension.formatEuroCurrency(sum));
     }
 
-    private void refundSale() {
+    private void RefundSale() {
         int confirm = JOptionPane.showConfirmDialog(
                 this,
                 CommonConstant.CONFIRM_REFUND_SALE,
@@ -117,20 +115,19 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
 
                 if (employee != null) {
                     Date createdDate = new Date();
-
                     Refund saleRefund = new Refund(CommonSetting.COMPANY, employee, _saleModel, _saleModel.getTotal(), createdDate);
+
                     OrderNote saleRefundNote = new OrderNote(_saleModel, employee, CommonConstant.SALE_REFUND_NOTE, createdDate);
                     long refundId = _refundController.addRefund(saleRefund, saleRefundNote);
 
                     if (refundId > 0) {
                         JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_REFUND);
 
-                        RefundSaleView refundSaleView = new RefundSaleView(_saleModel, _listSaleProdServs, _orderDeposits, _salePayments);
-                        CommonSetting.openInternalFrame(refundSaleView, "Refunded Sale: " + _saleModel.getIdSale());
                     }
 
                 } else {
-                    JOptionPane.showMessageDialog(this, CommonConstant.NOT_AUTHORIZED, null, JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, CommonConstant.ERROR_REFUND, null, JOptionPane.ERROR_MESSAGE);
+                    this.lbl_sale_refunded.setVisible(true);
                 }
 
             } catch (BusinessException e) {
@@ -158,11 +155,11 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
         hdn_txt_customer_id = new javax.swing.JTextField();
         lbl_sale_no = new javax.swing.JLabel();
         lbl_auto_sale_no = new javax.swing.JLabel();
+        lbl_sale_refunded = new javax.swing.JLabel();
         panel_total_amount = new javax.swing.JPanel();
         lbl_total = new javax.swing.JLabel();
         lbl_total_field = new javax.swing.JLabel();
         panel_sale_buttons = new javax.swing.JPanel();
-        btn_refund_sale = new javax.swing.JButton();
         btn_notes = new javax.swing.JButton();
         btn_deposit = new javax.swing.JButton();
         btn_print = new javax.swing.JButton();
@@ -234,6 +231,11 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
         lbl_auto_sale_no.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
         lbl_auto_sale_no.setText("autoGen");
 
+        lbl_sale_refunded.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
+        lbl_sale_refunded.setForeground(new java.awt.Color(255, 102, 102));
+        lbl_sale_refunded.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lbl_sale_refunded.setText("SALE REFUNDED");
+
         javax.swing.GroupLayout panel_input_detailLayout = new javax.swing.GroupLayout(panel_input_detail);
         panel_input_detail.setLayout(panel_input_detailLayout);
         panel_input_detailLayout.setHorizontalGroup(
@@ -263,6 +265,8 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
                         .addComponent(lbl_sale_no)
                         .addGap(7, 7, 7)
                         .addComponent(lbl_auto_sale_no)
+                        .addGap(18, 18, 18)
+                        .addComponent(lbl_sale_refunded)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -277,7 +281,8 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbl_auto_sale_no)
-                    .addComponent(lbl_sale_no))
+                    .addComponent(lbl_sale_no)
+                    .addComponent(lbl_sale_refunded))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txt_first_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -334,17 +339,6 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
 
         panel_sale_buttons.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        btn_refund_sale.setBackground(new java.awt.Color(0, 0, 0));
-        btn_refund_sale.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        btn_refund_sale.setForeground(new java.awt.Color(255, 255, 255));
-        btn_refund_sale.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_refund.png"))); // NOI18N
-        btn_refund_sale.setText("Refund");
-        btn_refund_sale.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_refund_saleActionPerformed(evt);
-            }
-        });
-
         btn_notes.setBackground(new java.awt.Color(21, 76, 121));
         btn_notes.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_notes.setForeground(new java.awt.Color(255, 255, 255));
@@ -384,8 +378,6 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
             panel_sale_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_sale_buttonsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(btn_refund_sale)
-                .addGap(12, 12, 12)
                 .addComponent(btn_notes)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btn_deposit)
@@ -398,7 +390,6 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
             .addGroup(panel_sale_buttonsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panel_sale_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btn_refund_sale)
                     .addComponent(btn_notes)
                     .addComponent(btn_deposit)
                     .addComponent(btn_print))
@@ -512,12 +503,21 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_table_view_productsMouseClicked
 
     private void table_view_productsKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_table_view_productsKeyReleased
-        refundSale();
-    }//GEN-LAST:event_table_view_productsKeyReleased
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            double sum = 0;
+            for (int i = 0; i < this._dtmProdServ.getRowCount(); i++) {
+                double unitPrice = Double.parseDouble(this._dtmProdServ.getValueAt(i, 3).toString());
+                int qty = Integer.parseInt(this._dtmProdServ.getValueAt(i, 2).toString());
 
-    private void btn_refund_saleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refund_saleActionPerformed
-        refundSale();
-    }//GEN-LAST:event_btn_refund_saleActionPerformed
+                this._dtmProdServ.setValueAt(unitPrice, i, 3);
+                double priceTotal = unitPrice * qty;
+                this._dtmProdServ.setValueAt(priceTotal, i, 4);
+                sum += priceTotal;
+            }
+
+            this.lbl_total_field.setText(String.valueOf((sum)));
+        }
+    }//GEN-LAST:event_table_view_productsKeyReleased
 
     private void btn_notesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_notesActionPerformed
         NoteModal noteModal = new NoteModal(_saleModel, _parentFrame, true);
@@ -542,7 +542,6 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
     private javax.swing.JButton btn_deposit;
     private javax.swing.JButton btn_notes;
     private javax.swing.JButton btn_print;
-    private javax.swing.JButton btn_refund_sale;
     private javax.swing.JTextField hdn_txt_customer_id;
     private javax.swing.JLabel lbl_auto_sale_no;
     private javax.swing.JLabel lbl_contact;
@@ -550,6 +549,7 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lbl_first_name;
     private javax.swing.JLabel lbl_last_name;
     private javax.swing.JLabel lbl_sale_no;
+    private javax.swing.JLabel lbl_sale_refunded;
     private javax.swing.JLabel lbl_total;
     private javax.swing.JLabel lbl_total_field;
     private javax.swing.JPanel panel_input_detail;
