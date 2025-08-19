@@ -10,6 +10,7 @@ import com.pchouse.pchousestoremvn.models.Sale;
 import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
+import java.awt.Window;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
@@ -23,16 +24,16 @@ public class PaymentModal extends javax.swing.JDialog {
     private List<SalePayment> salePayments = new ArrayList<>();
     private String _amountToPay;
 
-    public PaymentModal(ServiceOrder serviceOrder, String amountToPay, java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
-        initComponents();
-        initListeners();
-
-        this._serviceOrderModel = serviceOrder;
-        this._amountToPay = amountToPay;
-
-        loadOrderPaymentFields(serviceOrder.getIdServiceOrder(), amountToPay);
-    }
+//    public PaymentModal(ServiceOrder serviceOrder, String amountToPay, java.awt.Frame parent, boolean modal) {
+//        super(parent, modal);
+//        initComponents();
+//        initListeners();
+//
+//        this._serviceOrderModel = serviceOrder;
+//        this._amountToPay = amountToPay;
+//
+//        loadOrderPaymentFields(serviceOrder.getIdServiceOrder(), amountToPay);
+//    }
 
     public PaymentModal(Sale sale, String amountToPay, java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -43,6 +44,19 @@ public class PaymentModal extends javax.swing.JDialog {
         this._amountToPay = amountToPay;
 
         loadOrderPaymentFields(sale.getIdSale(), amountToPay);
+    }
+
+    public PaymentModal(ServiceOrder serviceOrder, String amountToPay, Window owner, boolean modal) {
+        super(owner, ModalityType.APPLICATION_MODAL);
+        this._serviceOrderModel = serviceOrder;
+        this._amountToPay = amountToPay;
+        initComponents();
+        initListeners();
+
+        this._serviceOrderModel = serviceOrder;
+        this._amountToPay = amountToPay;
+
+        loadOrderPaymentFields(serviceOrder.getIdServiceOrder(), amountToPay);
     }
 
     private void initListeners() {

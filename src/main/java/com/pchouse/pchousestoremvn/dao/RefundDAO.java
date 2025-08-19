@@ -70,7 +70,7 @@ public class RefundDAO {
         // Persist Refund first
         em.persist(refund);
 
-        // Now update statuses AFTER refund is persisted
+        // Now update status AFTER refund be persisted
         if (refund.getSale() != null) {
             refund.getSale().setStatus(OrderStatus.REFUNDED);
         }

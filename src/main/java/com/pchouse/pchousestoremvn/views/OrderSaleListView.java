@@ -6,7 +6,6 @@ package com.pchouse.pchousestoremvn.views;
 
 import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.controllers.DepositController;
-import com.pchouse.pchousestoremvn.controllers.OrderNoteController;
 import com.pchouse.pchousestoremvn.controllers.ServiceOrderController;
 import com.pchouse.pchousestoremvn.controllers.SaleController;
 import com.pchouse.pchousestoremvn.controllers.SalePaymentController;
@@ -167,7 +166,7 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
             Long orderId = (Long) table_view_order_list.getValueAt(selectedRow, 0);
 
             try {
-                ServiceOrder orderModel = _serviceOrderController.getItemOrder(orderId);
+                ServiceOrder orderModel = _serviceOrderController.getServiceOrderById(orderId);
                 List<ServiceOrderFault> listOrderFault = _serviceOrderFaultController.getOrderFaults(orderModel);
                 List<ServiceOrderProdServ> listOrderProdServ = _serviceOrderProdServController.getOrderProdServ(orderModel);
                 List<Deposit> listOrderDeposit = _orderDepositController.getOrderDeposit(orderModel);
@@ -175,13 +174,16 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
                 if (orderModel.getStatus() == OrderStatus.IN_PROGRESS) {
                     CreatedOrderView createdOrderView = new CreatedOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
                     openInternalFrame(createdOrderView, "Order In Progress: " + orderId);
-                } else if (orderModel.getStatus() == OrderStatus.FIXED){
+                } else if (orderModel.getStatus() == OrderStatus.FIXED) {
                     FixedOrderView fixedOrderView = new FixedOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
                     openInternalFrame(fixedOrderView, "Order Fixed" + orderId);
-                } else if(orderModel.getStatus() == OrderStatus.NOT_FIXED){
+                } else if (orderModel.getStatus() == OrderStatus.NOT_FIXED) {
                     NotFixedOrderView notFixedOrderView = new NotFixedOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
                     openInternalFrame(notFixedOrderView, "Order Not Fixed" + orderId);
-                } else if(orderModel.getStatus() == OrderStatus.REFUNDED){
+                } else if (orderModel.getStatus() == OrderStatus.PICKED) {
+                    PickedOrderView pickedOrderView = new PickedOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
+                    openInternalFrame(pickedOrderView, "Picked Order: " + orderId);
+                } else if (orderModel.getStatus() == OrderStatus.REFUNDED) {
                     RefundOrderView refundOrderView = new RefundOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
                     openInternalFrame(refundOrderView, "Order Refunded" + orderId);
                 }
@@ -211,10 +213,10 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
                 List<Deposit> listSaleDeposit = _orderDepositController.getSaleDeposit(saleModel);
                 List<SalePayment> salePayments = _salePaymentController.getSalePayments(saleModel);
 
-                if (saleModel.getStatus() == OrderStatus.FINISHED) {
+                if (saleModel.getStatus() == OrderStatus.PICKED) {
                     CreatedSaleView createdSaleView = new CreatedSaleView(saleModel, listSaleProdServ, listSaleDeposit, salePayments);
-                openInternalFrame(createdSaleView, "Sale: " + saleId);
-                } else if(saleModel.getStatus() == OrderStatus.REFUNDED){
+                    openInternalFrame(createdSaleView, "Sale: " + saleId);
+                } else if (saleModel.getStatus() == OrderStatus.REFUNDED) {
                     RefundSaleView refundSaleView = new RefundSaleView(saleModel, listSaleProdServ, listSaleDeposit, salePayments);
                     openInternalFrame(refundSaleView, "Refunded Sale" + saleId);
                 }

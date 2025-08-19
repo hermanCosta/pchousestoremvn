@@ -10,6 +10,7 @@ import com.pchouse.pchousestoremvn.controllers.FaultController;
 import com.pchouse.pchousestoremvn.controllers.ServiceOrderController;
 import com.pchouse.pchousestoremvn.controllers.ProductServiceController;
 import com.pchouse.pchousestoremvn.enums.OrderStatus;
+import com.pchouse.pchousestoremvn.enums.PaymentType;
 import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Customer;
 import com.pchouse.pchousestoremvn.models.Deposit;
@@ -1020,6 +1021,11 @@ public class NewOrderView extends javax.swing.JInternalFrame {
                         return;
                     }
 
+                    // Mark each payment with the type
+                    for (ServiceOrderPayment payment : payments) {
+                        payment.setPaymentType(PaymentType.DEPOSIT);
+                    }
+
                     deposit = new Deposit(addOrder, addOrder.getEmployee(), Double.parseDouble(this.txt_deposit.getText()), addOrder.getCreated());
                 }
 
@@ -1030,6 +1036,7 @@ public class NewOrderView extends javax.swing.JInternalFrame {
 
                 if (idOrderAdded > 0) {
                     isAdded = true;
+                    addOrder.setIdServiceOrder(idOrderAdded);
                 }
 
                 if (isAdded) {

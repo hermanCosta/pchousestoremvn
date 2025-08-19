@@ -16,11 +16,13 @@ public class CommonConstant {
     public static final String CONFIRM_ORDER_FIXED = "Are you sure you want to mark this Service Order as FIXED?";
     public static final String CONFIRM_ORDER_NOT_FIXED = "Are you sure you want to mark this Service Order as NOT FIXED?";
     public static final String CONFIRM_ORDER_IN_PROGRESS = "Are you sure you want to mark this Service Order as IN PROGRESS?";
+    public static final String CONFIRM_PAYMENT_ORDER = "Are you sure you want to PAY this Order?";
     public static final String CONFIRM_REFUND_SALE = "Are you sure you want to REFUND this Sale?";
     public static final String CONFIRM_REFUND_ORDER = "Are you sure you want to REFUND this Order?";
     
     public static final String SUCCESS_SAVE = "Saved succesfully";
     public static final String SUCCESS_UPDATE = "Updated succesfully";
+    public static final String SUCCESS_PAYMENT = "Paid succesfully";
     public static final String SUCCESS_REFUND = "Refunded succesfully";
 
     public static final String ERROR_SAVE = " Error, could not be saved";
@@ -41,6 +43,7 @@ public class CommonConstant {
     public static final String ORDER_REFUND_NOTE = "ORDER REFUNDED";
 
     public static final String SALE_CREATED_NOTE = "SALE CREATED";
+    public static final String SALE_PICKED_NOTE = "SALE PICKED";
     public static final String SALE_REFUND_NOTE = "SALE REFUNDED";
 
     public static final String WARN_EMPTY_FIELDS = "Please, check empty fields";

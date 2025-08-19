@@ -4,13 +4,17 @@ import com.pchouse.pchousestoremvn.common.CommonConstant;
 import com.pchouse.pchousestoremvn.common.CommonExtension;
 import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.common.CommonStrings;
+import com.pchouse.pchousestoremvn.controllers.DepositController;
 import com.pchouse.pchousestoremvn.controllers.DeviceController;
 import com.pchouse.pchousestoremvn.controllers.EmployeeController;
 import com.pchouse.pchousestoremvn.controllers.OrderNoteController;
 import com.pchouse.pchousestoremvn.controllers.ServiceOrderController;
 import com.pchouse.pchousestoremvn.controllers.ServiceOrderFaultController;
+import com.pchouse.pchousestoremvn.controllers.ServiceOrderPaymentController;
 import com.pchouse.pchousestoremvn.controllers.ServiceOrderProdServController;
 import com.pchouse.pchousestoremvn.enums.OrderStatus;
+import com.pchouse.pchousestoremvn.enums.PaymentType;
+import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Customer;
 import com.pchouse.pchousestoremvn.models.Deposit;
 import com.pchouse.pchousestoremvn.models.Device;
@@ -18,9 +22,11 @@ import com.pchouse.pchousestoremvn.models.Employee;
 import com.pchouse.pchousestoremvn.models.OrderNote;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderFault;
+import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrderProdServ;
 import com.pchouse.pchousestoremvn.views.modals.DepositModal;
 import com.pchouse.pchousestoremvn.views.modals.NoteModal;
+import com.pchouse.pchousestoremvn.views.modals.PaymentModal;
 import java.awt.EventQueue;
 import java.awt.Frame;
 import java.awt.Toolkit;
@@ -30,16 +36,19 @@ import java.util.Date;
 import java.util.List;
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 public class FixedOrderView extends javax.swing.JInternalFrame {
 
-    private final ServiceOrderController _orderController;
+    private final ServiceOrderController _serviceOrderController;
     private final EmployeeController _employeeController;
-    private final ServiceOrderProdServController _orderProdServController;
-    private final ServiceOrderFaultController _orderFaultController;
+    private final ServiceOrderProdServController _serviceOrderProdServController;
+    private final ServiceOrderFaultController _serviceOrderFaultController;
     private final OrderNoteController _orderNoteController;
     private final DeviceController _deviceController;
+    private final ServiceOrderPaymentController _serviceOrderPaymentController;
+    private final DepositController _depositController;
     private final DefaultTableModel _dtmProdServ;
     private final DefaultTableModel _dtmFault;
     Frame _parentFrame = JOptionPane.getFrameForComponent(this);
@@ -60,12 +69,15 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
         CommonSetting.tableSettings(table_view_faults);
         CommonSetting.tableSettings(table_view_products);
 
-        this._orderController = new ServiceOrderController();
+        this._serviceOrderController = new ServiceOrderController();
         this._employeeController = new EmployeeController();
-        this._orderProdServController = new ServiceOrderProdServController();
-        this._orderFaultController = new ServiceOrderFaultController();
+        this._serviceOrderProdServController = new ServiceOrderProdServController();
+        this._serviceOrderFaultController = new ServiceOrderFaultController();
         this._orderNoteController = new OrderNoteController();
         this._deviceController = new DeviceController();
+        this._serviceOrderPaymentController = new ServiceOrderPaymentController();
+        this._depositController = new DepositController();
+
         this._dtmProdServ = (DefaultTableModel) this.table_view_products.getModel();
         this._dtmFault = (DefaultTableModel) this.table_view_faults.getModel();
 
@@ -178,7 +190,7 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
                 _serviceOrderModel.setStatus(newStatus);
                 _serviceOrderModel.setEmployee(employee);
 
-                boolean isOrderUpdated = this._orderController.updateServiceOrderStatus(_serviceOrderModel);
+                boolean isOrderUpdated = this._serviceOrderController.updateServiceOrderStatus(_serviceOrderModel);
                 if (isOrderUpdated) {
                     OrderNote orderNote = new OrderNote(
                             _serviceOrderModel,
@@ -211,11 +223,11 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
                                 _listOrderDeposit
                         );
                         CommonSetting.openInternalFrame(notFixedOrderView, "Order Not Fixed: " + _serviceOrderModel.getIdServiceOrder());
-                    }else if (newStatus == OrderStatus.IN_PROGRESS) {
+                    } else if (newStatus == OrderStatus.IN_PROGRESS) {
                         CreatedOrderView createdOrderView = new CreatedOrderView(
-                                _serviceOrderModel, 
-                                _listServiceOrderFault, 
-                                _listServiceOrderProdServ, 
+                                _serviceOrderModel,
+                                _listServiceOrderFault,
+                                _listServiceOrderProdServ,
                                 _listOrderDeposit
                         );
                         CommonSetting.openInternalFrame(createdOrderView, "Order In Progress");
@@ -224,7 +236,67 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
                 } else {
                     JOptionPane.showMessageDialog(this, CommonConstant.ERROR_UPDATE, null, JOptionPane.ERROR_MESSAGE);
                 }
+            } else {
+                JOptionPane.showMessageDialog(this, CommonConstant.NOT_AUTHORIZED, null, JOptionPane.ERROR_MESSAGE);
             }
+        }
+    }
+
+    private void payServiceOrder() {
+        if (_serviceOrderModel != null) {
+            int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    CommonConstant.CONFIRM_PAYMENT_ORDER,
+                    "Confirm Action",
+                    JOptionPane.YES_NO_OPTION
+            );
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                String password = CommonExtension.requestUserPassword();
+                Employee employee = _employeeController.getEmployeeByPass(password);
+
+                if (employee != null) {
+                    try {
+                        List<ServiceOrderPayment> payments = null;
+
+                        PaymentModal paymentModal = new PaymentModal(
+                                _serviceOrderModel,
+                                String.valueOf(_serviceOrderModel.getDue()),
+                                SwingUtilities.getWindowAncestor(this), // use current window as parent
+                                true
+                        );
+                        paymentModal.setVisible(true);
+
+                        payments = paymentModal.getServiceOrderPayments();
+
+                        if (payments == null || payments.isEmpty()) {
+                            JOptionPane.showMessageDialog(this, "Payment was not completed.", getTitle(), JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+
+                        // Mark each payment with the type
+                        for (ServiceOrderPayment payment : payments) {
+                            payment.setPaymentType(PaymentType.ORDER);
+                        }
+
+                        OrderNote orderNote = new OrderNote(_serviceOrderModel, _serviceOrderModel.getEmployee(), CommonConstant.ORDER_PICKED_NOTE, new Date());
+
+                        long idOrderPayment = _serviceOrderPaymentController.addOrderPayment(payments, orderNote);
+
+                        if (idOrderPayment > 0) {
+                            PickedOrderView pickedOrderView = new PickedOrderView(_serviceOrderModel, _listServiceOrderFault, _listServiceOrderProdServ, _listOrderDeposit);
+                            CommonSetting.openInternalFrame(pickedOrderView, "Picked Order: " + _serviceOrderModel.getIdServiceOrder());
+
+                            //new ReportGenerator().generateServiceOrderReport(addOrder, listOrderFault, listOrderProdServ);
+                        }
+                    } catch (BusinessException e) {
+                        JOptionPane.showMessageDialog(this, e.getMessage(), this.getTitle(), JOptionPane.ERROR_MESSAGE);
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, CommonConstant.NOT_AUTHORIZED, null, JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -273,8 +345,9 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
         lbl_deposit_paid = new javax.swing.JLabel();
         panel_order_buttons = new javax.swing.JPanel();
         btn_notes = new javax.swing.JButton();
-        btn_undo_fixed = new javax.swing.JButton();
+        btn_pay_service_order = new javax.swing.JButton();
         btn_deposit = new javax.swing.JButton();
+        btn_undo_fixed1 = new javax.swing.JButton();
         scroll_pane_products = new javax.swing.JScrollPane();
         table_view_products = new javax.swing.JTable();
         scroll_pane_faults = new javax.swing.JScrollPane();
@@ -644,14 +717,15 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
             }
         });
 
-        btn_undo_fixed.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        btn_undo_fixed.setForeground(new java.awt.Color(255, 255, 255));
-        btn_undo_fixed.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_undo.png"))); // NOI18N
-        btn_undo_fixed.setText("Undo");
-        btn_undo_fixed.setNextFocusableComponent(txt_first_name);
-        btn_undo_fixed.addActionListener(new java.awt.event.ActionListener() {
+        btn_pay_service_order.setBackground(new java.awt.Color(0, 204, 102));
+        btn_pay_service_order.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+        btn_pay_service_order.setForeground(new java.awt.Color(255, 255, 255));
+        btn_pay_service_order.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_pay.png"))); // NOI18N
+        btn_pay_service_order.setText("Pay");
+        btn_pay_service_order.setNextFocusableComponent(txt_first_name);
+        btn_pay_service_order.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_undo_fixedActionPerformed(evt);
+                btn_pay_service_orderActionPerformed(evt);
             }
         });
 
@@ -667,17 +741,30 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
             }
         });
 
+        btn_undo_fixed1.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+        btn_undo_fixed1.setForeground(new java.awt.Color(255, 255, 255));
+        btn_undo_fixed1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_undo.png"))); // NOI18N
+        btn_undo_fixed1.setText("Undo");
+        btn_undo_fixed1.setNextFocusableComponent(txt_first_name);
+        btn_undo_fixed1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_undo_fixed1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panel_order_buttonsLayout = new javax.swing.GroupLayout(panel_order_buttons);
         panel_order_buttons.setLayout(panel_order_buttonsLayout);
         panel_order_buttonsLayout.setHorizontalGroup(
             panel_order_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_order_buttonsLayout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(btn_pay_service_order)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btn_notes)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btn_deposit)
-                .addGap(18, 18, 18)
-                .addComponent(btn_undo_fixed)
+                .addGap(15, 15, 15)
+                .addComponent(btn_undo_fixed1)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panel_order_buttonsLayout.setVerticalGroup(
@@ -686,8 +773,9 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(panel_order_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_notes)
-                    .addComponent(btn_undo_fixed)
-                    .addComponent(btn_deposit))
+                    .addComponent(btn_pay_service_order)
+                    .addComponent(btn_deposit)
+                    .addComponent(btn_undo_fixed1))
                 .addContainerGap())
         );
 
@@ -884,7 +972,7 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
                 Employee employee = _employeeController.getEmployeeByPass(password);
                 if (employee != null) {
 
-                    long idOrderFaultDeleted = this._orderFaultController.deleteOrderFault((long) this._dtmFault.getValueAt(selectedRow, 2));
+                    long idOrderFaultDeleted = this._serviceOrderFaultController.deleteOrderFault((long) this._dtmFault.getValueAt(selectedRow, 2));
 
                     if (idOrderFaultDeleted > 0) {
                         this._dtmFault.removeRow(table_view_faults.getSelectedRow());
@@ -909,7 +997,7 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
                 Employee employee = _employeeController.getEmployeeByPass(password);
 
                 if (employee != null) {
-                    long idDeleteOrderProdServ = this._orderProdServController.deleteOrderProdServ((long) this._dtmProdServ.getValueAt(selectedRow, 5));
+                    long idDeleteOrderProdServ = this._serviceOrderProdServController.deleteOrderProdServ((long) this._dtmProdServ.getValueAt(selectedRow, 5));
 
                     if (idDeleteOrderProdServ > 0) {
                         this._dtmProdServ.removeRow(this.table_view_products.getSelectedRow());
@@ -918,7 +1006,7 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
 
                         _serviceOrderModel.setTotal(Double.parseDouble(this.lbl_total_field.getText()));
                         _serviceOrderModel.setDue(Double.parseDouble(this.lbl_due_field.getText()));
-                        _orderController.updateServiceOrderStatus(_serviceOrderModel);
+                        _serviceOrderController.updateServiceOrderStatus(_serviceOrderModel);
                     } else {
                         JOptionPane.showMessageDialog(this, CommonConstant.ERROR_DELETE_ITEM, this.getTitle(), JOptionPane.ERROR_MESSAGE);
                     }
@@ -973,13 +1061,9 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
         noteModal.setVisible(true);
     }//GEN-LAST:event_btn_notesActionPerformed
 
-    private void btn_undo_fixedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_undo_fixedActionPerformed
-        updateOrderStatus(
-                OrderStatus.IN_PROGRESS,
-                CommonConstant.CONFIRM_ORDER_IN_PROGRESS,
-                CommonConstant.ORDER_BACKED_IN_PROGRESS_NOTE
-        );
-    }//GEN-LAST:event_btn_undo_fixedActionPerformed
+    private void btn_pay_service_orderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_pay_service_orderActionPerformed
+        payServiceOrder();
+    }//GEN-LAST:event_btn_pay_service_orderActionPerformed
 
     private void btn_depositActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_depositActionPerformed
         DepositModal depositModal = new DepositModal(_serviceOrderModel, _parentFrame, true);
@@ -987,11 +1071,20 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
         depositModal.setVisible(true);
     }//GEN-LAST:event_btn_depositActionPerformed
 
+    private void btn_undo_fixed1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_undo_fixed1ActionPerformed
+        updateOrderStatus(
+                OrderStatus.IN_PROGRESS,
+                CommonConstant.CONFIRM_ORDER_IN_PROGRESS,
+                CommonConstant.ORDER_BACKED_IN_PROGRESS_NOTE
+        );
+    }//GEN-LAST:event_btn_undo_fixed1ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_copy;
     private javax.swing.JButton btn_deposit;
     private javax.swing.JButton btn_notes;
-    private javax.swing.JButton btn_undo_fixed;
+    private javax.swing.JButton btn_pay_service_order;
+    private javax.swing.JButton btn_undo_fixed1;
     private javax.swing.JEditorPane editor_pane_notes;
     private javax.swing.JTextField hdn_txt_customer_id;
     private javax.swing.JLabel lbl_auto_order_no;

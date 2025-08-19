@@ -20,49 +20,29 @@ public class DepositDAO {
         try {
             em.getTransaction().begin();
 
-            // Attach associated ServiceOrder
             if (deposit.getServiceOrder() != null) {
-                ServiceOrder managedOrder = em.find(
-                        ServiceOrder.class,
-                        deposit.getServiceOrder().getIdServiceOrder()
-                );
-                deposit.setServiceOrder(managedOrder);
-            }
-            
-            // Attach associated Sale
-            if (deposit.getSale()!= null) {
-                Sale managedSale = em.find(
-                        Sale.class,
-                        deposit.getSale().getIdSale()
-                );
-                deposit.setSale(managedSale);
+                deposit.setServiceOrder(em.getReference(
+                        ServiceOrder.class, deposit.getServiceOrder().getIdServiceOrder()));
             }
 
-            // Attach associated ServiceOrderPayment
+            if (deposit.getSale() != null) {
+                deposit.setSale(em.getReference(
+                        Sale.class, deposit.getSale().getIdSale()));
+            }
+
             if (deposit.getServiceOrderPayment() != null) {
-                ServiceOrderPayment managedOrderPayment = em.find(
-                        ServiceOrderPayment.class,
-                        deposit.getServiceOrderPayment().getIdOrderPayment()
-                );
-                deposit.setServiceOrderPayment(managedOrderPayment);
-            }
-            
-            // Attach associated SalePayment
-            if (deposit.getSalePayment() != null) {
-                SalePayment managedSalePayment = em.find(
-                        SalePayment.class,
-                        deposit.getSalePayment().getIdSalePayment()
-                );
-                deposit.setSalePayment(managedSalePayment);
+                deposit.setServiceOrderPayment(em.getReference(
+                        ServiceOrderPayment.class, deposit.getServiceOrderPayment().getIdServiceOrderPayment()));
             }
 
-            // Attach associated Employee
+            if (deposit.getSalePayment() != null) {
+                deposit.setSalePayment(em.getReference(
+                        SalePayment.class, deposit.getSalePayment().getIdSalePayment()));
+            }
+
             if (deposit.getEmployee() != null) {
-                Employee managedEmployee = em.find(
-                        Employee.class,
-                        deposit.getEmployee().getIdEmployee()
-                );
-                deposit.setEmployee(managedEmployee);
+                deposit.setEmployee(em.getReference(
+                        Employee.class, deposit.getEmployee().getIdEmployee()));
             }
 
             em.persist(deposit);
@@ -92,8 +72,8 @@ public class DepositDAO {
         }
         return orderDeposits;
     }
-    
-     public List<Deposit> getSaleDepositDAO(Sale pSale) {
+
+    public List<Deposit> getSaleDepositDAO(Sale pSale) {
         EntityManager em = JPAUtil.getEntityManager();
         List<Deposit> orderDeposits = null;
         try {

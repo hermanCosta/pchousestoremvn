@@ -1,5 +1,9 @@
 package com.pchouse.pchousestoremvn.dao;
 
+import com.pchouse.pchousestoremvn.enums.OrderStatus;
+import com.pchouse.pchousestoremvn.exception.BusinessException;
+import com.pchouse.pchousestoremvn.models.Employee;
+import com.pchouse.pchousestoremvn.models.OrderNote;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
 import com.pchouse.pchousestoremvn.util.JPAUtil;
@@ -9,34 +13,62 @@ import java.util.List;
 
 public class OrderPaymentDAO {
 
-    public long addOrderPaymentDAO(ServiceOrderPayment pOrderPayment) {
+    public long addOrderPaymentDAO(List<ServiceOrderPayment> pOrderPayments, OrderNote note) throws Exception {
         EntityManager em = JPAUtil.getEntityManager();
-        long idOrderPaymentAdded = 0;
+        ServiceOrderPayment lastPayment = null;
+
         try {
             em.getTransaction().begin();
 
-            // Reattach ServiceOrder
-            if (pOrderPayment.getServiceOrder() != null) {
-                ServiceOrder managedOrder = em.find(
-                        ServiceOrder.class,
-                        pOrderPayment.getServiceOrder().getIdServiceOrder()
-                );
-                pOrderPayment.setServiceOrder(managedOrder);
+            if (pOrderPayments != null && !pOrderPayments.isEmpty()) {
+                for (ServiceOrderPayment payment : pOrderPayments) {
+                    if (payment.getServiceOrder() != null) {
+                        // Reattach ServiceOrder properly
+                        ServiceOrder managedServiceOrder = em.getReference(
+                                ServiceOrder.class,
+                                payment.getServiceOrder().getIdServiceOrder()
+                        );
+                        payment.setServiceOrder(managedServiceOrder);
+                    }
+
+                    em.persist(payment);
+                    lastPayment = payment;
+                }
+
+                // Update status AFTER persisting last payment
+                if (lastPayment != null && lastPayment.getServiceOrder() != null) {
+                    lastPayment.getServiceOrder().setStatus(OrderStatus.PICKED);
+                }
             }
 
-            em.persist(pOrderPayment);
+            // Persist OrderNote
+            if (note != null && lastPayment != null) {
+                note.setServiceOrder(lastPayment.getServiceOrder());
+
+                // Reattach Employee
+                if (note.getEmployee() != null) {
+                    Employee managedEmployee = em.getReference(
+                            Employee.class,
+                            note.getEmployee().getIdEmployee()
+                    );
+                    note.setEmployee(managedEmployee);
+                }
+
+                em.persist(note);
+            }
+
             em.getTransaction().commit();
-            idOrderPaymentAdded = pOrderPayment.getIdOrderPayment();
+            return lastPayment != null ? lastPayment.getIdServiceOrderPayment() : -1;
         } catch (Exception e) {
-            System.err.println("Error adding order payment: " + e.getMessage());
-            e.printStackTrace();
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new BusinessException("Failed to add payment: " + e.getMessage(), e);
         } finally {
             em.close();
         }
-        return idOrderPaymentAdded;
     }
-    
+
     public List<ServiceOrderPayment> getServiceOrderPaymentDAO(ServiceOrder pServiceOrder) {
         EntityManager em = JPAUtil.getEntityManager();
         List<ServiceOrderPayment> payments = new ArrayList<>();
@@ -55,7 +87,6 @@ public class OrderPaymentDAO {
         } catch (Exception e) {
             System.err.println("Error fetching service order payments: " + e.getMessage());
             e.printStackTrace();
-            em.getTransaction().rollback();
         } finally {
             em.close();
         }

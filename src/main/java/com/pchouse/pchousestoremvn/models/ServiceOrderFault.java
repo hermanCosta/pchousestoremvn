@@ -1,6 +1,5 @@
 package com.pchouse.pchousestoremvn.models;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -20,7 +19,7 @@ public class ServiceOrderFault implements Serializable {
     @Column(name = "ID_SERVICE_ORDER_FAULT")
     private long idServiceOrderFault;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "ID_SERVICE_ORDER", referencedColumnName = "ID_SERVICE_ORDER")
     private ServiceOrder serviceOrder;
 
@@ -62,10 +61,10 @@ public class ServiceOrderFault implements Serializable {
 
     @Override
     public String toString() {
-        return "ServiceOrderFault{" +
-                "idServiceOrderFault=" + idServiceOrderFault +
-                ", serviceOrder=" + serviceOrder +
-                ", fault=" + fault +
-                '}';
+        return "ServiceOrderFault{"
+                + "idServiceOrderFault=" + idServiceOrderFault
+                + ", serviceOrder=" + serviceOrder
+                + ", fault=" + fault
+                + '}';
     }
 }

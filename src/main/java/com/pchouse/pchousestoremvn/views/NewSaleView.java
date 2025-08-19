@@ -9,6 +9,7 @@ import com.pchouse.pchousestoremvn.controllers.SaleController;
 import com.pchouse.pchousestoremvn.controllers.ProductServiceController;
 import com.pchouse.pchousestoremvn.controllers.SalePaymentController;
 import com.pchouse.pchousestoremvn.enums.OrderStatus;
+import com.pchouse.pchousestoremvn.enums.PaymentType;
 import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Customer;
 import com.pchouse.pchousestoremvn.models.Deposit;
@@ -56,6 +57,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
     public NewSaleView() {
         initComponents();
 
+        this.txt_deposit.setVisible(false);
         //avoid auto old value by focus loosing
         this.txt_contact.setFocusLostBehavior(JFormattedTextField.PERSIST);
 
@@ -743,8 +745,11 @@ public class NewSaleView extends javax.swing.JInternalFrame {
                 Deposit deposit = null;
                 OrderNote saleNote = null;
 
-                if (!this.txt_deposit.getText().trim().isEmpty()) {
-                    PaymentModal paymentModal = new PaymentModal(addSale, this.txt_deposit.getText(), new MainMenuView(CommonSetting.COMPANY), true);
+//                if (!this.txt_deposit.getText().trim().isEmpty()) { 
+//                    deposit = new Deposit(addSale, addSale.getEmployee(), CommonExtension.parseTextFieldToDouble(txt_deposit), addSale.getCreated());
+//                }
+
+                PaymentModal paymentModal = new PaymentModal(addSale, String.valueOf(addSale.getRemaining()), new MainMenuView(CommonSetting.COMPANY), true);
                     paymentModal.setVisible(true);
 
                     payments = paymentModal.getSalePayments();
@@ -754,20 +759,15 @@ public class NewSaleView extends javax.swing.JInternalFrame {
                         return;
                     }
 
-                    deposit = new Deposit(addSale, addSale.getEmployee(), CommonExtension.parseTextFieldToDouble(txt_deposit), addSale.getCreated());
-
+                    // Mark each payment with the type
+                    for (SalePayment payment : payments) {
+                        payment.setPaymentType(PaymentType.SALE);
                 }
 
-                saleNote = new OrderNote(addSale, addSale.getEmployee(), CommonConstant.SALE_CREATED_NOTE, new Date());
+                    
+                saleNote = new OrderNote(addSale, addSale.getEmployee(), CommonConstant.SALE_PICKED_NOTE, new Date());
 
-                // Note: Your _saleController.addOrderSale method must be adjusted to accept List<SalePayment> and List<Deposit>
-                long idSaleAdded = this._saleController.addOrderSale(
-                        addSale,
-                        listSaleItems,
-                        payments, // list now
-                        deposit, // list now
-                        saleNote
-                );
+                long idSaleAdded = this._saleController.addOrderSale(addSale, listSaleItems, payments, deposit, saleNote);
 
                 if (idSaleAdded > 0) {
                     isAdded = true;

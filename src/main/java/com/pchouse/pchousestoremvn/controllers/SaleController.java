@@ -15,17 +15,6 @@ public class SaleController {
 
     private final SaleDAO SALE_DAO = new SaleDAO();
 
-    // Retrieve the ID of the last sale
-    public long getLastSaleId() {
-        try {
-            return SALE_DAO.getLastSaleIdDAO();
-        } catch (Exception e) {
-            System.err.println("Error retrieving last sale ID: " + e.getMessage());
-            e.printStackTrace();
-            return -1;
-        }
-    }
-
     // Add a new sale to the database
     public long addSale(Sale pSale) throws BusinessException {
         try {

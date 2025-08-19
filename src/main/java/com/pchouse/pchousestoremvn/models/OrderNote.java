@@ -1,6 +1,5 @@
 package com.pchouse.pchousestoremvn.models;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,15 +22,15 @@ public class OrderNote implements Serializable {
     @Column(name = "ID_SERVICE_ORDER_NOTE")
     private int idServiceOrderNote;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "ID_SERVICE_ORDER", referencedColumnName = "ID_SERVICE_ORDER")
     private ServiceOrder serviceOrder;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "ID_SALE", referencedColumnName = "ID_SALE")
     private Sale sale;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "ID_EMPLOYEE", referencedColumnName = "ID_EMPLOYEE")
     private Employee employee;
 

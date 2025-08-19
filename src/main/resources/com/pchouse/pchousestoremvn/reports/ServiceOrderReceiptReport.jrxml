@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ServiceOrderReport" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="f6013a57-97c5-4d3e-a890-ccc68eab1783">
+	<parameter name="subreport_header" class="net.sf.jasperreports.engine.JasperReport"/>
+	<parameter name="companyName" class="java.lang.String"/>
+	<parameter name="companyPhone" class="java.lang.String"/>
+	<parameter name="companyEmail" class="java.lang.String"/>
+	<parameter name="companyAddress" class="java.lang.String"/>
+	<parameter name="companyLogo" class="java.io.InputStream"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
+	<parameter name="saleId" class="java.lang.Long"/>
+	<parameter name="customerName" class="java.lang.String"/>
+	<parameter name="customerEmail" class="java.lang.String"/>
+	<parameter name="customerPhone" class="java.lang.String"/>
+	<parameter name="total" class="java.lang.Double"/>
+	<parameter name="payMethod" class="java.lang.String"/>
+	<parameter name="payMethodCash" class="java.lang.Double"/>
+	<parameter name="payMethodCard" class="java.lang.Double"/>
+	<parameter name="change" class="java.lang.Double"/>
+	<parameter name="createdDate" class="java.util.Date"/>
+	<parameter name="prodServDataSource" class="net.sf.jasperreports.engine.JRDataSource"/>
+	<pageHeader>
+		<band height="110">
+			<subreport isUsingCache="true" runToBottom="false">
+				<reportElement x="0" y="0" width="555" height="65" uuid="40fb481f-a0da-43f9-9029-aca5c0112175"/>
+				<subreportParameter name="companyName">
+					<subreportParameterExpression><![CDATA[$P{companyName}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="companyPhone">
+					<subreportParameterExpression><![CDATA[$P{companyPhone}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="companyEmail">
+					<subreportParameterExpression><![CDATA[$P{companyEmail}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="companyAddress">
+					<subreportParameterExpression><![CDATA[$P{companyAddress}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="companyLogo">
+					<subreportParameterExpression><![CDATA[$P{companyLogo}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.JREmptyDataSource(1)]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{subreport_header}]]></subreportExpression>
+			</subreport>
+			<textField>
+				<reportElement x="0" y="80" width="555" height="30" uuid="326b839c-f2ff-4abf-afa8-3041fedad877"/>
+				<textElement textAlignment="Center">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["SALE RECEIPT #" + $P{saleId}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="670">
+			<staticText>
+				<reportElement x="0" y="20" width="555" height="20" uuid="cefb24c4-ecdd-46ff-9e1f-b3ac5ea83a0e"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Customer Information]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="40" width="555" height="20" uuid="bc6d71d4-95fb-4542-9dd5-638fe70d1a76"/>
+				<textFieldExpression><![CDATA["Name: " + $P{customerName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="60" width="555" height="20" uuid="72bd2607-1f1a-48ae-8adc-4042740ab97c"/>
+				<textFieldExpression><![CDATA["Email: " + $P{customerEmail}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="80" width="555" height="20" uuid="343c9b1a-2fcc-43e5-ad0a-8707f9069bc9"/>
+				<textFieldExpression><![CDATA["Phone: " + $P{customerPhone}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="120" width="555" height="20" uuid="6b2aa110-6130-48a9-88b8-0ac9b2a3d806"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Products & Services]]></text>
+			</staticText>
+			<subreport>
+				<reportElement x="0" y="140" width="555" height="120" uuid="6483ea0a-4ca6-4dc1-a48c-7da5a90778db"/>
+				<subreportParameter name="REPORT_DATA_SOURCE">
+					<subreportParameterExpression><![CDATA[$P{prodServDataSource}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "subreport_prodserv.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement x="0" y="270" width="555" height="20" uuid="12d413b1-ed28-4b6a-809d-4804d8bcc66d"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Financial Summary]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="290" width="555" height="20" uuid="7382fe25-1d60-4dac-99ff-ef539c7b7ac0"/>
+				<textFieldExpression><![CDATA["Total: €" + String.format("%.2f", $P{total})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="310" width="555" height="20" uuid="a49e68f3-917b-4528-9290-3b0bdff4fad4"/>
+				<textFieldExpression><![CDATA["Pay Method: " +
+                    ($P{payMethodCash} != 0 ? "Cash €" + String.format("%.2f", $P{payMethodCash}) : "") +
+                    (($P{payMethodCash} != 0 && $P{payMethodCard} != 0) ? " | " : "") +
+                    ($P{payMethodCard} != 0 ? "Card €" + String.format("%.2f", $P{payMethodCard}) : "")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="330" width="555" height="20" uuid="e7b5fda6-df30-4fd6-a569-364e6b735db3"/>
+				<textFieldExpression><![CDATA["Change: €" + String.format("%.2f", $P{change})]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy HH:mm">
+				<reportElement x="0" y="360" width="200" height="20" uuid="c5c1912d-5d3f-4c3f-a2cf-39d2d780bfe7"/>
+				<textElement textAlignment="Left">
+					<font size="10" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{createdDate}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

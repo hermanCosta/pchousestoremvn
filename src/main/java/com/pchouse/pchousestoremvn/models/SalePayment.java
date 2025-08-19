@@ -3,7 +3,7 @@ package com.pchouse.pchousestoremvn.models;
 import java.io.Serializable;
 import java.util.Date;
 import com.pchouse.pchousestoremvn.enums.PayMethod;
-import jakarta.persistence.CascadeType;
+import com.pchouse.pchousestoremvn.enums.PaymentType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -26,26 +26,27 @@ public class SalePayment implements Serializable {
     @Column(name = "ID_SALE_PAYMENT")
     private long idSalePayment;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "ID_SALE", referencedColumnName = "ID_SALE")
     private Sale sale;
 
-    @JoinColumn(name = "ID_DEPOSIT", referencedColumnName = "ID_DEPOSIT")
-    private Deposit deposit;
-    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "PAYMENT_TYPE")
+    private PaymentType paymentType;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "PAY_METHOD")
-    private PayMethod payMethod; 
+    private PayMethod payMethod;
 
     @Column(name = "AMOUNT_DUE")
     private double amountDue;
 
     @Column(name = "AMOUNT_PAID")
     private double amountPaid;
-    
-     @Column(name = "CARD_AMOUNT")
+
+    @Column(name = "CARD_AMOUNT")
     private Double cardAmount;
-    
+
     @Column(name = "CASH_AMOUNT")
     private Double cashAmount;
 
@@ -59,9 +60,9 @@ public class SalePayment implements Serializable {
     public SalePayment() {
     }
 
-    public SalePayment(Sale sale, Deposit deposit, PayMethod payMethod, double amountDue, double amountPaid, Double cardAmount, Double cashAmount, double changeAmount, Date dtTransaction) {
+    public SalePayment(Sale sale, PaymentType paymentType, PayMethod payMethod, double amountDue, double amountPaid, Double cardAmount, Double cashAmount, double changeAmount, Date dtTransaction) {
         this.sale = sale;
-        this.deposit = deposit;
+        this.paymentType = paymentType;
         this.payMethod = payMethod;
         this.amountDue = amountDue;
         this.amountPaid = (cashAmount != null ? cashAmount : 0) + (cardAmount != null ? cardAmount : 0);
@@ -72,7 +73,6 @@ public class SalePayment implements Serializable {
     }
 
     // Getters and setters
-
     public long getIdSalePayment() {
         return idSalePayment;
     }
@@ -89,12 +89,12 @@ public class SalePayment implements Serializable {
         this.sale = sale;
     }
 
-    public Deposit getDeposit() {
-        return deposit;
+    public PaymentType getPaymentType() {
+        return paymentType;
     }
 
-    public void setDeposit(Deposit deposit) {
-        this.deposit = deposit;
+    public void setPaymentType(PaymentType paymentType) {
+        this.paymentType = paymentType;
     }
 
     public PayMethod getPayMethod() {

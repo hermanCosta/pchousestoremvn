@@ -1,5 +1,6 @@
 package com.pchouse.pchousestoremvn.dao;
 
+import com.pchouse.pchousestoremvn.enums.PaymentType;
 import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Company;
 import com.pchouse.pchousestoremvn.models.Customer;
@@ -282,7 +283,6 @@ public class OrderDAO {
             // Persist payment
             if (payments != null) {
                 for (ServiceOrderPayment payment : payments) {
-                    payment.setDeposit(deposit);
                     payment.setServiceOrder(managedOrder);
                     em.persist(payment);
                 }
@@ -399,7 +399,7 @@ public class OrderDAO {
                 }
             }
 
-            // Persist deposit if any (same as payment — usually new record)
+            // Persist deposit if any 
             if (deposit != null) {
                 deposit.setServiceOrder(managedOrder);
                 if (deposit.getEmployee() != null) {
@@ -409,11 +409,11 @@ public class OrderDAO {
                 em.persist(deposit);
             }
 
-            // Persist payment if any (usually payments are new records)
+            // Persist payment if any
             if (payments != null) {
                 for (ServiceOrderPayment payment : payments) {
                     payment.setServiceOrder(managedOrder);
-                    payment.setDeposit(deposit);
+                    
                     em.persist(payment);
                 }
             }

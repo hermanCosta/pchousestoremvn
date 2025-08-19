@@ -3,7 +3,7 @@ package com.pchouse.pchousestoremvn.models;
 import java.io.Serializable;
 import java.util.Date;
 import com.pchouse.pchousestoremvn.enums.PayMethod;
-import jakarta.persistence.CascadeType;
+import com.pchouse.pchousestoremvn.enums.PaymentType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,7 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -26,12 +26,14 @@ public class ServiceOrderPayment implements Serializable {
     @Column(name = "ID_SERVICE_ORDER_PAYMENT")
     private long idServiceOrderPayment;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "ID_SERVICE_ORDER", referencedColumnName = "ID_SERVICE_ORDER")
     private ServiceOrder serviceOrder;
 
-    @JoinColumn(name = "ID_DEPOSIT", referencedColumnName = "ID_DEPOSIT")
-    private Deposit deposit;
+    // If you really don't need a Deposit entity, replace this with an enum
+    @Enumerated(EnumType.STRING)
+    @Column(name = "PAYMENT_TYPE")
+    private PaymentType paymentType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "PAY_METHOD")
@@ -52,16 +54,16 @@ public class ServiceOrderPayment implements Serializable {
     @Column(name = "CHANGE_AMOUNT")
     private double changeAmount;
 
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "DT_TRANSACTION")
     private Date dtTransaction;
 
     public ServiceOrderPayment() {
     }
 
-    public ServiceOrderPayment(ServiceOrder serviceOrder, Deposit deposit, PayMethod payMethod, double amountDue, double amountPaid, Double cardAmount, Double cashAmount, double changeAmount, Date dtTransaction) {
+    public ServiceOrderPayment(ServiceOrder serviceOrder, PaymentType paymentType, PayMethod payMethod, double amountDue, double amountPaid, Double cardAmount, Double cashAmount, double changeAmount, Date dtTransaction) {
         this.serviceOrder = serviceOrder;
-        this.deposit = deposit;
+        this.paymentType = paymentType;
         this.payMethod = payMethod;
         this.amountDue = amountDue;
         this.amountPaid = amountPaid;
@@ -72,11 +74,11 @@ public class ServiceOrderPayment implements Serializable {
     }
 
     // Getters and setters
-    public long getIdOrderPayment() {
+    public long getIdServiceOrderPayment() {
         return idServiceOrderPayment;
     }
 
-    public void setIdOrderPayment(long idOrderPayment) {
+    public void setIdServiceOrderPayment(long idOrderPayment) {
         this.idServiceOrderPayment = idOrderPayment;
     }
 
@@ -88,12 +90,12 @@ public class ServiceOrderPayment implements Serializable {
         this.serviceOrder = serviceOrder;
     }
 
-    public Deposit getDeposit() {
-        return deposit;
+    public PaymentType getPaymentType() {
+        return paymentType;
     }
 
-    public void setDeposit(Deposit deposit) {
-        this.deposit = deposit;
+    public void setPaymentType(PaymentType paymentType) {
+        this.paymentType = paymentType;
     }
 
     public PayMethod getPayMethod() {

@@ -259,7 +259,6 @@ public class SaleDAO {
             if (payments != null) {
 
                 for (SalePayment payment : payments) {
-                    payment.setDeposit(deposit);
                     payment.setSale(sale);
                     em.persist(payment);
                 }

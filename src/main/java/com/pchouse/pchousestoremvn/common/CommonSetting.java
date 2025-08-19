@@ -132,14 +132,13 @@ public class CommonSetting {
         JDesktopPane desktop = CommonSetting.MAIN_MENU_DESKTOP_PANE;
 
         for (JInternalFrame openFrame : desktop.getAllFrames()) {
-            try {
-                openFrame.dispose();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            openFrame.dispose();
         }
 
         desktop.add(frame);
+        desktop.revalidate();
+        desktop.repaint();
+
         frame.setVisible(true);
 
         SwingUtilities.invokeLater(() -> {
@@ -151,4 +150,5 @@ public class CommonSetting {
             }
         });
     }
+
 }

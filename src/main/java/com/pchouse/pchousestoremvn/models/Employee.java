@@ -1,6 +1,5 @@
 package com.pchouse.pchousestoremvn.models;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -20,7 +19,7 @@ public class Employee implements Serializable {
     @Column(name = "ID_EMPLOYEE")
     private long idEmployee;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "ID_PERSON", referencedColumnName = "ID_PERSON")
     private Person person;
 
@@ -84,17 +83,21 @@ public class Employee implements Serializable {
 
     @Override
     public String toString() {
-        return "Employee{" +
-                "idEmployee=" + idEmployee +
-                ", username='" + username + '\'' +
-                ", accessLevel='" + accessLevel + '\'' +
-                '}';
+        return "Employee{"
+                + "idEmployee=" + idEmployee
+                + ", username='" + username + '\''
+                + ", accessLevel='" + accessLevel + '\''
+                + '}';
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
         Employee employee = (Employee) obj;
         return idEmployee == employee.idEmployee;
     }

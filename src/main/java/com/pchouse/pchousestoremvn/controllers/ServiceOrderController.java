@@ -39,7 +39,7 @@ public class ServiceOrderController {
     }
 
 // Get order details by ID
-    public ServiceOrder getItemOrder(long pIdOrder) {
+    public ServiceOrder getServiceOrderById(long pIdOrder) {
         try {
             return ORDER_DAO.getItemOrderDAO(pIdOrder);
         } catch (Exception e) {

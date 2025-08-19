@@ -1,6 +1,5 @@
 package com.pchouse.pchousestoremvn.models;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,23 +22,23 @@ public class Deposit implements Serializable {
     @Column(name = "ID_DEPOSIT")
     private long idDeposit;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "ID_SERVICE_ORDER", referencedColumnName = "ID_SERVICE_ORDER", nullable = true)
     private ServiceOrder serviceOrder;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "ID_SALE", referencedColumnName = "ID_SALE", nullable = true)
     private Sale sale;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "ID_EMPLOYEE", referencedColumnName = "ID_EMPLOYEE", nullable = false)
     private Employee employee;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "ID_SERVICE_ORDER_PAYMENT", referencedColumnName = "ID_SERVICE_ORDER_PAYMENT", nullable = true)
     private ServiceOrderPayment serviceOrderPayment;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "ID_SALE_PAYMENT", referencedColumnName = "ID_SALE_PAYMENT", nullable = true)
     private SalePayment salePayment;
 

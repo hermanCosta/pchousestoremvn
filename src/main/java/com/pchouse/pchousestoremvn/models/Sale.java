@@ -1,7 +1,6 @@
 package com.pchouse.pchousestoremvn.models;
 
 import com.pchouse.pchousestoremvn.enums.OrderStatus;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -26,15 +25,15 @@ public class Sale implements Serializable {
     @Column(name = "ID_SALE")
     private long idSale;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "ID_CUSTOMER", referencedColumnName = "ID_CUSTOMER")
     private Customer customer;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "ID_EMPLOYEE", referencedColumnName = "ID_EMPLOYEE")
     private Employee employee;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "ID_COMPANY", referencedColumnName = "ID_COMPANY")
     private Company company;
 

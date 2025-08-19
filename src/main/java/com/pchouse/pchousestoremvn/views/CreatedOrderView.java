@@ -13,6 +13,7 @@ import com.pchouse.pchousestoremvn.controllers.OrderNoteController;
 import com.pchouse.pchousestoremvn.controllers.ProductServiceController;
 import com.pchouse.pchousestoremvn.controllers.RefundController;
 import com.pchouse.pchousestoremvn.enums.OrderStatus;
+import com.pchouse.pchousestoremvn.enums.PaymentType;
 import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Customer;
 import com.pchouse.pchousestoremvn.models.Deposit;
@@ -24,7 +25,6 @@ import com.pchouse.pchousestoremvn.models.ProductService;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderFault;
 import com.pchouse.pchousestoremvn.models.OrderNote;
-import com.pchouse.pchousestoremvn.models.Refund;
 import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrderProdServ;
 import com.pchouse.pchousestoremvn.util.ReportGenerator;
@@ -429,6 +429,10 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
                 }
             }
         }
+    }
+
+    private void showError(String message) {
+        JOptionPane.showMessageDialog(this, message, getTitle(), JOptionPane.ERROR_MESSAGE);
     }
 
     @SuppressWarnings("unchecked")
@@ -1196,9 +1200,17 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
 
                     payments = paymentModal.getServiceOrderPayments();
 
-                    deposit = new Deposit(updateOrder, updateOrder.getEmployee(),
-                            Double.parseDouble(this.txt_deposit.getText()),
-                            updateOrder.getCreated());
+                    if (payments == null || payments.isEmpty()) {
+                        showError("Payment was not completed.");
+                        return;
+                    }
+
+                    // Mark each payment with the type
+                    for (ServiceOrderPayment payment : payments) {
+                        payment.setPaymentType(PaymentType.DEPOSIT);
+                    }
+
+                    deposit = new Deposit(updateOrder, updateOrder.getEmployee(), Double.parseDouble(this.txt_deposit.getText()), updateOrder.getCreated());
                 }
 
                 orderNote = new OrderNote(updateOrder, updateOrder.getEmployee(), CommonConstant.ORDER_UPDATED_NOTE, new Date());
@@ -1212,6 +1224,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
 
                 if (isUpdated) {
                     JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_UPDATE);
+                    this.txt_deposit.setText("");
                 }
             } catch (BusinessException e) {
                 JOptionPane.showMessageDialog(this, e.getMessage(), this.getTitle(), JOptionPane.ERROR_MESSAGE);
