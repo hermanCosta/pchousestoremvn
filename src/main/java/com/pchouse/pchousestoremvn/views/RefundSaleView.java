@@ -534,7 +534,7 @@ public class RefundSaleView extends javax.swing.JInternalFrame {
     private void btn_printActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_printActionPerformed
 
         // Genarate and display the report
-        new ReportGenerator().generateSaleOrderReport(_saleModel, _listSaleProdServs, _salePayments);
+        new ReportGenerator().generateSaleReceiptReport(_saleModel, _listSaleProdServs, _salePayments);
     }//GEN-LAST:event_btn_printActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

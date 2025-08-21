@@ -21,7 +21,9 @@ import com.pchouse.pchousestoremvn.models.OrderNote;
 import com.pchouse.pchousestoremvn.models.Refund;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderFault;
+import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrderProdServ;
+import com.pchouse.pchousestoremvn.util.ReportGenerator;
 import com.pchouse.pchousestoremvn.views.modals.DepositModal;
 import com.pchouse.pchousestoremvn.views.modals.NoteModal;
 import java.awt.EventQueue;
@@ -49,11 +51,12 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
     Frame _parentFrame = JOptionPane.getFrameForComponent(this);
 
     private ServiceOrder _serviceOrderModel;
-    private List<ServiceOrderFault> _listServiceOrderFault;
-    private List<ServiceOrderProdServ> _listServiceOrderProdServ;
+    private List<ServiceOrderFault> _serviceOrderFaults;
+    private List<ServiceOrderProdServ> _serviceOrderProdServs;
     private List<Deposit> _orderDeposits;
-
-    public PickedOrderView(ServiceOrder orderModel, List<ServiceOrderFault> listOrderFault, List<ServiceOrderProdServ> listOrderProdServ, List<Deposit> listOrderDeposit) {
+    private List<ServiceOrderPayment> _serviceOrderPayments;
+    
+    public PickedOrderView(ServiceOrder orderModel, List<ServiceOrderFault> listOrderFault, List<ServiceOrderProdServ> listOrderProdServ, List<Deposit> listOrderDeposit, List<ServiceOrderPayment> serviceOrderPayments ) {
         initComponents();
 
         //avoid auto old value by focus loosing
@@ -75,9 +78,10 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
         this._dtmFault = (DefaultTableModel) this.table_view_faults.getModel();
 
         this._serviceOrderModel = orderModel;
-        this._listServiceOrderFault = listOrderFault;
-        this._listServiceOrderProdServ = listOrderProdServ;
+        this._serviceOrderFaults = listOrderFault;
+        this._serviceOrderProdServs = listOrderProdServ;
         this._orderDeposits = listOrderDeposit;
+        this._serviceOrderPayments = serviceOrderPayments;
         loadOrderFields(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
     }
 
@@ -166,73 +170,7 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
         this.lbl_total_field.setText(String.valueOf(sum));
         this.lbl_due_field.setText(this.lbl_total_field.getText());
     }
-
-    private void updateOrderStatus(OrderStatus newStatus, String confirmMessage, String noteMessage) {
-        int confirm = JOptionPane.showConfirmDialog(
-                this,
-                confirmMessage,
-                "Confirm Action",
-                JOptionPane.YES_NO_OPTION
-        );
-
-        if (confirm == JOptionPane.YES_OPTION) {
-            String password = CommonExtension.requestUserPassword();
-            Employee employee = _employeeController.getEmployeeByPass(password);
-
-            if (employee != null) {
-                _serviceOrderModel.setStatus(newStatus);
-                _serviceOrderModel.setEmployee(employee);
-
-                boolean isOrderUpdated = this._orderController.updateServiceOrderStatus(_serviceOrderModel);
-                if (isOrderUpdated) {
-                    OrderNote orderNote = new OrderNote(
-                            _serviceOrderModel,
-                            employee,
-                            noteMessage,
-                            new Date()
-                    );
-
-                    long idOrderNote = _orderNoteController.addOrderNote(orderNote);
-
-                    if (idOrderNote > 0) {
-                        JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_UPDATE);
-                    } else {
-                        JOptionPane.showMessageDialog(this, CommonConstant.ERROR_ADD_NOTE, null, JOptionPane.ERROR_MESSAGE);
-                    }
-
-                    if (newStatus == OrderStatus.FIXED) {
-                        PickedOrderView fixedOrderView = new PickedOrderView(
-                                _serviceOrderModel,
-                                _listServiceOrderFault,
-                                _listServiceOrderProdServ,
-                                _orderDeposits
-                        );
-                        CommonSetting.openInternalFrame(fixedOrderView, "Order Fixed: " + _serviceOrderModel.getIdServiceOrder());
-                    } else if (newStatus == OrderStatus.NOT_FIXED) {
-                        NotFixedOrderView notFixedOrderView = new NotFixedOrderView(
-                                _serviceOrderModel,
-                                _listServiceOrderFault,
-                                _listServiceOrderProdServ,
-                                _orderDeposits
-                        );
-                        CommonSetting.openInternalFrame(notFixedOrderView, "Order Not Fixed: " + _serviceOrderModel.getIdServiceOrder());
-                    } else if (newStatus == OrderStatus.IN_PROGRESS) {
-                        CreatedOrderView createdOrderView = new CreatedOrderView(
-                                _serviceOrderModel,
-                                _listServiceOrderFault,
-                                _listServiceOrderProdServ,
-                                _orderDeposits
-                        );
-                        CommonSetting.openInternalFrame(createdOrderView, "Order In Progress");
-                    }
-
-                } else {
-                    JOptionPane.showMessageDialog(this, CommonConstant.ERROR_UPDATE, null, JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        }
-    }
-
+   
     private void refundServiceOrder() {
         int confirm = JOptionPane.showConfirmDialog(
                 this,
@@ -256,7 +194,7 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
                     if (refundId > 0) {
                         JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_REFUND);
 
-                        RefundOrderView refundOrderView = new RefundOrderView(_serviceOrderModel, _listServiceOrderFault, _listServiceOrderProdServ, _orderDeposits);
+                        RefundOrderView refundOrderView = new RefundOrderView(_serviceOrderModel, _serviceOrderFaults, _serviceOrderProdServs, _orderDeposits);
                         CommonSetting.openInternalFrame(refundOrderView, "Refunded Order: " + _serviceOrderModel.getIdServiceOrder());
                     }
 
@@ -318,6 +256,7 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
         btn_notes = new javax.swing.JButton();
         btn_deposit = new javax.swing.JButton();
         btn_refund_sale = new javax.swing.JButton();
+        btn_print = new javax.swing.JButton();
         scroll_pane_products = new javax.swing.JScrollPane();
         table_view_products = new javax.swing.JTable();
         scroll_pane_faults = new javax.swing.JScrollPane();
@@ -709,6 +648,17 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
             }
         });
 
+        btn_print.setBackground(new java.awt.Color(21, 76, 121));
+        btn_print.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+        btn_print.setForeground(new java.awt.Color(255, 255, 255));
+        btn_print.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_print.png"))); // NOI18N
+        btn_print.setText("Print");
+        btn_print.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_printActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panel_order_buttonsLayout = new javax.swing.GroupLayout(panel_order_buttons);
         panel_order_buttons.setLayout(panel_order_buttonsLayout);
         panel_order_buttonsLayout.setHorizontalGroup(
@@ -720,6 +670,8 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
                 .addComponent(btn_notes)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btn_deposit)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btn_print)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panel_order_buttonsLayout.setVerticalGroup(
@@ -729,7 +681,8 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
                 .addGroup(panel_order_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_notes)
                     .addComponent(btn_deposit)
-                    .addComponent(btn_refund_sale))
+                    .addComponent(btn_refund_sale)
+                    .addComponent(btn_print))
                 .addContainerGap())
         );
 
@@ -1026,10 +979,16 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
 
     }//GEN-LAST:event_btn_refund_saleActionPerformed
 
+    private void btn_printActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_printActionPerformed
+        // Genarate and display the report
+        new ReportGenerator().generateServiceOrderReceiptReport(_serviceOrderModel, _serviceOrderProdServs, _serviceOrderPayments);
+    }//GEN-LAST:event_btn_printActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_copy;
     private javax.swing.JButton btn_deposit;
     private javax.swing.JButton btn_notes;
+    private javax.swing.JButton btn_print;
     private javax.swing.JButton btn_refund_sale;
     private javax.swing.JEditorPane editor_pane_notes;
     private javax.swing.JTextField hdn_txt_customer_id;

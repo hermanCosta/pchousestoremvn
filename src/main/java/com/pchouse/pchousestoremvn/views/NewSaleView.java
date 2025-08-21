@@ -36,6 +36,7 @@ import java.util.Objects;
 import javax.swing.DefaultListModel;
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.MaskFormatter;
@@ -748,23 +749,29 @@ public class NewSaleView extends javax.swing.JInternalFrame {
 //                if (!this.txt_deposit.getText().trim().isEmpty()) { 
 //                    deposit = new Deposit(addSale, addSale.getEmployee(), CommonExtension.parseTextFieldToDouble(txt_deposit), addSale.getCreated());
 //                }
+                PaymentModal paymentModal = new PaymentModal(
+                        addSale,
+                        PaymentType.SALE,
+                        String.valueOf(addSale.getRemaining()),
+                        SwingUtilities.getWindowAncestor(this), // use current window as parent
+                        true
+                );
 
-                PaymentModal paymentModal = new PaymentModal(addSale, String.valueOf(addSale.getRemaining()), new MainMenuView(CommonSetting.COMPANY), true);
-                    paymentModal.setVisible(true);
+                //PaymentModal paymentModal = new PaymentModal(addSale, String.valueOf(addSale.getRemaining()), new MainMenuView(CommonSetting.COMPANY), true);
+                paymentModal.setVisible(true);
 
-                    payments = paymentModal.getSalePayments();
+                payments = paymentModal.getSalePayments();
 
-                    if (payments == null || payments.isEmpty()) {
-                        showError("Payment was not completed.");
-                        return;
-                    }
-
-                    // Mark each payment with the type
-                    for (SalePayment payment : payments) {
-                        payment.setPaymentType(PaymentType.SALE);
+                if (payments == null || payments.isEmpty()) {
+                    showError("Payment was not completed.");
+                    return;
                 }
 
-                    
+//                // Mark each payment with the type
+//                for (SalePayment payment : payments) {
+//                    payment.setPaymentType(PaymentType.SALE);
+//                }
+
                 saleNote = new OrderNote(addSale, addSale.getEmployee(), CommonConstant.SALE_PICKED_NOTE, new Date());
 
                 long idSaleAdded = this._saleController.addOrderSale(addSale, listSaleItems, payments, deposit, saleNote);
@@ -779,7 +786,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
                     clearFields();
 
                     List<SalePayment> salePayments = _salePaymentController.getSalePayments(addSale);
-                    new ReportGenerator().generateSaleOrderReport(addSale, listSaleItems, salePayments);
+                    new ReportGenerator().generateSaleReceiptReport(addSale, listSaleItems, salePayments);
                 }
 
             } catch (BusinessException e) {

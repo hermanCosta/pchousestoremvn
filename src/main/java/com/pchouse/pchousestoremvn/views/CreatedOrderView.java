@@ -44,6 +44,7 @@ import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.MaskFormatter;
@@ -400,10 +401,9 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
 
                     long idOrderNote = _orderNoteController.addOrderNote(orderNote);
 
-                    if (idOrderNote > 0) {
-                        JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_UPDATE);
-                    } else {
+                    if (idOrderNote == 0) {
                         JOptionPane.showMessageDialog(this, CommonConstant.ERROR_ADD_NOTE, null, JOptionPane.ERROR_MESSAGE);
+                        return;
                     }
 
                     if (newStatus == OrderStatus.FIXED) {
@@ -1195,7 +1195,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
                 OrderNote orderNote = null;
 
                 if (!this.txt_deposit.getText().trim().isEmpty()) {
-                    PaymentModal paymentModal = new PaymentModal(updateOrder, this.txt_deposit.getText(), new MainMenuView(CommonSetting.COMPANY), true);
+                    PaymentModal paymentModal = new PaymentModal(updateOrder, PaymentType.DEPOSIT, this.txt_deposit.getText(), SwingUtilities.getWindowAncestor(this), true);
                     paymentModal.setVisible(true);
 
                     payments = paymentModal.getServiceOrderPayments();
@@ -1205,10 +1205,10 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
                         return;
                     }
 
-                    // Mark each payment with the type
-                    for (ServiceOrderPayment payment : payments) {
-                        payment.setPaymentType(PaymentType.DEPOSIT);
-                    }
+//                    // Mark each payment with the type
+//                    for (ServiceOrderPayment payment : payments) {
+//                        payment.setPaymentType(PaymentType.DEPOSIT);
+//                    }
 
                     deposit = new Deposit(updateOrder, updateOrder.getEmployee(), Double.parseDouble(this.txt_deposit.getText()), updateOrder.getCreated());
                 }

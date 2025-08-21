@@ -24,6 +24,7 @@ import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderFault;
 import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrderProdServ;
+import com.pchouse.pchousestoremvn.util.ReportGenerator;
 import com.pchouse.pchousestoremvn.views.modals.DepositModal;
 import com.pchouse.pchousestoremvn.views.modals.NoteModal;
 import com.pchouse.pchousestoremvn.views.modals.PaymentModal;
@@ -48,7 +49,6 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
     private final OrderNoteController _orderNoteController;
     private final DeviceController _deviceController;
     private final ServiceOrderPaymentController _serviceOrderPaymentController;
-    private final DepositController _depositController;
     private final DefaultTableModel _dtmProdServ;
     private final DefaultTableModel _dtmFault;
     Frame _parentFrame = JOptionPane.getFrameForComponent(this);
@@ -76,7 +76,6 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
         this._orderNoteController = new OrderNoteController();
         this._deviceController = new DeviceController();
         this._serviceOrderPaymentController = new ServiceOrderPaymentController();
-        this._depositController = new DepositController();
 
         this._dtmProdServ = (DefaultTableModel) this.table_view_products.getModel();
         this._dtmFault = (DefaultTableModel) this.table_view_faults.getModel();
@@ -261,6 +260,7 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
 
                         PaymentModal paymentModal = new PaymentModal(
                                 _serviceOrderModel,
+                                PaymentType.ORDER,
                                 String.valueOf(_serviceOrderModel.getDue()),
                                 SwingUtilities.getWindowAncestor(this), // use current window as parent
                                 true
@@ -274,20 +274,16 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
                             return;
                         }
 
-                        // Mark each payment with the type
-                        for (ServiceOrderPayment payment : payments) {
-                            payment.setPaymentType(PaymentType.ORDER);
-                        }
-
                         OrderNote orderNote = new OrderNote(_serviceOrderModel, _serviceOrderModel.getEmployee(), CommonConstant.ORDER_PICKED_NOTE, new Date());
 
                         long idOrderPayment = _serviceOrderPaymentController.addOrderPayment(payments, orderNote);
 
                         if (idOrderPayment > 0) {
-                            PickedOrderView pickedOrderView = new PickedOrderView(_serviceOrderModel, _listServiceOrderFault, _listServiceOrderProdServ, _listOrderDeposit);
+                            PickedOrderView pickedOrderView = new PickedOrderView(_serviceOrderModel, _listServiceOrderFault, _listServiceOrderProdServ, _listOrderDeposit, payments);
                             CommonSetting.openInternalFrame(pickedOrderView, "Picked Order: " + _serviceOrderModel.getIdServiceOrder());
 
-                            //new ReportGenerator().generateServiceOrderReport(addOrder, listOrderFault, listOrderProdServ);
+                            // Genarate and display the report
+                            new ReportGenerator().generateServiceOrderReceiptReport(_serviceOrderModel, _listServiceOrderProdServ, payments);
                         }
                     } catch (BusinessException e) {
                         JOptionPane.showMessageDialog(this, e.getMessage(), this.getTitle(), JOptionPane.ERROR_MESSAGE);

@@ -5,6 +5,7 @@ import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.models.SaleProdServ;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderFault;
+import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrderProdServ;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -99,7 +100,7 @@ public class ReportGenerator {
         }
     }
 
-    public void generateSaleOrderReport(Sale sale, List<SaleProdServ> prodServs, List<SalePayment> salePayments) {
+    public void generateSaleReceiptReport(Sale sale, List<SaleProdServ> prodServs, List<SalePayment> salePayments) {
         try {
             // Sum amounts by payment method
             double totalCash = 0.0;
@@ -116,8 +117,8 @@ public class ReportGenerator {
                             break;
                         case COMBINE:
                             totalCash += payment.getCashAmount();
-                             totalCard += payment.getCardAmount();
-                             break;
+                            totalCard += payment.getCardAmount();
+                            break;
                         default:
                             break; // ignore other payment methods
                     }
@@ -184,6 +185,108 @@ public class ReportGenerator {
             JasperViewer.viewReport(jasperPrint, false);
 
             System.out.println("Report generated successfully.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void generateServiceOrderReceiptReport(ServiceOrder order, List<ServiceOrderProdServ> prodServs, List<ServiceOrderPayment> serviceOrderPayments) {
+        try {
+            // Sum amounts by payment method
+            double totalCash = 0.0;
+            double totalCard = 0.0;
+
+            for (ServiceOrderPayment payment : serviceOrderPayments) {
+                if (payment.getPayMethod() != null) {
+                    switch (payment.getPayMethod()) {
+                        case CASH:
+                            totalCash += payment.getCashAmount();
+                            break;
+                        case CARD:
+                            totalCard += payment.getCardAmount();
+                            break;
+                        case COMBINE:
+                            totalCash += payment.getCashAmount();
+                            totalCard += payment.getCardAmount();
+                            break;
+                        default:
+                            break; // ignore others
+                    }
+                }
+            }
+
+            // Paths to your reports
+            String mainReportPath = "/com/pchouse/pchousestoremvn/reports/ServiceOrderReceiptReport.jasper";
+            String headerSubreportPath = "/com/pchouse/pchousestoremvn/reports/subreport_header.jasper";
+            String subreportDir = "/com/pchouse/pchousestoremvn/reports/";
+
+            // Load the header subreport JasperReport object
+            JasperReport headerSubreport = (JasperReport) JRLoader.loadObject(
+                    getClass().getResource(headerSubreportPath)
+            );
+
+            // Create data source
+            JRBeanCollectionDataSource prodServDataSource = new JRBeanCollectionDataSource(prodServs);
+
+            // Prepare parameters
+            Map<String, Object> parameters = new HashMap<>();
+
+            // Company info
+            parameters.put("companyName", order.getCompany().getName());
+            parameters.put("companyAddress", order.getCompany().getAddress());
+            parameters.put("companyPhone", order.getCompany().getContactOne());
+            parameters.put("companyEmail", order.getCompany().getEmail());
+
+            // Logo
+            InputStream logoStream = getClass().getResourceAsStream("/icons/icon_logo_header_lg.png");
+            if (logoStream == null) {
+                System.err.println("Logo not found!");
+            }
+            parameters.put("companyLogo", logoStream);
+
+            // Subreport
+            parameters.put("subreport_header", headerSubreport);
+
+            // Order fields
+            parameters.put("serviceOrderId", order.getIdServiceOrder());
+            parameters.put("customerName", order.getCustomer().getPerson().getFirstName() + " " + order.getCustomer().getPerson().getLastName());
+            parameters.put("customerPhone", order.getCustomer().getPerson().getContactNo());
+            parameters.put("customerEmail", order.getCustomer().getPerson().getEmail());
+            parameters.put("brand", order.getDevice().getBrand());
+            parameters.put("model", order.getDevice().getModel());
+            parameters.put("serialNumber", order.getDevice().getSerialNumber());
+            parameters.put("createdDate", order.getCreated());
+            parameters.put("createdDate", order.getCreated());
+            parameters.put("total", order.getTotal());
+            parameters.put("deposit", order.getTotal() - order.getDue());
+            parameters.put("remaining", order.getDue());
+
+            // Payment method totals
+            parameters.put("payMethodCash", totalCash);
+            parameters.put("payMethodCard", totalCard);
+
+            // Change amount (take from first payment safely)
+            if (serviceOrderPayments != null && !serviceOrderPayments.isEmpty()) {
+                parameters.put("change", serviceOrderPayments.get(0).getChangeAmount());
+            } else {
+                parameters.put("change", 0.0);
+            }
+
+            // DataSource for products/services
+            parameters.put("prodServDataSource", prodServDataSource);
+
+            // Subreport dir
+            parameters.put("SUBREPORT_DIR", getClass().getResource(subreportDir).getPath());
+
+            // Load and fill main report
+            JasperReport mainReport = (JasperReport) JRLoader.loadObject(getClass().getResource(mainReportPath));
+            JasperPrint jasperPrint = JasperFillManager.fillReport(mainReport, parameters, new JREmptyDataSource());
+
+            // Show
+            JasperViewer.viewReport(jasperPrint, false);
+
+            System.out.println("Service Order Receipt generated successfully.");
 
         } catch (Exception e) {
             e.printStackTrace();

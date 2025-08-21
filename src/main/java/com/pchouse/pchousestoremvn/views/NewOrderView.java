@@ -39,6 +39,7 @@ import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.MaskFormatter;
@@ -1011,7 +1012,7 @@ public class NewOrderView extends javax.swing.JInternalFrame {
                 OrderNote orderNote = null;
 
                 if (!this.txt_deposit.getText().trim().isEmpty()) {
-                    PaymentModal paymentModal = new PaymentModal(addOrder, this.txt_deposit.getText(), new MainMenuView(CommonSetting.COMPANY), true);
+                    PaymentModal paymentModal = new PaymentModal(addOrder, PaymentType.ORDER, this.txt_deposit.getText(), SwingUtilities.getWindowAncestor(this), true);
                     paymentModal.setVisible(true);
 
                     payments = paymentModal.getServiceOrderPayments();
@@ -1021,10 +1022,10 @@ public class NewOrderView extends javax.swing.JInternalFrame {
                         return;
                     }
 
-                    // Mark each payment with the type
-                    for (ServiceOrderPayment payment : payments) {
-                        payment.setPaymentType(PaymentType.DEPOSIT);
-                    }
+//                    // Mark each payment with the type
+//                    for (ServiceOrderPayment payment : payments) {
+//                        payment.setPaymentType(PaymentType.DEPOSIT);
+//                    }
 
                     deposit = new Deposit(addOrder, addOrder.getEmployee(), Double.parseDouble(this.txt_deposit.getText()), addOrder.getCreated());
                 }

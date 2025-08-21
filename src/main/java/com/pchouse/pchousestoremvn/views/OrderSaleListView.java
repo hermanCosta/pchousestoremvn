@@ -11,6 +11,7 @@ import com.pchouse.pchousestoremvn.controllers.SaleController;
 import com.pchouse.pchousestoremvn.controllers.SalePaymentController;
 import com.pchouse.pchousestoremvn.controllers.SaleProdServController;
 import com.pchouse.pchousestoremvn.controllers.ServiceOrderFaultController;
+import com.pchouse.pchousestoremvn.controllers.ServiceOrderPaymentController;
 import com.pchouse.pchousestoremvn.controllers.ServiceOrderProdServController;
 import com.pchouse.pchousestoremvn.enums.OrderStatus;
 import com.pchouse.pchousestoremvn.models.Deposit;
@@ -19,6 +20,7 @@ import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.models.SaleProdServ;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderFault;
+import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrderProdServ;
 import java.beans.PropertyVetoException;
 import java.util.List;
@@ -39,6 +41,7 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
     private final SaleController _saleController;
     private final SaleProdServController _saleProdServController;
     private final SalePaymentController _salePaymentController;
+    private final ServiceOrderPaymentController _serviceOrderPaymentController;
     private final DefaultTableModel _dtmOrder;
     private final DefaultTableModel _dtmSale;
 
@@ -53,13 +56,13 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
         this._saleController = new SaleController();
         this._saleProdServController = new SaleProdServController();
         this._salePaymentController = new SalePaymentController();
-        this._dtmOrder = (DefaultTableModel) this.table_view_order_list.getModel();
-        this._dtmSale = (DefaultTableModel) this.table_view_sale_list.getModel();
-
+        this._serviceOrderPaymentController = new ServiceOrderPaymentController();
         this._serviceOrderFaultController = new ServiceOrderFaultController();
         this._serviceOrderProdServController = new ServiceOrderProdServController();
         this._orderDepositController = new DepositController();
 
+        this._dtmOrder = (DefaultTableModel) this.table_view_order_list.getModel();
+        this._dtmSale = (DefaultTableModel) this.table_view_sale_list.getModel();
         loadOrderListTable();
         loadSaleListTable();
     }
@@ -170,6 +173,7 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
                 List<ServiceOrderFault> listOrderFault = _serviceOrderFaultController.getOrderFaults(orderModel);
                 List<ServiceOrderProdServ> listOrderProdServ = _serviceOrderProdServController.getOrderProdServ(orderModel);
                 List<Deposit> listOrderDeposit = _orderDepositController.getOrderDeposit(orderModel);
+                List<ServiceOrderPayment> listServiceOrderPayment = _serviceOrderPaymentController.getServiceOrderPayments(orderModel);
 
                 if (orderModel.getStatus() == OrderStatus.IN_PROGRESS) {
                     CreatedOrderView createdOrderView = new CreatedOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
@@ -181,7 +185,7 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
                     NotFixedOrderView notFixedOrderView = new NotFixedOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
                     openInternalFrame(notFixedOrderView, "Order Not Fixed" + orderId);
                 } else if (orderModel.getStatus() == OrderStatus.PICKED) {
-                    PickedOrderView pickedOrderView = new PickedOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
+                    PickedOrderView pickedOrderView = new PickedOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit, listServiceOrderPayment);
                     openInternalFrame(pickedOrderView, "Picked Order: " + orderId);
                 } else if (orderModel.getStatus() == OrderStatus.REFUNDED) {
                     RefundOrderView refundOrderView = new RefundOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
