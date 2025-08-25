@@ -18,9 +18,11 @@ import com.pchouse.pchousestoremvn.models.Employee;
 import com.pchouse.pchousestoremvn.models.OrderNote;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderFault;
+import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrderProdServ;
 import com.pchouse.pchousestoremvn.views.modals.DepositModal;
 import com.pchouse.pchousestoremvn.views.modals.NoteModal;
+import com.pchouse.pchousestoremvn.views.modals.PaymentHistoryModal;
 import java.awt.EventQueue;
 import java.awt.Frame;
 import java.awt.Toolkit;
@@ -48,8 +50,9 @@ public class RefundOrderView extends javax.swing.JInternalFrame {
     private List<ServiceOrderFault> _listServiceOrderFault;
     private List<ServiceOrderProdServ> _listServiceOrderProdServ;
     private List<Deposit> _listOrderDeposit;
+    private List<ServiceOrderPayment> _serviceOrderPayments;
 
-    public RefundOrderView(ServiceOrder orderModel, List<ServiceOrderFault> listOrderFault, List<ServiceOrderProdServ> listOrderProdServ, List<Deposit> listOrderDeposit) {
+    public RefundOrderView(ServiceOrder orderModel, List<ServiceOrderFault> listOrderFault, List<ServiceOrderProdServ> listOrderProdServ, List<Deposit> listOrderDeposit, List<ServiceOrderPayment> _serviceOrderPayments) {
         initComponents();
 
         //avoid auto old value by focus loosing
@@ -73,6 +76,7 @@ public class RefundOrderView extends javax.swing.JInternalFrame {
         this._listServiceOrderFault = listOrderFault;
         this._listServiceOrderProdServ = listOrderProdServ;
         this._listOrderDeposit = listOrderDeposit;
+        this._serviceOrderPayments = _serviceOrderPayments;
         loadOrderFields(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
     }
 
@@ -208,7 +212,8 @@ public class RefundOrderView extends javax.swing.JInternalFrame {
                                 _serviceOrderModel,
                                 _listServiceOrderFault,
                                 _listServiceOrderProdServ,
-                                _listOrderDeposit
+                                _listOrderDeposit,
+                                _serviceOrderPayments
                         );
                         CommonSetting.openInternalFrame(notFixedOrderView, "Order Not Fixed: " + _serviceOrderModel.getIdServiceOrder());
                     } else if (newStatus == OrderStatus.IN_PROGRESS) {
@@ -273,8 +278,8 @@ public class RefundOrderView extends javax.swing.JInternalFrame {
         lbl_deposit_paid = new javax.swing.JLabel();
         panel_order_buttons = new javax.swing.JPanel();
         btn_notes = new javax.swing.JButton();
-        btn_undo_fixed = new javax.swing.JButton();
         btn_deposit = new javax.swing.JButton();
+        btn_payments = new javax.swing.JButton();
         scroll_pane_products = new javax.swing.JScrollPane();
         table_view_products = new javax.swing.JTable();
         scroll_pane_faults = new javax.swing.JScrollPane();
@@ -298,7 +303,6 @@ public class RefundOrderView extends javax.swing.JInternalFrame {
 
         lbl_auto_order_no.setBackground(new java.awt.Color(255, 102, 102));
         lbl_auto_order_no.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
-        lbl_auto_order_no.setForeground(new java.awt.Color(255, 102, 102));
         lbl_auto_order_no.setText("autoGen");
 
         lbl_first_name.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
@@ -437,7 +441,7 @@ public class RefundOrderView extends javax.swing.JInternalFrame {
         lbl_order_not_fixed.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
         lbl_order_not_fixed.setForeground(new java.awt.Color(255, 102, 102));
         lbl_order_not_fixed.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lbl_order_not_fixed.setText("ORDER NOT FIXED");
+        lbl_order_not_fixed.setText("ORDER REFUNDED");
 
         javax.swing.GroupLayout panel_input_detailLayout = new javax.swing.GroupLayout(panel_input_detail);
         panel_input_detail.setLayout(panel_input_detailLayout);
@@ -647,17 +651,6 @@ public class RefundOrderView extends javax.swing.JInternalFrame {
             }
         });
 
-        btn_undo_fixed.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        btn_undo_fixed.setForeground(new java.awt.Color(255, 255, 255));
-        btn_undo_fixed.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_undo.png"))); // NOI18N
-        btn_undo_fixed.setText("Undo");
-        btn_undo_fixed.setNextFocusableComponent(txt_first_name);
-        btn_undo_fixed.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_undo_fixedActionPerformed(evt);
-            }
-        });
-
         btn_deposit.setBackground(new java.awt.Color(21, 76, 121));
         btn_deposit.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_deposit.setForeground(new java.awt.Color(255, 255, 255));
@@ -670,6 +663,17 @@ public class RefundOrderView extends javax.swing.JInternalFrame {
             }
         });
 
+        btn_payments.setBackground(new java.awt.Color(21, 76, 121));
+        btn_payments.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+        btn_payments.setForeground(new java.awt.Color(255, 255, 255));
+        btn_payments.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_payments_white.png"))); // NOI18N
+        btn_payments.setText("Payments");
+        btn_payments.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_paymentsActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panel_order_buttonsLayout = new javax.swing.GroupLayout(panel_order_buttons);
         panel_order_buttons.setLayout(panel_order_buttonsLayout);
         panel_order_buttonsLayout.setHorizontalGroup(
@@ -677,10 +681,10 @@ public class RefundOrderView extends javax.swing.JInternalFrame {
             .addGroup(panel_order_buttonsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(btn_notes)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btn_deposit)
-                .addGap(18, 18, 18)
-                .addComponent(btn_undo_fixed)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btn_payments)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panel_order_buttonsLayout.setVerticalGroup(
@@ -689,8 +693,8 @@ public class RefundOrderView extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(panel_order_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_notes)
-                    .addComponent(btn_undo_fixed)
-                    .addComponent(btn_deposit))
+                    .addComponent(btn_deposit)
+                    .addComponent(btn_payments))
                 .addContainerGap())
         );
 
@@ -976,25 +980,23 @@ public class RefundOrderView extends javax.swing.JInternalFrame {
         noteModal.setVisible(true);
     }//GEN-LAST:event_btn_notesActionPerformed
 
-    private void btn_undo_fixedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_undo_fixedActionPerformed
-        updateOrderStatus(
-                OrderStatus.IN_PROGRESS,
-                CommonConstant.CONFIRM_ORDER_IN_PROGRESS,
-                CommonConstant.ORDER_BACKED_IN_PROGRESS_NOTE
-        );
-    }//GEN-LAST:event_btn_undo_fixedActionPerformed
-
     private void btn_depositActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_depositActionPerformed
         DepositModal depositModal = new DepositModal(_serviceOrderModel, _parentFrame, true);
         depositModal.setLocationRelativeTo(this);
         depositModal.setVisible(true);
     }//GEN-LAST:event_btn_depositActionPerformed
 
+    private void btn_paymentsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_paymentsActionPerformed
+        PaymentHistoryModal paymentHistoryModal = new PaymentHistoryModal(_serviceOrderModel, _serviceOrderPayments, _parentFrame, true);
+        paymentHistoryModal.setLocationRelativeTo(this);
+        paymentHistoryModal.setVisible(true);
+    }//GEN-LAST:event_btn_paymentsActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_copy;
     private javax.swing.JButton btn_deposit;
     private javax.swing.JButton btn_notes;
-    private javax.swing.JButton btn_undo_fixed;
+    private javax.swing.JButton btn_payments;
     private javax.swing.JEditorPane editor_pane_notes;
     private javax.swing.JTextField hdn_txt_customer_id;
     private javax.swing.JLabel lbl_auto_order_no;

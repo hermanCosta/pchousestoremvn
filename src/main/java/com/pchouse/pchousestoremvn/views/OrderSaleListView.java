@@ -188,7 +188,7 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
                     PickedOrderView pickedOrderView = new PickedOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit, listServiceOrderPayment);
                     openInternalFrame(pickedOrderView, "Picked Order: " + orderId);
                 } else if (orderModel.getStatus() == OrderStatus.REFUNDED) {
-                    RefundOrderView refundOrderView = new RefundOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
+                    RefundOrderView refundOrderView = new RefundOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit, listServiceOrderPayment);
                     openInternalFrame(refundOrderView, "Order Refunded" + orderId);
                 }
 

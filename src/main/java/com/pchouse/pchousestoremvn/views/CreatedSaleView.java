@@ -19,6 +19,7 @@ import com.pchouse.pchousestoremvn.models.SaleProdServ;
 import com.pchouse.pchousestoremvn.util.ReportGenerator;
 import com.pchouse.pchousestoremvn.views.modals.DepositModal;
 import com.pchouse.pchousestoremvn.views.modals.NoteModal;
+import com.pchouse.pchousestoremvn.views.modals.PaymentHistoryModal;
 import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
@@ -166,6 +167,7 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
         btn_notes = new javax.swing.JButton();
         btn_deposit = new javax.swing.JButton();
         btn_print = new javax.swing.JButton();
+        btn_payments = new javax.swing.JButton();
         scroll_pane_products = new javax.swing.JScrollPane();
         table_view_products = new javax.swing.JTable();
 
@@ -378,6 +380,17 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
             }
         });
 
+        btn_payments.setBackground(new java.awt.Color(21, 76, 121));
+        btn_payments.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+        btn_payments.setForeground(new java.awt.Color(255, 255, 255));
+        btn_payments.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_payments_white.png"))); // NOI18N
+        btn_payments.setText("Payments");
+        btn_payments.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_paymentsActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panel_sale_buttonsLayout = new javax.swing.GroupLayout(panel_sale_buttons);
         panel_sale_buttons.setLayout(panel_sale_buttonsLayout);
         panel_sale_buttonsLayout.setHorizontalGroup(
@@ -390,6 +403,8 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btn_deposit)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btn_payments)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btn_print)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -401,7 +416,8 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
                     .addComponent(btn_refund_sale)
                     .addComponent(btn_notes)
                     .addComponent(btn_deposit)
-                    .addComponent(btn_print))
+                    .addComponent(btn_print)
+                    .addComponent(btn_payments))
                 .addContainerGap())
         );
 
@@ -537,10 +553,17 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
         new ReportGenerator().generateSaleReceiptReport(_saleModel, _listSaleProdServs, _salePayments);
     }//GEN-LAST:event_btn_printActionPerformed
 
+    private void btn_paymentsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_paymentsActionPerformed
+        PaymentHistoryModal paymentHistoryModal = new PaymentHistoryModal(_saleModel, _salePayments, _parentFrame, true);
+        paymentHistoryModal.setLocationRelativeTo(this);
+        paymentHistoryModal.setVisible(true);
+    }//GEN-LAST:event_btn_paymentsActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_copy;
     private javax.swing.JButton btn_deposit;
     private javax.swing.JButton btn_notes;
+    private javax.swing.JButton btn_payments;
     private javax.swing.JButton btn_print;
     private javax.swing.JButton btn_refund_sale;
     private javax.swing.JTextField hdn_txt_customer_id;

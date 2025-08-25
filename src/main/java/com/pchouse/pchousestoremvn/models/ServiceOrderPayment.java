@@ -13,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -25,6 +26,10 @@ public class ServiceOrderPayment implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID_SERVICE_ORDER_PAYMENT")
     private long idServiceOrderPayment;
+
+    @OneToOne
+    @JoinColumn(name = "ID_EMPLOYEE", referencedColumnName = "ID_EMPLOYEE")
+    private Employee employee;
 
     @ManyToOne
     @JoinColumn(name = "ID_SERVICE_ORDER", referencedColumnName = "ID_SERVICE_ORDER")
@@ -61,7 +66,8 @@ public class ServiceOrderPayment implements Serializable {
     public ServiceOrderPayment() {
     }
 
-    public ServiceOrderPayment(ServiceOrder serviceOrder, PaymentType paymentType, PayMethod payMethod, double amountDue, double amountPaid, Double cardAmount, Double cashAmount, double changeAmount, Date dtTransaction) {
+    public ServiceOrderPayment(Employee employee, ServiceOrder serviceOrder, PaymentType paymentType, PayMethod payMethod, double amountDue, double amountPaid, Double cardAmount, Double cashAmount, double changeAmount, Date dtTransaction) {
+        this.employee = employee;
         this.serviceOrder = serviceOrder;
         this.paymentType = paymentType;
         this.payMethod = payMethod;
@@ -80,6 +86,14 @@ public class ServiceOrderPayment implements Serializable {
 
     public void setIdServiceOrderPayment(long idOrderPayment) {
         this.idServiceOrderPayment = idOrderPayment;
+    }
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
 
     public ServiceOrder getServiceOrder() {

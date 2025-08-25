@@ -105,9 +105,12 @@ public class ReportGenerator {
             // Sum amounts by payment method
             double totalCash = 0.0;
             double totalCard = 0.0;
+            double totalChange = 0.0;
 
             for (SalePayment payment : salePayments) {
                 if (payment.getPayMethod() != null) {
+                    totalChange += payment.getChangeAmount();
+
                     switch (payment.getPayMethod()) {
                         case CASH:
                             totalCash += payment.getCashAmount();
@@ -162,13 +165,13 @@ public class ReportGenerator {
             parameters.put("customerName", sale.getCustomer().getPerson().getFirstName() + " " + sale.getCustomer().getPerson().getLastName());
             parameters.put("customerPhone", sale.getCustomer().getPerson().getContactNo());
             parameters.put("customerEmail", sale.getCustomer().getPerson().getEmail());
-            parameters.put("createdDate", sale.getCreated());
+            parameters.put("createdDate", salePayments.getLast().getDtTransaction());
             parameters.put("total", sale.getTotal());
 
             // Set summed payment method values
             parameters.put("payMethodCash", totalCash);
             parameters.put("payMethodCard", totalCard);
-            parameters.put("change", salePayments.get(0).getChangeAmount());
+            parameters.put("change", totalChange);
 
             parameters.put("prodServDataSource", prodServDataSource);
 
@@ -196,9 +199,12 @@ public class ReportGenerator {
             // Sum amounts by payment method
             double totalCash = 0.0;
             double totalCard = 0.0;
+            double totalchange = 0.0;
 
             for (ServiceOrderPayment payment : serviceOrderPayments) {
                 if (payment.getPayMethod() != null) {
+                    totalchange += payment.getChangeAmount();
+
                     switch (payment.getPayMethod()) {
                         case CASH:
                             totalCash += payment.getCashAmount();
@@ -257,7 +263,7 @@ public class ReportGenerator {
             parameters.put("model", order.getDevice().getModel());
             parameters.put("serialNumber", order.getDevice().getSerialNumber());
             parameters.put("createdDate", order.getCreated());
-            parameters.put("createdDate", order.getCreated());
+            parameters.put("createdDate", serviceOrderPayments.getLast().getDtTransaction());
             parameters.put("total", order.getTotal());
             parameters.put("deposit", order.getTotal() - order.getDue());
             parameters.put("remaining", order.getDue());
@@ -268,7 +274,7 @@ public class ReportGenerator {
 
             // Change amount (take from first payment safely)
             if (serviceOrderPayments != null && !serviceOrderPayments.isEmpty()) {
-                parameters.put("change", serviceOrderPayments.get(0).getChangeAmount());
+                parameters.put("change", totalchange);
             } else {
                 parameters.put("change", 0.0);
             }

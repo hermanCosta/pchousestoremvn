@@ -58,7 +58,7 @@
               <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="scroll_pane_notes" pref="572" max="32767" attributes="0"/>
+                      <Component id="scroll_pane_notes" pref="672" max="32767" attributes="0"/>
                       <Group type="102" attributes="0">
                           <Component id="lbl_search_icon" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
@@ -135,7 +135,7 @@
                       <Editor/>
                       <Renderer/>
                     </Column>
-                    <Column maxWidth="150" minWidth="-1" prefWidth="120" resizable="true">
+                    <Column maxWidth="180" minWidth="-1" prefWidth="150" resizable="true">
                       <Title/>
                       <Editor/>
                       <Renderer/>
@@ -188,7 +188,7 @@
                               <Component id="lbl_max_char" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           </Group>
-                          <Component id="scroll_pane_notes1" alignment="1" pref="556" max="32767" attributes="0"/>
+                          <Component id="scroll_pane_notes1" alignment="1" pref="656" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -210,7 +210,7 @@
                           </Group>
                       </Group>
                       <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
-                      <Component id="scroll_pane_notes1" pref="92" max="32767" attributes="0"/>
+                      <Component id="scroll_pane_notes1" pref="148" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>

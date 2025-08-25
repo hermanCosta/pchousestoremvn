@@ -193,8 +193,8 @@ public class DepositModal extends javax.swing.JDialog {
             table_view_deposits.getColumnModel().getColumn(1).setMaxWidth(150);
             table_view_deposits.getColumnModel().getColumn(2).setPreferredWidth(100);
             table_view_deposits.getColumnModel().getColumn(2).setMaxWidth(100);
-            table_view_deposits.getColumnModel().getColumn(3).setPreferredWidth(80);
-            table_view_deposits.getColumnModel().getColumn(3).setMaxWidth(100);
+            table_view_deposits.getColumnModel().getColumn(3).setPreferredWidth(150);
+            table_view_deposits.getColumnModel().getColumn(3).setMaxWidth(180);
         }
 
         panel_deposit_total.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -212,7 +212,7 @@ public class DepositModal extends javax.swing.JDialog {
                 .addComponent(lbl_deposit_paid)
                 .addGap(9, 9, 9)
                 .addComponent(lbl_total, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(310, Short.MAX_VALUE))
+                .addContainerGap(330, Short.MAX_VALUE))
         );
         panel_deposit_totalLayout.setVerticalGroup(
             panel_deposit_totalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -232,7 +232,7 @@ public class DepositModal extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(panel_notesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(panel_deposit_total, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(scroll_pane_deposit, javax.swing.GroupLayout.DEFAULT_SIZE, 472, Short.MAX_VALUE)
+                    .addComponent(scroll_pane_deposit, javax.swing.GroupLayout.DEFAULT_SIZE, 492, Short.MAX_VALUE)
                     .addGroup(panel_notesLayout.createSequentialGroup()
                         .addComponent(lbl_order_no)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)

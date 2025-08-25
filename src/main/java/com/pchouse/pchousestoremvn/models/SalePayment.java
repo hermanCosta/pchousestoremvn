@@ -27,6 +27,10 @@ public class SalePayment implements Serializable {
     private long idSalePayment;
 
     @OneToOne
+    @JoinColumn(name = "ID_EMPLOYEE", referencedColumnName = "ID_EMPLOYEE")
+    private Employee employee;
+            
+    @OneToOne
     @JoinColumn(name = "ID_SALE", referencedColumnName = "ID_SALE")
     private Sale sale;
 
@@ -60,12 +64,13 @@ public class SalePayment implements Serializable {
     public SalePayment() {
     }
 
-    public SalePayment(Sale sale, PaymentType paymentType, PayMethod payMethod, double amountDue, double amountPaid, Double cardAmount, Double cashAmount, double changeAmount, Date dtTransaction) {
+    public SalePayment(Employee employee, Sale sale, PaymentType paymentType, PayMethod payMethod, double amountDue, double amountPaid, Double cardAmount, Double cashAmount, double changeAmount, Date dtTransaction) {
+        this.employee = employee;
         this.sale = sale;
         this.paymentType = paymentType;
         this.payMethod = payMethod;
         this.amountDue = amountDue;
-        this.amountPaid = (cashAmount != null ? cashAmount : 0) + (cardAmount != null ? cardAmount : 0);
+        this.amountPaid = amountPaid;
         this.cardAmount = cardAmount;
         this.cashAmount = cashAmount;
         this.changeAmount = changeAmount;
@@ -79,6 +84,14 @@ public class SalePayment implements Serializable {
 
     public void setIdSalePayment(long idSalePayment) {
         this.idSalePayment = idSalePayment;
+    }
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
 
     public Sale getSale() {

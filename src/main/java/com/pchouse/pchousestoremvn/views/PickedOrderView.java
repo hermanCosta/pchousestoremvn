@@ -26,6 +26,7 @@ import com.pchouse.pchousestoremvn.models.ServiceOrderProdServ;
 import com.pchouse.pchousestoremvn.util.ReportGenerator;
 import com.pchouse.pchousestoremvn.views.modals.DepositModal;
 import com.pchouse.pchousestoremvn.views.modals.NoteModal;
+import com.pchouse.pchousestoremvn.views.modals.PaymentHistoryModal;
 import java.awt.EventQueue;
 import java.awt.Frame;
 import java.awt.Toolkit;
@@ -55,8 +56,8 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
     private List<ServiceOrderProdServ> _serviceOrderProdServs;
     private List<Deposit> _orderDeposits;
     private List<ServiceOrderPayment> _serviceOrderPayments;
-    
-    public PickedOrderView(ServiceOrder orderModel, List<ServiceOrderFault> listOrderFault, List<ServiceOrderProdServ> listOrderProdServ, List<Deposit> listOrderDeposit, List<ServiceOrderPayment> serviceOrderPayments ) {
+
+    public PickedOrderView(ServiceOrder orderModel, List<ServiceOrderFault> listOrderFault, List<ServiceOrderProdServ> listOrderProdServ, List<Deposit> listOrderDeposit, List<ServiceOrderPayment> serviceOrderPayments) {
         initComponents();
 
         //avoid auto old value by focus loosing
@@ -170,7 +171,7 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
         this.lbl_total_field.setText(String.valueOf(sum));
         this.lbl_due_field.setText(this.lbl_total_field.getText());
     }
-   
+
     private void refundServiceOrder() {
         int confirm = JOptionPane.showConfirmDialog(
                 this,
@@ -194,7 +195,7 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
                     if (refundId > 0) {
                         JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_REFUND);
 
-                        RefundOrderView refundOrderView = new RefundOrderView(_serviceOrderModel, _serviceOrderFaults, _serviceOrderProdServs, _orderDeposits);
+                        RefundOrderView refundOrderView = new RefundOrderView(_serviceOrderModel, _serviceOrderFaults, _serviceOrderProdServs, _orderDeposits, _serviceOrderPayments);
                         CommonSetting.openInternalFrame(refundOrderView, "Refunded Order: " + _serviceOrderModel.getIdServiceOrder());
                     }
 
@@ -254,9 +255,10 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
         lbl_deposit_paid = new javax.swing.JLabel();
         panel_order_buttons = new javax.swing.JPanel();
         btn_notes = new javax.swing.JButton();
-        btn_deposit = new javax.swing.JButton();
+        btn_payments = new javax.swing.JButton();
         btn_refund_sale = new javax.swing.JButton();
         btn_print = new javax.swing.JButton();
+        btn_deposit1 = new javax.swing.JButton();
         scroll_pane_products = new javax.swing.JScrollPane();
         table_view_products = new javax.swing.JTable();
         scroll_pane_faults = new javax.swing.JScrollPane();
@@ -625,15 +627,15 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
             }
         });
 
-        btn_deposit.setBackground(new java.awt.Color(21, 76, 121));
-        btn_deposit.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        btn_deposit.setForeground(new java.awt.Color(255, 255, 255));
-        btn_deposit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_cash_entries.png"))); // NOI18N
-        btn_deposit.setText("Deposit");
-        btn_deposit.setNextFocusableComponent(txt_first_name);
-        btn_deposit.addActionListener(new java.awt.event.ActionListener() {
+        btn_payments.setBackground(new java.awt.Color(21, 76, 121));
+        btn_payments.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+        btn_payments.setForeground(new java.awt.Color(255, 255, 255));
+        btn_payments.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_payments_white.png"))); // NOI18N
+        btn_payments.setText("Payments");
+        btn_payments.setNextFocusableComponent(txt_first_name);
+        btn_payments.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_depositActionPerformed(evt);
+                btn_paymentsActionPerformed(evt);
             }
         });
 
@@ -659,6 +661,18 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
             }
         });
 
+        btn_deposit1.setBackground(new java.awt.Color(21, 76, 121));
+        btn_deposit1.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+        btn_deposit1.setForeground(new java.awt.Color(255, 255, 255));
+        btn_deposit1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_cash_entries.png"))); // NOI18N
+        btn_deposit1.setText("Deposit");
+        btn_deposit1.setNextFocusableComponent(txt_first_name);
+        btn_deposit1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_deposit1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panel_order_buttonsLayout = new javax.swing.GroupLayout(panel_order_buttons);
         panel_order_buttons.setLayout(panel_order_buttonsLayout);
         panel_order_buttonsLayout.setHorizontalGroup(
@@ -669,7 +683,9 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
                 .addGap(12, 12, 12)
                 .addComponent(btn_notes)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btn_deposit)
+                .addComponent(btn_deposit1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btn_payments)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btn_print)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -680,9 +696,10 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(panel_order_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_notes)
-                    .addComponent(btn_deposit)
+                    .addComponent(btn_payments)
                     .addComponent(btn_refund_sale)
-                    .addComponent(btn_print))
+                    .addComponent(btn_print)
+                    .addComponent(btn_deposit1))
                 .addContainerGap())
         );
 
@@ -968,11 +985,11 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
         noteModal.setVisible(true);
     }//GEN-LAST:event_btn_notesActionPerformed
 
-    private void btn_depositActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_depositActionPerformed
-        DepositModal depositModal = new DepositModal(_serviceOrderModel, _parentFrame, true);
-        depositModal.setLocationRelativeTo(this);
-        depositModal.setVisible(true);
-    }//GEN-LAST:event_btn_depositActionPerformed
+    private void btn_paymentsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_paymentsActionPerformed
+        PaymentHistoryModal paymentHistoryModal = new PaymentHistoryModal(_serviceOrderModel, _serviceOrderPayments, _parentFrame, true);
+        paymentHistoryModal.setLocationRelativeTo(this);
+        paymentHistoryModal.setVisible(true);
+    }//GEN-LAST:event_btn_paymentsActionPerformed
 
     private void btn_refund_saleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refund_saleActionPerformed
         refundServiceOrder();
@@ -984,10 +1001,17 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
         new ReportGenerator().generateServiceOrderReceiptReport(_serviceOrderModel, _serviceOrderProdServs, _serviceOrderPayments);
     }//GEN-LAST:event_btn_printActionPerformed
 
+    private void btn_deposit1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deposit1ActionPerformed
+        DepositModal depositModal = new DepositModal(_serviceOrderModel, _parentFrame, true);
+        depositModal.setLocationRelativeTo(this);
+        depositModal.setVisible(true);
+    }//GEN-LAST:event_btn_deposit1ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_copy;
-    private javax.swing.JButton btn_deposit;
+    private javax.swing.JButton btn_deposit1;
     private javax.swing.JButton btn_notes;
+    private javax.swing.JButton btn_payments;
     private javax.swing.JButton btn_print;
     private javax.swing.JButton btn_refund_sale;
     private javax.swing.JEditorPane editor_pane_notes;

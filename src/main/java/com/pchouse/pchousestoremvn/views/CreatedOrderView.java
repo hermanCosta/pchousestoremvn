@@ -236,73 +236,71 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
         } else {
             String password = CommonExtension.requestUserPassword();
             employee = _employeeController.getEmployeeByPass(password);
-            if (employee != null) {
-
-                long idCustomer = hdnCustomerId;
-
-                if (idCustomer > 0) {
-                    isNewCustomer = false;
-                    customer = this._customerController.getCustomerById(idCustomer);
-
-                    if (!customer.getPerson().getFirstName().trim().equals(this.txt_first_name.getText().trim())
-                            || !customer.getPerson().getLastName().trim().equals(this.txt_last_name.getText().trim())
-                            || !CommonExtension.formatContactNo(customer.getPerson().getContactNo()).equals(CommonExtension.formatContactNo(this.txt_contact.getText()))
-                            || !customer.getPerson().getEmail().trim().equals(this.txt_email.getText().trim())) {
-
-                        JOptionPane.showMessageDialog(this, CommonConstant.WARN_CUSTOMER_MATCHING, this.getTitle(), JOptionPane.WARNING_MESSAGE);
-                        CustomerModal customerModal = new CustomerModal(this, new MainMenuView(CommonSetting.COMPANY), true, customer);
-                        customerModal.setVisible(true);
-                        this.hdnCustomerId = 0;
-                        return getOrderDetails;
-                    }
-                }
-
-                if (isNewCustomer) {
-
-                    Customer checkCustomer = _customerController.searchCustomerByContactNo(this.txt_contact.getText().replace("(", "").replace(")", "").replace("-", "").replace(" ", ""));
-
-                    if (checkCustomer != null) {
-                        JOptionPane.showMessageDialog(this, CommonConstant.WARN_EXIST_PERSON, this.getTitle(), JOptionPane.WARNING_MESSAGE);
-
-                        CustomerModal customerModal = new CustomerModal(this, new MainMenuView(CommonSetting.COMPANY), true, checkCustomer);
-                        customerModal.setVisible(true);
-
-                        return getOrderDetails;
-                    } else {
-
-                        Person person = new Person(
-                                this.txt_first_name.getText().toUpperCase(),
-                                this.txt_last_name.getText().toUpperCase(),
-                                this.txt_contact.getText().replace("(", "").replace(")", "").replace("-", "").replace(" ", ""),
-                                this.txt_email.getText().toLowerCase());
-
-                        customer = new Customer(person, CommonSetting.COMPANY);
-                    }
-                }
-
-                Device device = new Device(this.txt_brand.getText().toUpperCase(),
-                        this.txt_model.getText().toUpperCase(),
-                        this.txt_serial_number.getText().toUpperCase());
-
-                getOrderDetails = new ServiceOrder(
-                        customer,
-                        device,
-                        employee,
-                        CommonSetting.COMPANY,
-                        CommonExtension.formatEuroToDouble(this.lbl_total_field.getText()),
-                        CommonExtension.formatEuroToDouble(this.lbl_due_field.getText()),
-                        OrderStatus.IN_PROGRESS,
-                        new Date(),
-                        null,
-                        null,
-                        (int) this.spn_bad_sectors.getValue(),
-                        this.editor_pane_notes.getText());
-
-                getOrderDetails.setIdServiceOrder(Integer.valueOf(this.lbl_auto_order_no.getText()));
-
-            } else {
+            if (employee == null) {
                 JOptionPane.showMessageDialog(this, CommonConstant.NOT_AUTHORIZED, this.getTitle(), JOptionPane.ERROR_MESSAGE);
+                return null;
             }
+            
+            long idCustomer = hdnCustomerId;
+            if (idCustomer > 0) {
+                isNewCustomer = false;
+                customer = this._customerController.getCustomerById(idCustomer);
+
+                if (!customer.getPerson().getFirstName().trim().equals(this.txt_first_name.getText().trim())
+                        || !customer.getPerson().getLastName().trim().equals(this.txt_last_name.getText().trim())
+                        || !CommonExtension.formatContactNo(customer.getPerson().getContactNo()).equals(CommonExtension.formatContactNo(this.txt_contact.getText()))
+                        || !customer.getPerson().getEmail().trim().equals(this.txt_email.getText().trim())) {
+
+                    JOptionPane.showMessageDialog(this, CommonConstant.WARN_CUSTOMER_MATCHING, this.getTitle(), JOptionPane.WARNING_MESSAGE);
+                    CustomerModal customerModal = new CustomerModal(this, new MainMenuView(CommonSetting.COMPANY), true, customer);
+                    customerModal.setVisible(true);
+                    this.hdnCustomerId = 0;
+                    return getOrderDetails;
+                }
+            }
+
+            if (isNewCustomer) {
+
+                Customer checkCustomer = _customerController.searchCustomerByContactNo(this.txt_contact.getText().replace("(", "").replace(")", "").replace("-", "").replace(" ", ""));
+
+                if (checkCustomer != null) {
+                    JOptionPane.showMessageDialog(this, CommonConstant.WARN_EXIST_PERSON, this.getTitle(), JOptionPane.WARNING_MESSAGE);
+
+                    CustomerModal customerModal = new CustomerModal(this, new MainMenuView(CommonSetting.COMPANY), true, checkCustomer);
+                    customerModal.setVisible(true);
+
+                    return getOrderDetails;
+                } else {
+
+                    Person person = new Person(
+                            this.txt_first_name.getText().toUpperCase(),
+                            this.txt_last_name.getText().toUpperCase(),
+                            this.txt_contact.getText().replace("(", "").replace(")", "").replace("-", "").replace(" ", ""),
+                            this.txt_email.getText().toLowerCase());
+
+                    customer = new Customer(person, CommonSetting.COMPANY);
+                }
+            }
+
+            Device device = new Device(this.txt_brand.getText().toUpperCase(),
+                    this.txt_model.getText().toUpperCase(),
+                    this.txt_serial_number.getText().toUpperCase());
+
+            getOrderDetails = new ServiceOrder(
+                    customer,
+                    device,
+                    employee,
+                    CommonSetting.COMPANY,
+                    CommonExtension.formatEuroToDouble(this.lbl_total_field.getText()),
+                    CommonExtension.formatEuroToDouble(this.lbl_due_field.getText()),
+                    OrderStatus.IN_PROGRESS,
+                    new Date(),
+                    null,
+                    null,
+                    (int) this.spn_bad_sectors.getValue(),
+                    this.editor_pane_notes.getText());
+
+            getOrderDetails.setIdServiceOrder(Integer.valueOf(this.lbl_auto_order_no.getText()));
         }
 
         return getOrderDetails;
@@ -1209,7 +1207,6 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
 //                    for (ServiceOrderPayment payment : payments) {
 //                        payment.setPaymentType(PaymentType.DEPOSIT);
 //                    }
-
                     deposit = new Deposit(updateOrder, updateOrder.getEmployee(), Double.parseDouble(this.txt_deposit.getText()), updateOrder.getCreated());
                 }
 

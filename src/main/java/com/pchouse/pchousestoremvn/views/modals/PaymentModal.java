@@ -23,7 +23,7 @@ public class PaymentModal extends javax.swing.JDialog {
     private ServiceOrder _serviceOrderModel;
     private Sale _saleModel;
     private List<ServiceOrderPayment> _serviceOrderPayments = new ArrayList<>();
-    private List<SalePayment> salePayments = new ArrayList<>();
+    private List<SalePayment> _salePayments = new ArrayList<>();
     private String _amountToPay;
     private PaymentType _paymentType;
 
@@ -96,7 +96,7 @@ public class PaymentModal extends javax.swing.JDialog {
     }
 
     public List<SalePayment> getSalePayments() {
-        return this.salePayments;
+        return this._salePayments;
     }
 
     public List<ServiceOrderPayment> getServiceOrderPayments() {
@@ -165,21 +165,21 @@ public class PaymentModal extends javax.swing.JDialog {
         lbl_change_value.setText(String.format("%.2f", changeAmount));
 
         // Clear previous payments if any
-        salePayments.clear();
+        _salePayments.clear();
         _serviceOrderPayments.clear();
 
         if (_saleModel != null) {
             switch (selectedPayMethod) {
                 case CARD ->
-                    salePayments.add(new SalePayment(
-                            _saleModel, _paymentType, CARD,
+                    _salePayments.add(new SalePayment(
+                            _saleModel.getEmployee(), _saleModel, _paymentType, CARD,
                             amountToPay, totalPaid,
                             cardAmount, 0.0, changeAmount,
                             new Date()
                     ));
                 case CASH ->
-                    salePayments.add(new SalePayment(
-                            _saleModel, _paymentType, CASH,
+                    _salePayments.add(new SalePayment(
+                            _saleModel.getEmployee(), _saleModel, _paymentType, CASH,
                             amountToPay, totalPaid,
                             0.0, cashAmount, changeAmount,
                             new Date()
@@ -187,14 +187,14 @@ public class PaymentModal extends javax.swing.JDialog {
                 case COMBINE -> {
                     double changeCardAmount = cardAmount < amountToPay ? 0 : cardAmount - amountToPay;
                     double changeCashAmount = cashAmount < amountToPay ? 0 : cashAmount - amountToPay;
-                    salePayments.add(new SalePayment(
-                            _saleModel, _paymentType, CARD,
+                    _salePayments.add(new SalePayment(
+                            _saleModel.getEmployee(), _saleModel, _paymentType, CARD,
                             amountToPay, cardAmount,
                             cardAmount, 0.0, changeCardAmount,
                             new Date()
                     ));
-                    salePayments.add(new SalePayment(
-                            _saleModel, _paymentType, CASH,
+                    _salePayments.add(new SalePayment(
+                            _saleModel.getEmployee(), _saleModel, _paymentType, CASH,
                             amountToPay, cashAmount,
                             0.0, cashAmount, changeCashAmount,
                             new Date()
@@ -205,6 +205,7 @@ public class PaymentModal extends javax.swing.JDialog {
             switch (selectedPayMethod) {
                 case CARD ->
                     _serviceOrderPayments.add(new ServiceOrderPayment(
+                            _serviceOrderModel.getEmployee(),
                             _serviceOrderModel, _paymentType, CARD,
                             amountToPay, totalPaid,
                             cardAmount, 0.0, changeAmount,
@@ -212,6 +213,7 @@ public class PaymentModal extends javax.swing.JDialog {
                     ));
                 case CASH ->
                     _serviceOrderPayments.add(new ServiceOrderPayment(
+                            _serviceOrderModel.getEmployee(),
                             _serviceOrderModel, _paymentType, CASH,
                             amountToPay, totalPaid,
                             0.0, cashAmount, changeAmount,
@@ -221,12 +223,14 @@ public class PaymentModal extends javax.swing.JDialog {
                     double changeCardAmount = cardAmount < amountToPay ? 0 : cardAmount - amountToPay;
                     double changeCashAmount = cashAmount < amountToPay ? 0 : cashAmount - amountToPay;
                     _serviceOrderPayments.add(new ServiceOrderPayment(
+                            _serviceOrderModel.getEmployee(),
                             _serviceOrderModel, _paymentType, CARD,
                             amountToPay, cardAmount,
                             cardAmount, 0.0, changeCardAmount,
                             new Date()
                     ));
                     _serviceOrderPayments.add(new ServiceOrderPayment(
+                            _serviceOrderModel.getEmployee(),
                             _serviceOrderModel, _paymentType, CASH,
                             amountToPay, cashAmount,
                             0.0, cashAmount, changeCashAmount,
@@ -510,9 +514,9 @@ public class PaymentModal extends javax.swing.JDialog {
             // For example: pass this list back to caller
             this._serviceOrderPayments = new ArrayList<>(_serviceOrderPayments);
             this.dispose();
-        } else if (!salePayments.isEmpty()) {
+        } else if (!_salePayments.isEmpty()) {
             // Save list of sale payments
-            this.salePayments = new ArrayList<>(salePayments);
+            this._salePayments = new ArrayList<>(_salePayments);
             this.dispose();
         } else {
             JOptionPane.showMessageDialog(this, "Invalid payment data", "Error", JOptionPane.ERROR_MESSAGE);

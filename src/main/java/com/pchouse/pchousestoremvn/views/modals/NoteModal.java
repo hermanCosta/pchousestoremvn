@@ -195,8 +195,8 @@ public class NoteModal extends javax.swing.JDialog {
             table_view_notes.getColumnModel().getColumn(0).setMinWidth(0);
             table_view_notes.getColumnModel().getColumn(0).setPreferredWidth(0);
             table_view_notes.getColumnModel().getColumn(0).setMaxWidth(0);
-            table_view_notes.getColumnModel().getColumn(1).setPreferredWidth(120);
-            table_view_notes.getColumnModel().getColumn(1).setMaxWidth(150);
+            table_view_notes.getColumnModel().getColumn(1).setPreferredWidth(150);
+            table_view_notes.getColumnModel().getColumn(1).setMaxWidth(180);
             table_view_notes.getColumnModel().getColumn(3).setPreferredWidth(100);
             table_view_notes.getColumnModel().getColumn(3).setMaxWidth(150);
         }
@@ -243,7 +243,7 @@ public class NoteModal extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lbl_max_char)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(scroll_pane_notes1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 556, Short.MAX_VALUE))
+                    .addComponent(scroll_pane_notes1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 656, Short.MAX_VALUE))
                 .addContainerGap())
         );
         panel_note_inputLayout.setVerticalGroup(
@@ -259,7 +259,7 @@ public class NoteModal extends javax.swing.JDialog {
                         .addComponent(lbl_notes)
                         .addComponent(lbl_max_char)))
                 .addGap(0, 0, 0)
-                .addComponent(scroll_pane_notes1, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE)
+                .addComponent(scroll_pane_notes1, javax.swing.GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -331,7 +331,7 @@ public class NoteModal extends javax.swing.JDialog {
             .addGroup(panel_notesLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panel_notesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(scroll_pane_notes, javax.swing.GroupLayout.DEFAULT_SIZE, 572, Short.MAX_VALUE)
+                    .addComponent(scroll_pane_notes, javax.swing.GroupLayout.DEFAULT_SIZE, 672, Short.MAX_VALUE)
                     .addGroup(panel_notesLayout.createSequentialGroup()
                         .addComponent(lbl_search_icon)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -346,7 +346,7 @@ public class NoteModal extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(panel_notesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(txt_search_note, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lbl_search_icon, javax.swing.GroupLayout.DEFAULT_SIZE, 0, Short.MAX_VALUE))
+                    .addComponent(lbl_search_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(scroll_pane_notes, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
