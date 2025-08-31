@@ -8,6 +8,7 @@ public enum PaymentType {
     DEPOSIT,
     SALE,
     ORDER,
+    REFUND,
     INSTALLMENT
 }
 

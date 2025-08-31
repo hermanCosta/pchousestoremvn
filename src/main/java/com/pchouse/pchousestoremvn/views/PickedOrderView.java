@@ -12,6 +12,8 @@ import com.pchouse.pchousestoremvn.controllers.ServiceOrderController;
 import com.pchouse.pchousestoremvn.controllers.ServiceOrderFaultController;
 import com.pchouse.pchousestoremvn.controllers.ServiceOrderProdServController;
 import com.pchouse.pchousestoremvn.enums.OrderStatus;
+import com.pchouse.pchousestoremvn.enums.PayMethod;
+import com.pchouse.pchousestoremvn.enums.PaymentType;
 import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Customer;
 import com.pchouse.pchousestoremvn.models.Deposit;
@@ -27,6 +29,7 @@ import com.pchouse.pchousestoremvn.util.ReportGenerator;
 import com.pchouse.pchousestoremvn.views.modals.DepositModal;
 import com.pchouse.pchousestoremvn.views.modals.NoteModal;
 import com.pchouse.pchousestoremvn.views.modals.PaymentHistoryModal;
+import com.pchouse.pchousestoremvn.views.modals.PaymentModal;
 import java.awt.EventQueue;
 import java.awt.Frame;
 import java.awt.Toolkit;
@@ -36,6 +39,7 @@ import java.util.Date;
 import java.util.List;
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 public class PickedOrderView extends javax.swing.JInternalFrame {
@@ -185,22 +189,22 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
                 String password = CommonExtension.requestUserPassword();
                 Employee employee = _employeeController.getEmployeeByPass(password);
 
-                if (employee != null) {
-                    Date createdDate = new Date();
-
-                    Refund orderRefund = new Refund(CommonSetting.COMPANY, employee, _serviceOrderModel, _serviceOrderModel.getTotal(), createdDate);
-                    OrderNote orderNoteRefundNote = new OrderNote(_serviceOrderModel, employee, CommonConstant.ORDER_REFUND_NOTE, createdDate);
-                    long refundId = _refundController.addRefund(orderRefund, orderNoteRefundNote);
-
-                    if (refundId > 0) {
-                        JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_REFUND);
-
-                        RefundOrderView refundOrderView = new RefundOrderView(_serviceOrderModel, _serviceOrderFaults, _serviceOrderProdServs, _orderDeposits, _serviceOrderPayments);
-                        CommonSetting.openInternalFrame(refundOrderView, "Refunded Order: " + _serviceOrderModel.getIdServiceOrder());
-                    }
-
-                } else {
+                if (employee == null) {
                     JOptionPane.showMessageDialog(this, CommonConstant.NOT_AUTHORIZED, null, JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                Date createdDate = new Date();
+                
+                Refund orderRefund = new Refund(CommonSetting.COMPANY, employee, _serviceOrderModel, _serviceOrderModel.getTotal(), createdDate);
+                OrderNote orderNoteRefundNote = new OrderNote(_serviceOrderModel, employee, CommonConstant.ORDER_REFUND_NOTE, createdDate);
+                long refundId = _refundController.addServiceOrderRefund(orderRefund, orderNoteRefundNote, _serviceOrderPayments);
+
+                if (refundId > 0) {
+                    JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_REFUND);
+
+                    RefundOrderView refundOrderView = new RefundOrderView(_serviceOrderModel, _serviceOrderFaults, _serviceOrderProdServs, _orderDeposits, _serviceOrderPayments);
+                    CommonSetting.openInternalFrame(refundOrderView, "Refunded Order: " + _serviceOrderModel.getIdServiceOrder());
                 }
 
             } catch (BusinessException e) {

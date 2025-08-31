@@ -17,7 +17,9 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import org.hibernate.annotations.Check;
 
+@Check(constraints = "PAYMENT_TYPE = 'REFUND' OR (AMOUNT_DUE >= 0 AND AMOUNT_PAID >= 0)")
 @Entity
 @Table(name = "SERVICE_ORDER_PAYMENT")
 public class ServiceOrderPayment implements Serializable {
@@ -34,8 +36,7 @@ public class ServiceOrderPayment implements Serializable {
     @ManyToOne
     @JoinColumn(name = "ID_SERVICE_ORDER", referencedColumnName = "ID_SERVICE_ORDER")
     private ServiceOrder serviceOrder;
-
-    // If you really don't need a Deposit entity, replace this with an enum
+  
     @Enumerated(EnumType.STRING)
     @Column(name = "PAYMENT_TYPE")
     private PaymentType paymentType;

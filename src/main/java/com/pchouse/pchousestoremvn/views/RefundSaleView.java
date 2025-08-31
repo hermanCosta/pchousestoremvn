@@ -4,18 +4,11 @@ import com.pchouse.pchousestoremvn.common.CommonConstant;
 import com.pchouse.pchousestoremvn.common.CommonExtension;
 import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.common.CommonStrings;
-import com.pchouse.pchousestoremvn.controllers.EmployeeController;
-import com.pchouse.pchousestoremvn.controllers.RefundController;
-import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Customer;
 import com.pchouse.pchousestoremvn.models.Deposit;
-import com.pchouse.pchousestoremvn.models.Employee;
-import com.pchouse.pchousestoremvn.models.OrderNote;
-import com.pchouse.pchousestoremvn.models.Refund;
 import com.pchouse.pchousestoremvn.models.Sale;
 import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.models.SaleProdServ;
-import com.pchouse.pchousestoremvn.util.ReportGenerator;
 import com.pchouse.pchousestoremvn.views.modals.DepositModal;
 import com.pchouse.pchousestoremvn.views.modals.NoteModal;
 import com.pchouse.pchousestoremvn.views.modals.PaymentHistoryModal;
@@ -23,7 +16,6 @@ import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
-import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -31,11 +23,8 @@ import javax.swing.table.DefaultTableModel;
 public class RefundSaleView extends javax.swing.JInternalFrame {
 
     private Sale _saleModel;
-    private List<SaleProdServ> _listSaleProdServs;
     private List<SalePayment> _salePayments;
     public SalePayment _orderPayment = null;
-    private final EmployeeController _employeeController;
-    private final RefundController _refundController;
     private final DefaultTableModel _dtmProdServ;
     Frame _parentFrame = JOptionPane.getFrameForComponent(this);
 
@@ -47,10 +36,7 @@ public class RefundSaleView extends javax.swing.JInternalFrame {
         CommonSetting.tableSettings(table_view_products);
 
         this._saleModel = saleModel;
-        this._listSaleProdServs = listSaleProdServ;
         this._salePayments = salePayments;
-        this._employeeController = new EmployeeController();
-        this._refundController = new RefundController();
         this._dtmProdServ = (DefaultTableModel) this.table_view_products.getModel();
 
         loadSaleFields(saleModel, listSaleProdServ);
@@ -101,43 +87,6 @@ public class RefundSaleView extends javax.swing.JInternalFrame {
         this.lbl_total_field.setText(CommonExtension.formatEuroCurrency(sum));
     }
 
-    private void RefundSale() {
-        int confirm = JOptionPane.showConfirmDialog(
-                this,
-                CommonConstant.CONFIRM_REFUND_SALE,
-                "Confirm Action",
-                JOptionPane.YES_NO_OPTION
-        );
-
-        if (confirm == JOptionPane.YES_OPTION) {
-            try {
-                String password = CommonExtension.requestUserPassword();
-                Employee employee = _employeeController.getEmployeeByPass(password);
-
-                if (employee != null) {
-                    Date createdDate = new Date();
-                    Refund saleRefund = new Refund(CommonSetting.COMPANY, employee, _saleModel, _saleModel.getTotal(), createdDate);
-
-                    OrderNote saleRefundNote = new OrderNote(_saleModel, employee, CommonConstant.SALE_REFUND_NOTE, createdDate);
-                    long refundId = _refundController.addRefund(saleRefund, saleRefundNote);
-
-                    if (refundId > 0) {
-                        JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_REFUND);
-
-                    }
-
-                } else {
-                    JOptionPane.showMessageDialog(this, CommonConstant.ERROR_REFUND, null, JOptionPane.ERROR_MESSAGE);
-                    this.lbl_sale_refunded.setVisible(true);
-                }
-
-            } catch (BusinessException e) {
-                JOptionPane.showMessageDialog(this, e.getMessage(), this.getTitle(), JOptionPane.ERROR_MESSAGE);
-                e.printStackTrace();
-            }
-        }
-    }
-
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -163,7 +112,6 @@ public class RefundSaleView extends javax.swing.JInternalFrame {
         panel_sale_buttons = new javax.swing.JPanel();
         btn_notes = new javax.swing.JButton();
         btn_deposit = new javax.swing.JButton();
-        btn_print = new javax.swing.JButton();
         btn_payments = new javax.swing.JButton();
         scroll_pane_products = new javax.swing.JScrollPane();
         table_view_products = new javax.swing.JTable();
@@ -363,17 +311,6 @@ public class RefundSaleView extends javax.swing.JInternalFrame {
             }
         });
 
-        btn_print.setBackground(new java.awt.Color(21, 76, 121));
-        btn_print.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        btn_print.setForeground(new java.awt.Color(255, 255, 255));
-        btn_print.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_print.png"))); // NOI18N
-        btn_print.setText("Print");
-        btn_print.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_printActionPerformed(evt);
-            }
-        });
-
         btn_payments.setBackground(new java.awt.Color(21, 76, 121));
         btn_payments.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         btn_payments.setForeground(new java.awt.Color(255, 255, 255));
@@ -396,8 +333,6 @@ public class RefundSaleView extends javax.swing.JInternalFrame {
                 .addComponent(btn_deposit)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btn_payments)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btn_print)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panel_sale_buttonsLayout.setVerticalGroup(
@@ -407,7 +342,6 @@ public class RefundSaleView extends javax.swing.JInternalFrame {
                 .addGroup(panel_sale_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_notes)
                     .addComponent(btn_deposit)
-                    .addComponent(btn_print)
                     .addComponent(btn_payments))
                 .addContainerGap())
         );
@@ -547,12 +481,6 @@ public class RefundSaleView extends javax.swing.JInternalFrame {
         depositModal.setVisible(true);
     }//GEN-LAST:event_btn_depositActionPerformed
 
-    private void btn_printActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_printActionPerformed
-
-        // Genarate and display the report
-        new ReportGenerator().generateSaleReceiptReport(_saleModel, _listSaleProdServs, _salePayments);
-    }//GEN-LAST:event_btn_printActionPerformed
-
     private void btn_paymentsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_paymentsActionPerformed
         PaymentHistoryModal paymentHistoryModal = new PaymentHistoryModal(_saleModel, _salePayments, _parentFrame, true);
         paymentHistoryModal.setLocationRelativeTo(this);
@@ -564,7 +492,6 @@ public class RefundSaleView extends javax.swing.JInternalFrame {
     private javax.swing.JButton btn_deposit;
     private javax.swing.JButton btn_notes;
     private javax.swing.JButton btn_payments;
-    private javax.swing.JButton btn_print;
     private javax.swing.JTextField hdn_txt_customer_id;
     private javax.swing.JLabel lbl_auto_sale_no;
     private javax.swing.JLabel lbl_contact;

@@ -16,7 +16,9 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import org.hibernate.annotations.Check;
 
+@Check(constraints = "PAYMENT_TYPE = 'REFUND' OR (AMOUNT_DUE >= 0 AND AMOUNT_PAID >= 0)")
 @Entity
 @Table(name = "SALE_PAYMENT")
 public class SalePayment implements Serializable {

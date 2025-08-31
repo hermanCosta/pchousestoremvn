@@ -387,7 +387,7 @@
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="lbl_total" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="lbl_total_field" min="-2" max="-2" attributes="0"/>
+                              <Component id="lbl_total_amount" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="lbl_deposit" min="-2" max="-2" attributes="0"/>
@@ -397,7 +397,7 @@
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="lbl_due" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="lbl_due_field" min="-2" max="-2" attributes="0"/>
+                              <Component id="lbl_due_amount" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
@@ -410,7 +410,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="lbl_total" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="lbl_total_field" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="lbl_total_amount" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
@@ -420,7 +420,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="lbl_due" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="lbl_due_field" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="lbl_due_amount" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -469,7 +469,7 @@
                 <Property name="text" type="java.lang.String" value="Due:"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="lbl_total_field">
+            <Component class="javax.swing.JLabel" name="lbl_total_amount">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Lucida Grande" size="14" style="1"/>
@@ -477,7 +477,7 @@
                 <Property name="text" type="java.lang.String" value="totalAmount"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="lbl_due_field">
+            <Component class="javax.swing.JLabel" name="lbl_due_amount">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Lucida Grande" size="14" style="1"/>
@@ -578,7 +578,6 @@
           </Properties>
           <Events>
             <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="txt_search_prod_servFocusLost"/>
-            <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txt_search_prod_servKeyPressed"/>
             <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txt_search_prod_servKeyReleased"/>
           </Events>
         </Component>
@@ -611,7 +610,7 @@
                 </Property>
               </Properties>
               <Events>
-                <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="list_prod_serv_searchMousePressed"/>
+                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="list_prod_serv_searchMouseClicked"/>
                 <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="list_prod_serv_searchKeyPressed"/>
               </Events>
               <AuxValues>
@@ -635,7 +634,7 @@
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
               <SubComponents>
-                <Component class="javax.swing.JTable" name="table_view_products">
+                <Component class="javax.swing.JTable" name="table_view_prod_serv">
                   <Properties>
                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
                       <Table columnCount="5" rowCount="0">
@@ -683,8 +682,8 @@
                     </Property>
                   </Properties>
                   <Events>
-                    <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="table_view_productsMouseClicked"/>
-                    <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="table_view_productsKeyReleased"/>
+                    <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="table_view_prod_servMouseClicked"/>
+                    <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="table_view_prod_servKeyReleased"/>
                   </Events>
                 </Component>
               </SubComponents>

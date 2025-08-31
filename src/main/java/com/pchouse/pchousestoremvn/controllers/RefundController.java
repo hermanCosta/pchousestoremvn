@@ -9,6 +9,8 @@ import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Company;
 import com.pchouse.pchousestoremvn.models.OrderNote;
 import com.pchouse.pchousestoremvn.models.Refund;
+import com.pchouse.pchousestoremvn.models.SalePayment;
+import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,12 +30,23 @@ public class RefundController {
     }
 
     // Add a new refund to the database
-    public long addRefund(Refund pRefund, OrderNote pOrderNote) throws BusinessException {
+    public long addServiceOrderRefund(Refund pRefund, OrderNote pOrderNote, List<ServiceOrderPayment> originalPayments) throws BusinessException {
         try {
-            return REFUND_DAO.addRefundDAO(pRefund, pOrderNote);
+            return REFUND_DAO.addServiceOrderRefundDAO(pRefund, pOrderNote, originalPayments);
 
         } catch (Exception e) {
-            System.err.println("Error adding refund: " + e.getMessage());
+            System.err.println("Error adding Order refund: " + e.getMessage());
+            e.printStackTrace();
+            throw new BusinessException("Unable to add refund.");
+        }
+    }
+    
+    public long addSaleRefund(Refund pRefund, OrderNote pOrderNote, List<SalePayment> originalPayments) throws BusinessException {
+        try {
+            return REFUND_DAO.addSaleRefundDAO(pRefund, pOrderNote, originalPayments);
+
+        } catch (Exception e) {
+            System.err.println("Error adding Sale refund: " + e.getMessage());
             e.printStackTrace();
             throw new BusinessException("Unable to add refund.");
         }

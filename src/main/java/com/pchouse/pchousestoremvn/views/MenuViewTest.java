@@ -60,15 +60,14 @@ public class MenuViewTest extends JFrame {
         logoPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         logoPanel.setLayout(new BorderLayout());
 
-        // Ícone do logo
         JLabel lblLogo = new JLabel();
-        lblLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_logo_header_md.png"))); // Ícone do logo
+        lblLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_logo_header_md.png")));
         logoPanel.add(lblLogo, BorderLayout.CENTER);
         sidePanel.add(logoPanel);
 
-        // Informações da loja com ícones
+        // Informações da loja
         JLabel lblShopAddress = new JLabel();
-        lblShopAddress.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_address.png"))); // Ícone de endereço
+        lblShopAddress.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_address.png")));
         lblShopAddress.setText(_company.getAddress());
         lblShopAddress.setForeground(Color.WHITE);
         lblShopAddress.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -76,7 +75,7 @@ public class MenuViewTest extends JFrame {
         sidePanel.add(lblShopAddress);
 
         JLabel lblShopTel = new JLabel();
-        lblShopTel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_phone_number.png"))); // Ícone de contato
+        lblShopTel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_phone_number.png")));
         lblShopTel.setText(_company.getContactOne());
         lblShopTel.setForeground(Color.WHITE);
         lblShopTel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -96,32 +95,41 @@ public class MenuViewTest extends JFrame {
 
         JMenuBar menuBar = new JMenuBar();
 
+        // --- CREATE ---
         JMenu menuCreate = new JMenu("Create");
         JMenuItem menuItemNewOrder = new JMenuItem("New Order");
+        menuItemNewOrder.setAccelerator(KeyStroke.getKeyStroke("F1"));
         menuItemNewOrder.addActionListener(this::menuItemNewOrderActionPerformed);
         menuCreate.add(menuItemNewOrder);
 
         JMenuItem menuItemNewSale = new JMenuItem("New Sale");
+        menuItemNewSale.setAccelerator(KeyStroke.getKeyStroke("F2"));
         menuItemNewSale.addActionListener(this::menuItemNewSaleActionPerformed);
         menuCreate.add(menuItemNewSale);
 
+        // --- MANAGE ---
         JMenu menuManage = new JMenu("Manage");
         JMenuItem menuItemCustomer = new JMenuItem("Customers");
+        menuItemCustomer.setAccelerator(KeyStroke.getKeyStroke("F3"));
         menuItemCustomer.addActionListener(this::menuItemCustomerActionPerformed);
         menuManage.add(menuItemCustomer);
 
         JMenuItem menuItemUsers = new JMenuItem("Users");
+        menuItemUsers.setAccelerator(KeyStroke.getKeyStroke("F4"));
         menuItemUsers.addActionListener(this::menuItemUsersActionPerformed);
         menuManage.add(menuItemUsers);
 
         JMenuItem menuItemProducts = new JMenuItem("Products");
+        menuItemProducts.setAccelerator(KeyStroke.getKeyStroke("F5"));
         menuItemProducts.addActionListener(this::menuItemProductsActionPerformed);
         menuManage.add(menuItemProducts);
 
         JMenuItem menuItemFault = new JMenuItem("Faults");
+        menuItemFault.setAccelerator(KeyStroke.getKeyStroke("F6"));
         menuItemFault.addActionListener(this::menuItemFaultActionPerformed);
         menuManage.add(menuItemFault);
 
+        // --- REFURBS ---
         JMenu menuRefurbs = new JMenu("Refurbs");
         JMenuItem menuItemRefurbs = new JMenuItem("All Refurbs");
         menuItemRefurbs.addActionListener(this::menuItemRefurbsActionPerformed);
@@ -147,15 +155,44 @@ public class MenuViewTest extends JFrame {
         menuItemCustom.addActionListener(this::menuItemCustomActionPerformed);
         menuRefurbs.add(menuItemCustom);
 
+        // --- CONSULT ---
         JMenu menuConsult = new JMenu("Consult");
         JMenuItem menuItemOrders = new JMenuItem("Orders");
+        menuItemOrders.setAccelerator(KeyStroke.getKeyStroke("F7"));
         menuItemOrders.addActionListener(this::menuItemOrdersActionPerformed);
         menuConsult.add(menuItemOrders);
 
+        JMenuItem menuItemSales = new JMenuItem("Sales");
+        menuItemSales.setAccelerator(KeyStroke.getKeyStroke("F8"));
+        menuItemSales.addActionListener(this::menuItemSalesActionPerformed);
+        menuConsult.add(menuItemSales);
+
+        // --- REPORT ---
+        JMenu menuReport = new JMenu("Report");
+        JMenuItem menuItemCloseTill = new JMenuItem("Close Till");
+        menuItemCloseTill.setAccelerator(KeyStroke.getKeyStroke("F9"));
+        menuItemCloseTill.addActionListener(this::menuItemCloseTillActionPerformed);
+        menuReport.add(menuItemCloseTill);
+
+        // --- CASH ---
+        JMenu menuCash = new JMenu("Cash");
+        JMenuItem menuItemCashIn = new JMenuItem("Cash In");
+        menuItemCashIn.setAccelerator(KeyStroke.getKeyStroke("F10"));
+        menuItemCashIn.addActionListener(this::menuItemCashInActionPerformed);
+        menuCash.add(menuItemCashIn);
+
+        JMenuItem menuItemCashOut = new JMenuItem("Cash Out");
+        menuItemCashOut.setAccelerator(KeyStroke.getKeyStroke("F11"));
+        menuItemCashOut.addActionListener(this::menuItemCashOutActionPerformed);
+        menuCash.add(menuItemCashOut);
+
+        // Add menus to menuBar
         menuBar.add(menuCreate);
         menuBar.add(menuManage);
         menuBar.add(menuRefurbs);
         menuBar.add(menuConsult);
+        menuBar.add(menuReport);
+        menuBar.add(menuCash);
 
         setJMenuBar(menuBar);
 
@@ -172,10 +209,9 @@ public class MenuViewTest extends JFrame {
             btnReloadUI.addActionListener(e -> {
                 this.dispose();
                 reloadMenuView();
-                //com.pchouse.pchousestoremvn.MainApp.carregarTelaInicial();
             });
 
-            sidePanel.add(Box.createVerticalStrut(30)); // espaço antes do botão
+            sidePanel.add(Box.createVerticalStrut(30));
             sidePanel.add(btnReloadUI);
         }
 
@@ -251,13 +287,29 @@ public class MenuViewTest extends JFrame {
     }
 
     private void menuItemOrdersActionPerformed(ActionEvent evt) {
-        openInternalFrame(new OrderSaleListView());
+        openInternalFrame(new OrderSaleListView(OrderSaleListView.TAB_ORDER));
+    }
+
+    private void menuItemSalesActionPerformed(ActionEvent evt) {
+        openInternalFrame(new OrderSaleListView(OrderSaleListView.TAB_SALE));
+    }
+
+    private void menuItemCloseTillActionPerformed(ActionEvent evt) {
+        //openInternalFrame(new CloseTillView());
+    }
+
+    private void menuItemCashInActionPerformed(ActionEvent evt) {
+        //openInternalFrame(new CashInView());
+    }
+
+    private void menuItemCashOutActionPerformed(ActionEvent evt) {
+        //openInternalFrame(new CashOutView());
     }
 
     private boolean isDevMode() {
         return Boolean.getBoolean("devMode");
     }
-    
+
     public static void reloadMenuView() {
         if (jFrameWindow != null) {
             jFrameWindow.dispose();  // Fecha a janela anterior se existir

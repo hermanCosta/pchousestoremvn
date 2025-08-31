@@ -1,7 +1,8 @@
 package com.pchouse.pchousestoremvn;
 
 import com.formdev.flatlaf.FlatDarkLaf;
-import com.pchouse.pchousestoremvn.common.CommonSetting;
+import com.pchouse.pchousestoremvn.controllers.CompanyController;
+import com.pchouse.pchousestoremvn.models.Company;
 import com.pchouse.pchousestoremvn.views.LoginView;
 import com.pchouse.pchousestoremvn.views.MenuViewTest;
 
@@ -26,10 +27,16 @@ public class MainApp {
 
     public static void carregarTelaInicial() {
         if (janelaAtual != null) {
-            janelaAtual.dispose();  // Fecha a janela anterior se existir
+            janelaAtual.dispose();  
         }
 
-        janelaAtual = new LoginView(); // Pode ser qualquer JFrame: LoginView, MainMenu, etc.
+        CompanyController controller = new CompanyController();
+        Company company = controller.getCompany("FREDERICKST", "fredst");
+
+        if (company != null) {
+            janelaAtual = new MenuViewTest(company);            
+        }
+        //janelaAtual = new LoginView();
         janelaAtual.setVisible(true);
     }
 

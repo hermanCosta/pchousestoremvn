@@ -45,7 +45,14 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
     private final DefaultTableModel _dtmOrder;
     private final DefaultTableModel _dtmSale;
 
+    public static final String TAB_ORDER = "ORDER";
+    public static final String TAB_SALE = "SALE";
+
     public OrderSaleListView() {
+        this(TAB_ORDER); // default to Orders
+    }
+
+    public OrderSaleListView(String defaultTab) {
         initComponents();
 
         CommonSetting.requestTxtFocus(this.txt_search_order);
@@ -65,6 +72,12 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
         this._dtmSale = (DefaultTableModel) this.table_view_sale_list.getModel();
         loadOrderListTable();
         loadSaleListTable();
+
+        if (TAB_SALE.equalsIgnoreCase(defaultTab)) {
+            jTabbedPane1.setSelectedIndex(1); // Sales
+        } else {
+            jTabbedPane1.setSelectedIndex(0); // Orders
+        }
     }
 
     private void loadOrderListTable() {

@@ -27,7 +27,6 @@ import com.pchouse.pchousestoremvn.views.modals.PaymentModal;
 import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,12 +58,14 @@ public class NewSaleView extends javax.swing.JInternalFrame {
         initComponents();
 
         this.txt_deposit.setVisible(false);
+        this.lbl_total_amount.setText("");
+        this.lbl_due_amount.setText("");
         //avoid auto old value by focus loosing
         this.txt_contact.setFocusLostBehavior(JFormattedTextField.PERSIST);
 
         CommonExtension.checkEmailFormat(this.txt_email);
         CommonSetting.requestTxtFocus(txt_first_name);
-        CommonSetting.tableSettings(table_view_products);
+        CommonSetting.tableSettings(table_view_prod_serv);
 
         this._saleController = new SaleController();
         this._productServiceController = new ProductServiceController();
@@ -72,22 +73,9 @@ public class NewSaleView extends javax.swing.JInternalFrame {
         this._employeeController = new EmployeeController();
         this._salePaymentController = new SalePaymentController();
 
-        this._dtmProdServ = (DefaultTableModel) this.table_view_products.getModel();
+        this._dtmProdServ = (DefaultTableModel) this.table_view_prod_serv.getModel();
         this._defaultListModelProdServ = new DefaultListModel();
         this.list_prod_serv_search.setModel(_defaultListModelProdServ);
-
-        list_prod_serv_search.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent evt) {
-                if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-                    if (!list_prod_serv_search.isSelectionEmpty()) {
-                        // addProductService();
-                    }
-                } else if (evt.getKeyCode() == KeyEvent.VK_UP && list_prod_serv_search.getSelectedIndex() == 0) {
-                    txt_search_prod_serv.requestFocusInWindow();
-                }
-            }
-        });
     }
 
     public void setCustomerFields(Customer customer) {
@@ -102,15 +90,16 @@ public class NewSaleView extends javax.swing.JInternalFrame {
     }
 
     private void searchProdServ() {
+        this._defaultListModelProdServ.removeAllElements();
+
         String searchText = txt_search_prod_serv.getText().trim();
 
         if (!searchText.isEmpty()) {
-            List<ProductService> newList = _productServiceController.searchOrderProductService(searchText);
-
-            if (!newList.equals(this._listProdServ)) {  // Only update if the list has changed
-                _defaultListModelProdServ.removeAllElements();
-                this._listProdServ = newList;
-                newList.forEach(prodServ -> _defaultListModelProdServ.addElement(prodServ));
+            this._listProdServ = _productServiceController.searchOrderProductService(searchText);
+            if (!_listProdServ.isEmpty()) {
+                _listProdServ.forEach(prodServ -> {
+                    this._defaultListModelProdServ.addElement(prodServ);
+                });
             }
         }
     }
@@ -121,8 +110,8 @@ public class NewSaleView extends javax.swing.JInternalFrame {
             sum += Double.parseDouble(this._dtmProdServ.getValueAt(i, 3).toString());
         }
 
-        this.lbl_total_field.setText(CommonExtension.formatEuroCurrency(sum));
-        this.lbl_due_field.setText(this.lbl_total_field.getText());
+        this.lbl_total_amount.setText(CommonExtension.formatEuroCurrency(sum));
+        this.lbl_due_amount.setText(this.lbl_total_amount.getText());
     }
 
     private void clearFields() {
@@ -131,9 +120,9 @@ public class NewSaleView extends javax.swing.JInternalFrame {
         this.txt_last_name.setText("");
         this.txt_contact.setText("");
         this.txt_email.setText("");
-        this.lbl_total_field.setText("");
+        this.lbl_total_amount.setText("");
         this.txt_deposit.setText("");
-        this.lbl_due_field.setText("");
+        this.lbl_due_amount.setText("");
 
         this._dtmProdServ.setRowCount(0);
 
@@ -166,7 +155,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
         return !txt_first_name.getText().trim().isEmpty()
                 && !txt_last_name.getText().trim().isEmpty()
                 && !txt_contact.getText().trim().isEmpty()
-                && table_view_products.getRowCount() > 0;
+                && table_view_prod_serv.getRowCount() > 0;
     }
 
     private Customer resolveCustomer() {
@@ -219,8 +208,8 @@ public class NewSaleView extends javax.swing.JInternalFrame {
     }
 
     private Sale createSale(Customer customer, Employee employee) {
-        double totalAmount = CommonExtension.formatEuroToDouble(lbl_total_field.getText());
-        double remaining = CommonExtension.formatEuroToDouble(lbl_due_field.getText());
+        double totalAmount = CommonExtension.formatEuroToDouble(lbl_total_amount.getText());
+        double remaining = CommonExtension.formatEuroToDouble(lbl_due_amount.getText());
 
         return new Sale(
                 customer,
@@ -236,7 +225,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
     private List<SaleProdServ> getSaleProdServ(Sale sale) {
         List<SaleProdServ> listSaleProdServ = new ArrayList<>();
 
-        if (this.table_view_products.getRowCount() == 0) {
+        if (this.table_view_prod_serv.getRowCount() == 0) {
             JOptionPane.showMessageDialog(this, CommonConstant.WARN_ADD_ITEM + "product|service", this.getTitle(), JOptionPane.WARNING_MESSAGE);
 
             return listSaleProdServ;
@@ -260,36 +249,38 @@ public class NewSaleView extends javax.swing.JInternalFrame {
         return listSaleProdServ;
     }
 
-    private void addProductService(ProductService prodServ) {
-        boolean isAdded = false;
+    private void addProdServToTheTable() {
+        if (!this.list_prod_serv_search.isSelectionEmpty()) {
+            ProductService prodServ = (ProductService) this._defaultListModelProdServ.getElementAt(
+                    this.list_prod_serv_search.getSelectedIndex()
+            );
+            boolean isAdded = false;
 
-        for (int i = 0; i < _dtmProdServ.getRowCount(); i++) {
-            int idProdServ = Integer.parseInt(_dtmProdServ.getValueAt(i, 0).toString());
-            if (idProdServ == prodServ.getIdProductService()) {
-                isAdded = true;
-                break;
+            if (this.table_view_prod_serv.getRowCount() > 0) {
+                for (int i = 0; i < this.table_view_prod_serv.getRowCount(); i++) {
+                    int idProdServ = Integer.parseInt(_dtmProdServ.getValueAt(i, 0).toString());
+                    if (idProdServ == prodServ.getIdProductService()) {
+                        isAdded = true;
+                        break;
+                    }
+                }
             }
-        }
 
-        if (!isAdded) {
-            _dtmProdServ.addRow(new Object[]{
-                prodServ.getIdProductService(),
-                prodServ.getProdServName(),
-                CommonConstant.DEFAULT_QTY,
-                CommonExtension.formatToPriceField(prodServ.getPrice()),
-                CommonExtension.formatToPriceField(prodServ.getPrice() * 1)
-            });
-        }
+            
+            if (!isAdded) {
+                _dtmProdServ.addRow(new Object[]{
+                    prodServ.getIdProductService(),
+                    prodServ.getProdServName(),
+                    CommonConstant.DEFAULT_QTY,
+                    CommonExtension.formatToPriceField(prodServ.getPrice()),
+                    CommonExtension.formatToPriceField(prodServ.getPrice() * CommonConstant.DEFAULT_QTY)
+                });
+            }
 
-        _defaultListModelProdServ.removeAllElements();
-        txt_search_prod_serv.setText("");
-        txt_search_prod_serv.requestFocus();
-    }
-
-    private void ensureListIsVisible() {
-        if (!list_prod_serv_search.isShowing()) {
-            list_prod_serv_search.getParent().setVisible(true); // Ensure parent is visible
-            list_prod_serv_search.requestFocusInWindow();
+            this._defaultListModelProdServ.removeAllElements();
+            this.txt_search_prod_serv.setText("");
+            this.txt_search_prod_serv.requestFocus();
+            getPriceSum();
         }
     }
 
@@ -322,8 +313,8 @@ public class NewSaleView extends javax.swing.JInternalFrame {
         lbl_deposit = new javax.swing.JLabel();
         txt_deposit = new javax.swing.JTextField();
         lbl_due = new javax.swing.JLabel();
-        lbl_total_field = new javax.swing.JLabel();
-        lbl_due_field = new javax.swing.JLabel();
+        lbl_total_amount = new javax.swing.JLabel();
+        lbl_due_amount = new javax.swing.JLabel();
         panel_sale_buttons = new javax.swing.JPanel();
         btn_save_sale = new javax.swing.JButton();
         btn_cancel = new javax.swing.JButton();
@@ -332,7 +323,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
         layered_pane_list_prod_serv = new javax.swing.JLayeredPane();
         list_prod_serv_search = new javax.swing.JList<>();
         scroll_pane_products = new javax.swing.JScrollPane();
-        table_view_products = new javax.swing.JTable();
+        table_view_prod_serv = new javax.swing.JTable();
 
         setClosable(true);
         setIconifiable(true);
@@ -507,11 +498,11 @@ public class NewSaleView extends javax.swing.JInternalFrame {
         lbl_due.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         lbl_due.setText("Due:");
 
-        lbl_total_field.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
-        lbl_total_field.setText("totalAmount");
+        lbl_total_amount.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
+        lbl_total_amount.setText("totalAmount");
 
-        lbl_due_field.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
-        lbl_due_field.setText("dueAmount");
+        lbl_due_amount.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
+        lbl_due_amount.setText("dueAmount");
 
         javax.swing.GroupLayout panel_total_amountLayout = new javax.swing.GroupLayout(panel_total_amount);
         panel_total_amount.setLayout(panel_total_amountLayout);
@@ -523,7 +514,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
                     .addGroup(panel_total_amountLayout.createSequentialGroup()
                         .addComponent(lbl_total)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lbl_total_field))
+                        .addComponent(lbl_total_amount))
                     .addGroup(panel_total_amountLayout.createSequentialGroup()
                         .addComponent(lbl_deposit)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -531,7 +522,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
                     .addGroup(panel_total_amountLayout.createSequentialGroup()
                         .addComponent(lbl_due)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lbl_due_field)))
+                        .addComponent(lbl_due_amount)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panel_total_amountLayout.setVerticalGroup(
@@ -540,7 +531,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(panel_total_amountLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbl_total)
-                    .addComponent(lbl_total_field))
+                    .addComponent(lbl_total_amount))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_total_amountLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbl_deposit)
@@ -548,7 +539,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_total_amountLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbl_due)
-                    .addComponent(lbl_due_field))
+                    .addComponent(lbl_due_amount))
                 .addContainerGap())
         );
 
@@ -606,9 +597,6 @@ public class NewSaleView extends javax.swing.JInternalFrame {
             }
         });
         txt_search_prod_serv.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                txt_search_prod_servKeyPressed(evt);
-            }
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txt_search_prod_servKeyReleased(evt);
             }
@@ -622,8 +610,8 @@ public class NewSaleView extends javax.swing.JInternalFrame {
         list_prod_serv_search.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         list_prod_serv_search.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         list_prod_serv_search.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                list_prod_serv_searchMousePressed(evt);
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                list_prod_serv_searchMouseClicked(evt);
             }
         });
         list_prod_serv_search.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -633,7 +621,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
         });
         layered_pane_list_prod_serv.add(list_prod_serv_search, new org.netbeans.lib.awtextra.AbsoluteConstraints(2, 0, 510, -1));
 
-        table_view_products.setModel(new javax.swing.table.DefaultTableModel(
+        table_view_prod_serv.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -649,28 +637,28 @@ public class NewSaleView extends javax.swing.JInternalFrame {
                 return canEdit [columnIndex];
             }
         });
-        table_view_products.setToolTipText(CommonConstant.TBL_REMOVE_ITEM_TOOL_TIP);
-        table_view_products.addMouseListener(new java.awt.event.MouseAdapter() {
+        table_view_prod_serv.setToolTipText(CommonConstant.TBL_REMOVE_ITEM_TOOL_TIP);
+        table_view_prod_serv.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                table_view_productsMouseClicked(evt);
+                table_view_prod_servMouseClicked(evt);
             }
         });
-        table_view_products.addKeyListener(new java.awt.event.KeyAdapter() {
+        table_view_prod_serv.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
-                table_view_productsKeyReleased(evt);
+                table_view_prod_servKeyReleased(evt);
             }
         });
-        scroll_pane_products.setViewportView(table_view_products);
-        if (table_view_products.getColumnModel().getColumnCount() > 0) {
-            table_view_products.getColumnModel().getColumn(0).setMinWidth(0);
-            table_view_products.getColumnModel().getColumn(0).setPreferredWidth(0);
-            table_view_products.getColumnModel().getColumn(0).setMaxWidth(0);
-            table_view_products.getColumnModel().getColumn(2).setPreferredWidth(40);
-            table_view_products.getColumnModel().getColumn(2).setMaxWidth(60);
-            table_view_products.getColumnModel().getColumn(3).setPreferredWidth(80);
-            table_view_products.getColumnModel().getColumn(3).setMaxWidth(120);
-            table_view_products.getColumnModel().getColumn(4).setPreferredWidth(80);
-            table_view_products.getColumnModel().getColumn(4).setMaxWidth(120);
+        scroll_pane_products.setViewportView(table_view_prod_serv);
+        if (table_view_prod_serv.getColumnModel().getColumnCount() > 0) {
+            table_view_prod_serv.getColumnModel().getColumn(0).setMinWidth(0);
+            table_view_prod_serv.getColumnModel().getColumn(0).setPreferredWidth(0);
+            table_view_prod_serv.getColumnModel().getColumn(0).setMaxWidth(0);
+            table_view_prod_serv.getColumnModel().getColumn(2).setPreferredWidth(40);
+            table_view_prod_serv.getColumnModel().getColumn(2).setMaxWidth(60);
+            table_view_prod_serv.getColumnModel().getColumn(3).setPreferredWidth(80);
+            table_view_prod_serv.getColumnModel().getColumn(3).setMaxWidth(120);
+            table_view_prod_serv.getColumnModel().getColumn(4).setPreferredWidth(80);
+            table_view_prod_serv.getColumnModel().getColumn(4).setMaxWidth(120);
         }
 
         layered_pane_list_prod_serv.add(scroll_pane_products, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 545, 410));
@@ -767,11 +755,6 @@ public class NewSaleView extends javax.swing.JInternalFrame {
                     return;
                 }
 
-//                // Mark each payment with the type
-//                for (SalePayment payment : payments) {
-//                    payment.setPaymentType(PaymentType.SALE);
-//                }
-
                 saleNote = new OrderNote(addSale, addSale.getEmployee(), CommonConstant.SALE_PICKED_NOTE, new Date());
 
                 long idSaleAdded = this._saleController.addOrderSale(addSale, listSaleItems, payments, deposit, saleNote);
@@ -797,14 +780,14 @@ public class NewSaleView extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btn_save_saleActionPerformed
 
     private void txt_depositKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_depositKeyReleased
-        double totalPrice = CommonExtension.formatEuroToDouble(this.lbl_total_field.getText());
+        double totalPrice = CommonExtension.formatEuroToDouble(this.lbl_total_amount.getText());
         if (!this.txt_deposit.getText().trim().isEmpty()) {
             //totalPrice = Double.parseDouble(this.lbl_total_field.getText());
             double deposit = CommonExtension.formatEuroToDouble(this.txt_deposit.getText());
 
-            this.lbl_due_field.setText(CommonExtension.formatEuroCurrency(totalPrice - deposit));
+            this.lbl_due_amount.setText(CommonExtension.formatEuroCurrency(totalPrice - deposit));
         } else {
-            this.lbl_due_field.setText(CommonExtension.formatEuroCurrency(totalPrice));
+            this.lbl_due_amount.setText(CommonExtension.formatEuroCurrency(totalPrice));
         }
     }//GEN-LAST:event_txt_depositKeyReleased
 
@@ -840,66 +823,36 @@ public class NewSaleView extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btn_copyActionPerformed
 
     private void txt_search_prod_servFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txt_search_prod_servFocusLost
-        this.txt_search_prod_serv.setText("");
-        this._defaultListModelProdServ.removeAllElements();
+        SwingUtilities.invokeLater(() -> {
+            if (!list_prod_serv_search.hasFocus()) {
+                this.txt_search_prod_serv.setText("");
+                this._defaultListModelProdServ.removeAllElements();
+            }
+        });
     }//GEN-LAST:event_txt_search_prod_servFocusLost
 
     private void txt_search_prod_servKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_search_prod_servKeyReleased
-        if (evt.getKeyCode() == KeyEvent.VK_DOWN || evt.getKeyCode() == KeyEvent.VK_UP) {
-            if (!this._defaultListModelProdServ.isEmpty()) {
-                list_prod_serv_search.requestFocus();
-                if (evt.getKeyCode() == KeyEvent.VK_DOWN) {
-                    list_prod_serv_search.setSelectedIndex(0);
-                }
-            }
-        } else {
-            searchProdServ(); // Call search only when typing
+        int key = evt.getKeyCode();
+
+        // Search logic
+        searchProdServ();
+
+        // Handle key navigation
+        if ((key == KeyEvent.VK_DOWN || key == KeyEvent.VK_TAB) && !_defaultListModelProdServ.isEmpty()) {
+            list_prod_serv_search.requestFocus();
+            list_prod_serv_search.setSelectedIndex(0);
         }
     }//GEN-LAST:event_txt_search_prod_servKeyReleased
 
-    private void list_prod_serv_searchMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_list_prod_serv_searchMousePressed
-        if (!this.list_prod_serv_search.isSelectionEmpty()) {
-            ProductService prodServ = (ProductService) this._defaultListModelProdServ.getElementAt(this.list_prod_serv_search.getSelectedIndex());
-            boolean isAdded = false;
-
-            if (this._dtmProdServ.getRowCount() > 0) {
-                for (int i = 0; i < _dtmProdServ.getRowCount(); i++) {
-                    int idProdServ = Integer.valueOf(this._dtmProdServ.getValueAt(i, 0).toString());
-                    if (idProdServ == prodServ.getIdProductService()) {
-                        isAdded = true;
-                        break;
-                    }
-                }
-            }
-
-            if (!isAdded) {
-                this._dtmProdServ.addRow(
-                        new Object[]{
-                            prodServ.getIdProductService(),
-                            prodServ.getProdServName(),
-                            CommonConstant.DEFAULT_QTY,
-                            CommonExtension.formatToPriceField(prodServ.getPrice()),
-                            CommonExtension.formatToPriceField(prodServ.getPrice() * 1)
-                        }
-                );
-
-                this._defaultListModelProdServ.removeAllElements();
-                this.txt_search_prod_serv.setText("");
-                this.txt_search_prod_serv.requestFocus();
-                getPriceSum();
-            }
-        }
-    }//GEN-LAST:event_list_prod_serv_searchMousePressed
-
-    private void table_view_productsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table_view_productsMouseClicked
+    private void table_view_prod_servMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table_view_prod_servMouseClicked
         if (evt.getClickCount() == 2) {
-            this._dtmProdServ.removeRow(this.table_view_products.getSelectedRow());
+            this._dtmProdServ.removeRow(this.table_view_prod_serv.getSelectedRow());
             // Sum price column and set into total textField
             getPriceSum();
         }
-    }//GEN-LAST:event_table_view_productsMouseClicked
+    }//GEN-LAST:event_table_view_prod_servMouseClicked
 
-    private void table_view_productsKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_table_view_productsKeyReleased
+    private void table_view_prod_servKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_table_view_prod_servKeyReleased
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             double sum = 0;
             for (int i = 0; i < this._dtmProdServ.getRowCount(); i++) {
@@ -912,10 +865,10 @@ public class NewSaleView extends javax.swing.JInternalFrame {
                 sum += priceTotal;
             }
 
-            this.lbl_total_field.setText(String.valueOf((sum)));
-            this.lbl_due_field.setText(String.valueOf(this.lbl_total_field.getText()));
+            this.lbl_total_amount.setText(String.valueOf((sum)));
+            this.lbl_due_amount.setText(String.valueOf(this.lbl_total_amount.getText()));
         }
-    }//GEN-LAST:event_table_view_productsKeyReleased
+    }//GEN-LAST:event_table_view_prod_servKeyReleased
 
     private void btn_international_number1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_international_number1ActionPerformed
         if (this.txt_contact.getFormatterFactory() != null) {
@@ -934,40 +887,13 @@ public class NewSaleView extends javax.swing.JInternalFrame {
 
     private void list_prod_serv_searchKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_list_prod_serv_searchKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            if (!list_prod_serv_search.isSelectionEmpty()) {
-                ProductService prodServ = (ProductService) _defaultListModelProdServ.getElementAt(list_prod_serv_search.getSelectedIndex());
-                addProductService(prodServ);
-            }
-        } else if (evt.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            txt_search_prod_serv.requestFocus(); // Return focus to search box
+            addProdServToTheTable();
         }
     }//GEN-LAST:event_list_prod_serv_searchKeyPressed
 
-    private void txt_search_prod_servKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_search_prod_servKeyPressed
-        System.out.println("Key Pressed: " + evt.getKeyCode());
-
-        // Check if the list is still attached to the UI
-        if (list_prod_serv_search.getParent() != null) {
-            System.out.println("List Parent: " + list_prod_serv_search.getParent().getClass().getName());
-        } else {
-            System.out.println("List has no parent, it might have been removed!");
-        }
-
-        System.out.println("List Visible? " + list_prod_serv_search.isVisible());
-        System.out.println("List Showing? " + list_prod_serv_search.isShowing());
-        System.out.println("List Size: " + _defaultListModelProdServ.getSize());
-
-        if (evt.getKeyCode() == KeyEvent.VK_DOWN) {
-            if (_defaultListModelProdServ.getSize() > 0) {
-                System.out.println("Focusing on list...");
-                ensureListIsVisible();  // Make sure it's visible
-                list_prod_serv_search.setSelectedIndex(0);
-                list_prod_serv_search.requestFocusInWindow();
-            } else {
-                System.out.println("List is empty, not moving focus.");
-            }
-        }
-    }//GEN-LAST:event_txt_search_prod_servKeyPressed
+    private void list_prod_serv_searchMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_list_prod_serv_searchMouseClicked
+        addProdServToTheTable();
+    }//GEN-LAST:event_list_prod_serv_searchMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_cancel;
@@ -980,7 +906,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lbl_contact_star;
     private javax.swing.JLabel lbl_deposit;
     private javax.swing.JLabel lbl_due;
-    private javax.swing.JLabel lbl_due_field;
+    private javax.swing.JLabel lbl_due_amount;
     private javax.swing.JLabel lbl_email;
     private javax.swing.JLabel lbl_first_name;
     private javax.swing.JLabel lbl_first_name_star;
@@ -988,14 +914,14 @@ public class NewSaleView extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lbl_last_name_star;
     private javax.swing.JLabel lbl_search_prod_serv_icon;
     private javax.swing.JLabel lbl_total;
-    private javax.swing.JLabel lbl_total_field;
+    private javax.swing.JLabel lbl_total_amount;
     private javax.swing.JList<String> list_prod_serv_search;
     private javax.swing.JPanel panel_input_detail;
     private javax.swing.JPanel panel_sale_buttons;
     private javax.swing.JPanel panel_sale_details;
     private javax.swing.JPanel panel_total_amount;
     private javax.swing.JScrollPane scroll_pane_products;
-    private javax.swing.JTable table_view_products;
+    private javax.swing.JTable table_view_prod_serv;
     private javax.swing.JFormattedTextField txt_contact;
     private javax.swing.JTextField txt_deposit;
     private javax.swing.JTextField txt_email;

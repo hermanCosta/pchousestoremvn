@@ -116,23 +116,20 @@ public class CreatedSaleView extends javax.swing.JInternalFrame {
                 String password = CommonExtension.requestUserPassword();
                 Employee employee = _employeeController.getEmployeeByPass(password);
 
-                if (employee != null) {
+                if (employee == null) {
+                    JOptionPane.showMessageDialog(this, CommonConstant.NOT_AUTHORIZED, null, JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                     Date createdDate = new Date();
-
                     Refund saleRefund = new Refund(CommonSetting.COMPANY, employee, _saleModel, _saleModel.getTotal(), createdDate);
+
                     OrderNote saleRefundNote = new OrderNote(_saleModel, employee, CommonConstant.SALE_REFUND_NOTE, createdDate);
-                    long refundId = _refundController.addRefund(saleRefund, saleRefundNote);
+                    long refundId = _refundController.addSaleRefund(saleRefund, saleRefundNote, _salePayments);
 
                     if (refundId > 0) {
                         JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_REFUND);
 
-                        RefundSaleView refundSaleView = new RefundSaleView(_saleModel, _listSaleProdServs, _orderDeposits, _salePayments);
-                        CommonSetting.openInternalFrame(refundSaleView, "Refunded Sale: " + _saleModel.getIdSale());
                     }
-
-                } else {
-                    JOptionPane.showMessageDialog(this, CommonConstant.NOT_AUTHORIZED, null, JOptionPane.ERROR_MESSAGE);
-                }
 
             } catch (BusinessException e) {
                 JOptionPane.showMessageDialog(this, e.getMessage(), this.getTitle(), JOptionPane.ERROR_MESSAGE);
