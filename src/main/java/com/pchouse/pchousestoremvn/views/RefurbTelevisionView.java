@@ -3,13 +3,15 @@ package com.pchouse.pchousestoremvn.views;
 import com.pchouse.pchousestoremvn.common.CommonConstant;
 import com.pchouse.pchousestoremvn.common.CommonExtension;
 import com.pchouse.pchousestoremvn.common.CommonSetting;
-import com.pchouse.pchousestoremvn.common.Printer;
+import com.pchouse.pchousestoremvn.common.PrinterUtil;
 import com.pchouse.pchousestoremvn.controllers.RefurbController;
 import com.pchouse.pchousestoremvn.models.Refurb;
+import java.awt.Component;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
@@ -398,11 +400,6 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
 
         txt_brand.setMinimumSize(new java.awt.Dimension(12, 20));
         txt_brand.setPreferredSize(new java.awt.Dimension(0, 25));
-        txt_brand.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                txt_brandKeyPressed(evt);
-            }
-        });
 
         lbl_model_star.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
         lbl_model_star.setForeground(java.awt.Color.red);
@@ -413,11 +410,6 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
 
         txt_model.setMinimumSize(new java.awt.Dimension(12, 20));
         txt_model.setPreferredSize(new java.awt.Dimension(0, 25));
-        txt_model.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                txt_modelKeyPressed(evt);
-            }
-        });
 
         lbl_price_star.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
         lbl_price_star.setForeground(java.awt.Color.red);
@@ -549,6 +541,7 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
 
         lbl_custom_1.setBackground(new java.awt.Color(214, 217, 223));
         lbl_custom_1.setFont(new java.awt.Font("Lucida Grande", 1, 12)); // NOI18N
+        lbl_custom_1.setForeground(new java.awt.Color(70, 73, 75));
         lbl_custom_1.setPreferredSize(new java.awt.Dimension(100, 25));
 
         txt_custom_1.setFont(new java.awt.Font("sansserif", 0, 11)); // NOI18N
@@ -561,6 +554,7 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
 
         lbl_custom_2.setBackground(new java.awt.Color(214, 217, 223));
         lbl_custom_2.setFont(new java.awt.Font("Lucida Grande", 1, 12)); // NOI18N
+        lbl_custom_2.setForeground(new java.awt.Color(70, 73, 75));
         lbl_custom_2.setPreferredSize(new java.awt.Dimension(100, 25));
 
         txt_custom_2.setFont(new java.awt.Font("sansserif", 0, 11)); // NOI18N
@@ -573,6 +567,7 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
 
         lbl_custom_3.setBackground(new java.awt.Color(214, 217, 223));
         lbl_custom_3.setFont(new java.awt.Font("Lucida Grande", 1, 12)); // NOI18N
+        lbl_custom_3.setForeground(new java.awt.Color(70, 73, 75));
         lbl_custom_3.setPreferredSize(new java.awt.Dimension(100, 25));
 
         txt_custom_3.setFont(new java.awt.Font("sansserif", 0, 11)); // NOI18N
@@ -585,6 +580,7 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
 
         lbl_custom_4.setBackground(new java.awt.Color(214, 217, 223));
         lbl_custom_4.setFont(new java.awt.Font("Lucida Grande", 1, 12)); // NOI18N
+        lbl_custom_4.setForeground(new java.awt.Color(70, 73, 75));
         lbl_custom_4.setPreferredSize(new java.awt.Dimension(100, 25));
 
         txt_custom_4.setFont(new java.awt.Font("sansserif", 0, 11)); // NOI18N
@@ -597,6 +593,7 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
 
         lbl_custom_5.setBackground(new java.awt.Color(214, 217, 223));
         lbl_custom_5.setFont(new java.awt.Font("Lucida Grande", 1, 12)); // NOI18N
+        lbl_custom_5.setForeground(new java.awt.Color(70, 73, 75));
         lbl_custom_5.setPreferredSize(new java.awt.Dimension(100, 25));
 
         txt_custom_5.setFont(new java.awt.Font("sansserif", 0, 11)); // NOI18N
@@ -609,6 +606,7 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
 
         lbl_custom_6.setBackground(new java.awt.Color(214, 217, 223));
         lbl_custom_6.setFont(new java.awt.Font("Lucida Grande", 1, 12)); // NOI18N
+        lbl_custom_6.setForeground(new java.awt.Color(70, 73, 75));
         lbl_custom_6.setPreferredSize(new java.awt.Dimension(100, 25));
 
         txt_custom_6.setFont(new java.awt.Font("sansserif", 0, 11)); // NOI18N
@@ -689,9 +687,11 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
         panel_refurb_label.setMaximumSize(new java.awt.Dimension(555, 200));
         panel_refurb_label.setPreferredSize(new java.awt.Dimension(432, 316));
 
-        lbl_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/logo_slogan_small.png"))); // NOI18N
+        lbl_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_logo_sm.png"))); // NOI18N
 
+        txt_bran_mod_scr_label.setBackground(java.awt.Color.white);
         txt_bran_mod_scr_label.setFont(new java.awt.Font("sansserif", 1, 15)); // NOI18N
+        txt_bran_mod_scr_label.setForeground(new java.awt.Color(70, 73, 75));
         txt_bran_mod_scr_label.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txt_bran_mod_scr_label.setBorder(null);
 
@@ -699,22 +699,30 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
         scroll_editorpane_computer.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scroll_editorpane_computer.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 
+        editor_pane_label.setBackground(java.awt.Color.white);
         editor_pane_label.setBorder(null);
+        editor_pane_label.setForeground(new java.awt.Color(70, 73, 75));
         editor_pane_label.setPreferredSize(new java.awt.Dimension(112, 30));
         scroll_editorpane_computer.setViewportView(editor_pane_label);
 
+        txt_price_label.setBackground(java.awt.Color.white);
         txt_price_label.setFont(new java.awt.Font("sansserif", 1, 15)); // NOI18N
+        txt_price_label.setForeground(new java.awt.Color(70, 73, 75));
         txt_price_label.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txt_price_label.setBorder(null);
         txt_price_label.setPreferredSize(new java.awt.Dimension(0, 30));
 
+        txt_warranty.setBackground(java.awt.Color.white);
         txt_warranty.setFont(new java.awt.Font("sansserif", 0, 13)); // NOI18N
+        txt_warranty.setForeground(new java.awt.Color(70, 73, 75));
         txt_warranty.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txt_warranty.setBorder(null);
         txt_warranty.setPreferredSize(new java.awt.Dimension(0, 20));
 
         txt_id.setEditable(false);
+        txt_id.setBackground(java.awt.Color.white);
         txt_id.setFont(new java.awt.Font("sansserif", 0, 13)); // NOI18N
+        txt_id.setForeground(new java.awt.Color(70, 73, 75));
         txt_id.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         txt_id.setBorder(null);
         txt_id.setPreferredSize(new java.awt.Dimension(50, 20));
@@ -758,7 +766,7 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
                     .addComponent(lbl_icon, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(txt_bran_mod_scr_label))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(separator_header)
+                .addComponent(separator_header, javax.swing.GroupLayout.DEFAULT_SIZE, 9, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(scroll_editorpane_computer, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -767,7 +775,7 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
                 .addComponent(txt_price_label, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(txt_warranty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
                 .addComponent(txt_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -777,21 +785,21 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
             panel_label_designLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_label_designLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(panel_refurb_label, javax.swing.GroupLayout.DEFAULT_SIZE, 431, Short.MAX_VALUE)
+                .addComponent(panel_refurb_label, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         panel_label_designLayout.setVerticalGroup(
             panel_label_designLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_label_designLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(panel_refurb_label, javax.swing.GroupLayout.DEFAULT_SIZE, 327, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(panel_refurb_label, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         panel_refurb_buttons.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         btn_add.setBackground(new java.awt.Color(21, 76, 121));
-        btn_add.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+        btn_add.setFont(new java.awt.Font("Lucida Grande", 0, 12)); // NOI18N
         btn_add.setForeground(new java.awt.Color(255, 255, 255));
         btn_add.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_add.png"))); // NOI18N
         btn_add.setText("Add");
@@ -802,7 +810,7 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
         });
 
         btn_update.setBackground(new java.awt.Color(21, 76, 121));
-        btn_update.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+        btn_update.setFont(new java.awt.Font("Lucida Grande", 0, 12)); // NOI18N
         btn_update.setForeground(new java.awt.Color(255, 255, 255));
         btn_update.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_save_changes.png"))); // NOI18N
         btn_update.setText("Update");
@@ -813,7 +821,7 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
         });
 
         btn_delete.setBackground(new java.awt.Color(21, 76, 121));
-        btn_delete.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+        btn_delete.setFont(new java.awt.Font("Lucida Grande", 0, 12)); // NOI18N
         btn_delete.setForeground(new java.awt.Color(255, 255, 255));
         btn_delete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_cancel.png"))); // NOI18N
         btn_delete.setText("Delete");
@@ -824,7 +832,7 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
         });
 
         btn_clear_fields.setBackground(new java.awt.Color(21, 76, 121));
-        btn_clear_fields.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+        btn_clear_fields.setFont(new java.awt.Font("Lucida Grande", 0, 12)); // NOI18N
         btn_clear_fields.setForeground(new java.awt.Color(255, 255, 255));
         btn_clear_fields.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_clear.png"))); // NOI18N
         btn_clear_fields.setText("Clear");
@@ -835,7 +843,7 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
         });
 
         btn_print_label.setBackground(new java.awt.Color(21, 76, 121));
-        btn_print_label.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+        btn_print_label.setFont(new java.awt.Font("Lucida Grande", 0, 12)); // NOI18N
         btn_print_label.setForeground(new java.awt.Color(255, 255, 255));
         btn_print_label.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_print.png"))); // NOI18N
         btn_print_label.setText("Print ");
@@ -944,7 +952,7 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txt_searchKeyReleased
 
     private void btn_print_labelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_print_labelActionPerformed
-        Printer.printPanel(this.panel_refurb_label);
+        PrinterUtil.printPanelAsImage(this.panel_refurb_label);
     }//GEN-LAST:event_btn_print_labelActionPerformed
 
     private void table_view_refurbMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table_view_refurbMouseClicked
@@ -967,98 +975,125 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btn_clear_fieldsActionPerformed
 
     private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
-        int selectedRow = this.table_view_refurb.getSelectedRow();
+        try {
+            int selectedRow = this.table_view_refurb.getSelectedRow();
 
-        if (selectedRow >= 0) {
-            Refurb deleteRefurbProd = new Refurb();
+            if (selectedRow >= 0) {
+                Refurb deleteRefurbProd = new Refurb();
 
-            deleteRefurbProd.setIdRefurb((Integer) this._dtmRefurb.getValueAt(selectedRow, 0));
-            deleteRefurbProd.setModel(this._dtmRefurb.getValueAt(selectedRow, 2).toString());
+                deleteRefurbProd.setIdRefurb((long) this._dtmRefurb.getValueAt(selectedRow, 0));
+                deleteRefurbProd.setModel(this._dtmRefurb.getValueAt(selectedRow, 2).toString());
 
-            int confirmDeletion = JOptionPane.showConfirmDialog(this, CommonConstant.CONFIRM_DELETE, this.getTitle(), JOptionPane.YES_NO_OPTION);
+                int confirmDeletion = JOptionPane.showConfirmDialog(
+                        this,
+                        CommonConstant.CONFIRM_DELETE,
+                        this.getTitle(),
+                        JOptionPane.YES_NO_OPTION
+                );
 
-            if (confirmDeletion == 0) {
-                boolean isDeleted = this._refurbController.deleteRefurbProduct(deleteRefurbProd);
+                if (confirmDeletion == JOptionPane.YES_OPTION) {
+                    boolean isDeleted = this._refurbController.deleteRefurbProduct(deleteRefurbProd);
 
-                if (isDeleted) {
-                    loadRefurbListTable();
-                } else {
-                    JOptionPane.showMessageDialog(this, CommonConstant.ERROR_DELETE_ITEM, this.getTitle(), JOptionPane.ERROR_MESSAGE);
+                    if (isDeleted) {
+                        loadRefurbListTable(); // Refresh the table
+                    } else {
+                        JOptionPane.showMessageDialog(
+                                this,
+                                CommonConstant.ERROR_DELETE,
+                                this.getTitle(),
+                                JOptionPane.ERROR_MESSAGE
+                        );
+                    }
                 }
+            } else {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Please select a row to delete.",
+                        this.getTitle(),
+                        JOptionPane.WARNING_MESSAGE
+                );
             }
+        } catch (Exception ex) {
+            ex.printStackTrace(); // Consider replacing with a logger
+            JOptionPane.showMessageDialog(
+                    this,
+                    "An unexpected error occurred: " + ex.getMessage(),
+                    this.getTitle(),
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
     }//GEN-LAST:event_btn_deleteActionPerformed
 
     private void btn_updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_updateActionPerformed
-        Refurb updateRefurb = getRefurbFields();
+        try {
+            Refurb updateRefurb = getRefurbFields();
 
-        if (updateRefurb != null) {
-            int confirmEditing = JOptionPane.showConfirmDialog(this, CommonConstant.CONFIRM_UPDATE, this.getTitle(), JOptionPane.YES_NO_OPTION);
-            if (confirmEditing == 0) {
-                boolean isUpdated = this._refurbController.updateRefurbProduct(updateRefurb);
+            if (updateRefurb != null) {
+                int confirmEditing = JOptionPane.showConfirmDialog(
+                        this,
+                        CommonConstant.CONFIRM_UPDATE,
+                        this.getTitle(),
+                        JOptionPane.YES_NO_OPTION
+                );
 
-                if (isUpdated) {
+                if (confirmEditing == JOptionPane.YES_OPTION) {
+                    boolean isUpdated = this._refurbController.updateRefurbProduct(updateRefurb);
 
-                    getItemRefurbProd(updateRefurb.getIdRefurb());
-                    clearPanelFields();
-                    clearPanelLabel();
-                } else {
-                    JOptionPane.showMessageDialog(this, CommonConstant.ERROR_UPDATE, this.getTitle(), JOptionPane.ERROR_MESSAGE);
+                    if (isUpdated) {
+                        getItemRefurbProd(updateRefurb.getIdRefurb());
+                        clearPanelFields();
+                        clearPanelLabel();
+                    } else {
+                        JOptionPane.showMessageDialog(
+                                this,
+                                CommonConstant.ERROR_UPDATE,
+                                this.getTitle(),
+                                JOptionPane.ERROR_MESSAGE
+                        );
+                    }
                 }
             }
+        } catch (Exception ex) {
+            ex.printStackTrace();  // For debugging, replace with logger in production
+            JOptionPane.showMessageDialog(
+                    this,
+                    "An unexpected error occurred: " + ex.getMessage(),
+                    this.getTitle(),
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
     }//GEN-LAST:event_btn_updateActionPerformed
 
     private void btn_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
-        Refurb addRefurbProd = this.getRefurbFields();
+        try {
+            Refurb addRefurbProd = this.getRefurbFields();
 
-        if (addRefurbProd != null) {
-            long idRefurbAdded = this._refurbController.addRefurbProduct(addRefurbProd);
+            if (addRefurbProd != null) {
+                long idRefurbAdded = this._refurbController.addRefurbProduct(addRefurbProd);
 
-            if (idRefurbAdded > 0) {
-
-                getItemRefurbProd(idRefurbAdded);
-                clearPanelFields();
-                clearPanelLabel();
-            } else {
-                JOptionPane.showMessageDialog(this, CommonConstant.ERROR_SAVE, this.getTitle(), JOptionPane.ERROR_MESSAGE);
+                if (idRefurbAdded > 0) {
+                    getItemRefurbProd(idRefurbAdded);
+                    clearPanelFields();
+                    clearPanelLabel();
+                } else {
+                    JOptionPane.showMessageDialog(
+                            this,
+                            CommonConstant.ERROR_SAVE,
+                            this.getTitle(),
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                }
             }
+        } catch (Exception ex) {
+            ex.printStackTrace(); // useful during development
+            JOptionPane.showMessageDialog(
+                    this,
+                    "An unexpected error occurred: " + ex.getMessage(),
+                    this.getTitle(),
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
     }//GEN-LAST:event_btn_addActionPerformed
-
-    private void txt_brandKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_brandKeyPressed
-        //Suggest autoComplete firstNames from Database
-        //        switch (evt.getKeyCode()) {
-        //            case KeyEvent.VK_BACK_SPACE:
-        //                break;
-        //
-        //            case KeyEvent.VK_ENTER:
-        //                txt_brand.setText(txt_brand.getText());
-        //                break;
-        //            default:
-        //                EventQueue.invokeLater(() -> {
-        //                    String text = txt_brand.getText();
-        //                    autoCompleteFromDb(brands, text, txt_brand);
-        //                });
-        //        }
-    }//GEN-LAST:event_txt_brandKeyPressed
-
-    private void txt_modelKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_modelKeyPressed
-        //Sugest autoComplete firstNames from Database
-        //        switch (evt.getKeyCode()) {
-        //            case KeyEvent.VK_BACK_SPACE:
-        //                break;
-        //
-        //            case KeyEvent.VK_ENTER:
-        //                txt_model.setText(txt_model.getText());
-        //                break;
-        //            default:
-        //                EventQueue.invokeLater(() -> {
-        //                    String text = txt_model.getText();
-        //                    autoCompleteFromDb(models, text, txt_model);
-        //                });
-        //        }
-    }//GEN-LAST:event_txt_modelKeyPressed
 
     private void txt_priceKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_priceKeyPressed
         if (Character.isLetter(evt.getKeyChar())) {
@@ -1142,18 +1177,7 @@ public class RefurbTelevisionView extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txt_custom_5KeyPressed
 
     private void radio_btn_enable_customActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radio_btn_enable_customActionPerformed
-        if (this.lbl_custom_1.getText().trim().isEmpty()
-                && this.txt_custom_1.getText().trim().isEmpty()) {
-            if (!this.lbl_custom_1.isVisible() || !this.txt_custom_1.isVisible()) {
-                this.lbl_custom_1.setVisible(true);
-                this.txt_custom_1.setVisible(true);
-
-                this.lbl_custom_1.requestFocus();
-            } else {
-                this.lbl_custom_1.setVisible(false);
-                this.txt_custom_1.setVisible(false);
-            }
-        }
+        CommonExtension.EnableRefurbCustomfields(lbl_custom_1, panel_refurb_custom_info);
     }//GEN-LAST:event_radio_btn_enable_customActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -3,6 +3,7 @@ package com.pchouse.pchousestoremvn.controllers;
 import com.pchouse.pchousestoremvn.dao.RefurbDAO;
 import com.pchouse.pchousestoremvn.models.Company;
 import com.pchouse.pchousestoremvn.models.Refurb;
+import java.util.Collections;
 import java.util.List;
 
 public class RefurbController {
@@ -14,7 +15,13 @@ public class RefurbController {
     }
 
     public long addRefurbProduct(Refurb refurb) {
-        return refurbDAO.addRefurbProductDAO(refurb);
+        try {
+            return refurbDAO.addRefurbProductDAO(refurb);
+        } catch (Exception e) {
+            System.out.println("Error in controller: " + e.getMessage());
+            e.printStackTrace(); // optional for debugging
+            return 0;
+        }
     }
 
     public Refurb getRefurbProductById(long id) {
@@ -22,30 +29,72 @@ public class RefurbController {
     }
 
     public boolean updateRefurbProduct(Refurb refurb) {
-        return refurbDAO.updateRefurbProdDAO(refurb);
+        try {
+            return refurbDAO.updateRefurbProdDAO(refurb);
+        } catch (Exception e) {
+            System.out.println("Error in controller: " + e.getMessage());
+            e.printStackTrace(); // Optional: remove or replace with logger in production
+            return false;
+        }
     }
 
     public boolean deleteRefurbProduct(Refurb refurb) {
-        return refurbDAO.deleteRefurbProdDAO(refurb);
+        try {
+            return refurbDAO.deleteRefurbProdDAO(refurb);
+        } catch (Exception e) {
+            System.out.println("Error in deleteRefurbProduct: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public List<Refurb> searchRefurbProducts(String searchTerm) {
-        return refurbDAO.searchRefurbDAO(searchTerm);
+        try {
+            return refurbDAO.searchRefurbDAO(searchTerm);
+        } catch (Exception e) {
+            System.out.println("Error in searchRefurbProducts: " + e.getMessage());
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
     }
 
     public List<Refurb> getRefurbProductsByCategory(Company company, String category) {
-        return refurbDAO.getAllRefurbByCategoryDAO(company, category);
+        try {
+            return refurbDAO.getAllRefurbByCategoryDAO(company, category);
+        } catch (Exception e) {
+            System.out.println("Error in getRefurbProductsByCategory: " + e.getMessage());
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
     }
 
     public List<Refurb> searchRefurbByCategory(Company company, String category, String searchTerm) {
-        return refurbDAO.searchRefurbByCategoryDAO(company, category, searchTerm);
+        try {
+            return refurbDAO.searchRefurbByCategoryDAO(company, category, searchTerm);
+        } catch (Exception e) {
+            System.out.println("Error in searchRefurbByCategory: " + e.getMessage());
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
     }
 
     public List<Refurb> getCustomRefurbProducts(Company company) {
-        return refurbDAO.getAllCustomRefurbProdDAO(company);
+        try {
+            return refurbDAO.getAllCustomRefurbProdDAO(company);
+        } catch (Exception e) {
+            System.out.println("Error in getCustomRefurbProducts: " + e.getMessage());
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
     }
 
     public List<Refurb> searchCustomRefurbProducts(Company company, String searchTerm) {
-        return refurbDAO.searchCustomRefurbDAO(company, searchTerm);
+        try {
+            return refurbDAO.searchCustomRefurbDAO(company, searchTerm);
+        } catch (Exception e) {
+            System.out.println("Error in searchCustomRefurbProducts: " + e.getMessage());
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
     }
 }

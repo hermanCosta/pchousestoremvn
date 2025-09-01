@@ -4,6 +4,7 @@ import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.NumberFormat;
@@ -16,7 +17,9 @@ import java.util.Locale;
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
@@ -243,5 +246,21 @@ public class CommonExtension {
         } else{
             return 0;
         }
+    }
+    
+    public static void EnableRefurbCustomfields(JTextField jTextField, JPanel panel){
+         boolean currentlyVisible = jTextField.isVisible(); // assuming all are synced
+
+        for (int i = 1; i <= 6; i++) {
+            JPanel parentPanel = panel; // or your actual panel variable
+            Component lbl = parentPanel.getComponent(i * 2 - 2); // lbl
+            Component txt = parentPanel.getComponent(i * 2 - 1); // txt
+
+            lbl.setVisible(!currentlyVisible);
+            txt.setVisible(!currentlyVisible);
+        }
+
+        panel.revalidate();
+        panel.repaint();
     }
 }

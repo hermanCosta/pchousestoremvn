@@ -13,6 +13,7 @@ import javax.swing.table.DefaultTableModel;
 
 public class RefurbView extends javax.swing.JInternalFrame {
 
+    private long refurbId;
     private final DefaultTableModel _dtmRefurb;
     private final RefurbController _refurbController;
     private List<Refurb> _listRefurb;
@@ -88,16 +89,15 @@ public class RefurbView extends javax.swing.JInternalFrame {
                     CommonExtension.joinCustomRefurbFields(this.lbl_custom_5, this.txt_custom_5),
                     CommonExtension.joinCustomRefurbFields(this.lbl_custom_6, this.txt_custom_6),
                     CommonSetting.COMPANY);
-
-            int idRefurb = CommonExtension.setIdExtension(this.txt_refurb_id);
-            getRefurb.setIdRefurb(idRefurb);
+            
+            getRefurb.setIdRefurb(refurbId);
 
             return getRefurb;
         }
     }
 
     private void setRefurbFields(Refurb refurbProd) {
-        this.txt_refurb_id.setText(String.valueOf(refurbProd.getIdRefurb()));
+        this.refurbId = refurbProd.getIdRefurb();
         this.combo_box_refurb_category.setSelectedItem(refurbProd.getCategory());
         this.txt_brand.setText(refurbProd.getBrand());
         this.txt_model.setText(refurbProd.getModel());
@@ -240,7 +240,7 @@ public class RefurbView extends javax.swing.JInternalFrame {
     }
 
     private void cleanBasicInfoPanelFields() {
-        this.txt_refurb_id.setText("");
+        this.refurbId = 0;
         this.txt_brand.setText("");
         this.txt_model.setText("");
         this.txt_price.setText("");
@@ -281,8 +281,6 @@ public class RefurbView extends javax.swing.JInternalFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         table_view_refurbs = new javax.swing.JTable();
         panel_refurb_basic_info = new javax.swing.JPanel();
-        lbl_refurb_id = new javax.swing.JLabel();
-        txt_refurb_id = new javax.swing.JTextField();
         lbl_categ_star = new javax.swing.JLabel();
         lbl_category = new javax.swing.JLabel();
         combo_box_refurb_category = new javax.swing.JComboBox<>();
@@ -402,15 +400,6 @@ public class RefurbView extends javax.swing.JInternalFrame {
         panel_refurb_basic_info.setPreferredSize(new java.awt.Dimension(330, 210));
         panel_refurb_basic_info.setVerifyInputWhenFocusTarget(false);
 
-        lbl_refurb_id.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
-        lbl_refurb_id.setText("ID");
-
-        txt_refurb_id.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        txt_refurb_id.setEnabled(false);
-        txt_refurb_id.setMinimumSize(new java.awt.Dimension(12, 20));
-        txt_refurb_id.setPreferredSize(new java.awt.Dimension(0, 25));
-        txt_refurb_id.setRequestFocusEnabled(false);
-
         lbl_categ_star.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
         lbl_categ_star.setForeground(java.awt.Color.red);
         lbl_categ_star.setText("*");
@@ -436,11 +425,6 @@ public class RefurbView extends javax.swing.JInternalFrame {
         txt_brand.setMinimumSize(new java.awt.Dimension(12, 20));
         txt_brand.setNextFocusableComponent(txt_model);
         txt_brand.setPreferredSize(new java.awt.Dimension(0, 25));
-        txt_brand.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                txt_brandKeyPressed(evt);
-            }
-        });
 
         lbl_model_star.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
         lbl_model_star.setForeground(java.awt.Color.red);
@@ -451,11 +435,6 @@ public class RefurbView extends javax.swing.JInternalFrame {
 
         txt_model.setMinimumSize(new java.awt.Dimension(12, 20));
         txt_model.setPreferredSize(new java.awt.Dimension(0, 25));
-        txt_model.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                txt_modelKeyPressed(evt);
-            }
-        });
 
         lbl_price_star.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
         lbl_price_star.setForeground(java.awt.Color.red);
@@ -517,19 +496,15 @@ public class RefurbView extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txt_qty, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_refurb_basic_infoLayout.createSequentialGroup()
-                        .addComponent(lbl_refurb_id)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txt_refurb_id, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(lbl_categ_star)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lbl_category)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(combo_box_refurb_category, 0, 139, Short.MAX_VALUE))
+                        .addComponent(combo_box_refurb_category, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(panel_refurb_basic_infoLayout.createSequentialGroup()
                         .addComponent(lbl_refurb_notes)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE))
                     .addGroup(panel_refurb_basic_infoLayout.createSequentialGroup()
                         .addComponent(lbl_serial_number)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -556,10 +531,7 @@ public class RefurbView extends javax.swing.JInternalFrame {
                     .addGroup(panel_refurb_basic_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(lbl_category)
                         .addComponent(lbl_categ_star, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(panel_refurb_basic_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lbl_refurb_id)
-                        .addComponent(txt_refurb_id, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(combo_box_refurb_category))
+                    .addComponent(combo_box_refurb_category, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_refurb_basic_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txt_brand, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -587,7 +559,7 @@ public class RefurbView extends javax.swing.JInternalFrame {
                         .addComponent(lbl_refurb_notes)
                         .addGap(19, 19, 19))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_refurb_basic_infoLayout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
                         .addContainerGap())))
         );
 
@@ -854,13 +826,13 @@ public class RefurbView extends javax.swing.JInternalFrame {
             .addGroup(panel_refurb_buttonsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(btn_add)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btn_update)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btn_delete)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btn_clear_fields)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btn_gen_label)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -918,12 +890,12 @@ public class RefurbView extends javax.swing.JInternalFrame {
                 .addGap(18, 18, 18)
                 .addGroup(panel_refurbsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(panel_refurb_extra_info, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(panel_refurb_basic_info, javax.swing.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE)
-                    .addComponent(panel_refurb_custom_info, javax.swing.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE))
+                    .addComponent(panel_refurb_basic_info, javax.swing.GroupLayout.DEFAULT_SIZE, 212, Short.MAX_VALUE)
+                    .addComponent(panel_refurb_custom_info, javax.swing.GroupLayout.DEFAULT_SIZE, 212, Short.MAX_VALUE))
                 .addGap(5, 5, 5)
                 .addComponent(lbl_mandatory)
                 .addGap(15, 15, 15)
-                .addComponent(panel_refurb_buttons, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
+                .addComponent(panel_refurb_buttons, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -933,14 +905,14 @@ public class RefurbView extends javax.swing.JInternalFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(panel_refurbs, javax.swing.GroupLayout.DEFAULT_SIZE, 1036, Short.MAX_VALUE)
+                .addComponent(panel_refurbs, javax.swing.GroupLayout.DEFAULT_SIZE, 1026, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(panel_refurbs, javax.swing.GroupLayout.DEFAULT_SIZE, 608, Short.MAX_VALUE)
+                .addComponent(panel_refurbs, javax.swing.GroupLayout.DEFAULT_SIZE, 594, Short.MAX_VALUE)
                 .addGap(14, 14, 14))
         );
 
@@ -948,99 +920,127 @@ public class RefurbView extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
-        Refurb addRefurbProd = this.getRefurbFields();
+        try {
+            Refurb addRefurbProd = this.getRefurbFields();
 
-        if (addRefurbProd != null) {
-            long idRefurbAdded = this._refurbController.addRefurbProduct(addRefurbProd);
+            if (addRefurbProd != null) {
+                long idRefurbAdded = this._refurbController.addRefurbProduct(addRefurbProd);
 
-            if (idRefurbAdded > 0) {
-                
-                getItemRefurbProd(idRefurbAdded);
-                cleanBasicInfoPanelFields();
-                cleanExtraInfoPanelFields();
-                cleanCustomInfoPanelFields();
-            } else {
-                JOptionPane.showMessageDialog(this, CommonConstant.ERROR_SAVE, this.getTitle(), JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }//GEN-LAST:event_btn_addActionPerformed
-
-    private void btn_updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_updateActionPerformed
-        Refurb updateRefurb = getRefurbFields();
-
-        if (updateRefurb != null) {
-            int confirmEditing = JOptionPane.showConfirmDialog(this, CommonConstant.CONFIRM_UPDATE,this.getTitle(), JOptionPane.YES_NO_OPTION);
-            if (confirmEditing == 0) {
-                boolean isUpdated = this._refurbController.updateRefurbProduct(updateRefurb);
-
-                if (isUpdated) {
-                    
-                    getItemRefurbProd(updateRefurb.getIdRefurb());
+                if (idRefurbAdded > 0) {
+                    getItemRefurbProd(idRefurbAdded);
                     cleanBasicInfoPanelFields();
                     cleanExtraInfoPanelFields();
                     cleanCustomInfoPanelFields();
                 } else {
-                    JOptionPane.showMessageDialog(this, CommonConstant.ERROR_UPDATE, this.getTitle(), JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(
+                            this,
+                            CommonConstant.ERROR_SAVE,
+                            this.getTitle(),
+                            JOptionPane.ERROR_MESSAGE
+                    );
                 }
             }
+        } catch (Exception ex) {
+            ex.printStackTrace(); // useful during development
+            JOptionPane.showMessageDialog(
+                    this,
+                    "An unexpected error occurred: " + ex.getMessage(),
+                    this.getTitle(),
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
+    }//GEN-LAST:event_btn_addActionPerformed
+
+    private void btn_updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_updateActionPerformed
+        try {
+            Refurb updateRefurb = getRefurbFields();
+
+            if (updateRefurb != null) {
+                int confirmEditing = JOptionPane.showConfirmDialog(
+                        this,
+                        CommonConstant.CONFIRM_UPDATE,
+                        this.getTitle(),
+                        JOptionPane.YES_NO_OPTION
+                );
+
+                if (confirmEditing == JOptionPane.YES_OPTION) {
+                    boolean isUpdated = this._refurbController.updateRefurbProduct(updateRefurb);
+
+                    if (isUpdated) {
+                        getItemRefurbProd(updateRefurb.getIdRefurb());
+                        cleanBasicInfoPanelFields();
+                        cleanExtraInfoPanelFields();
+                        cleanCustomInfoPanelFields();
+                    } else {
+                        JOptionPane.showMessageDialog(
+                                this,
+                                CommonConstant.ERROR_UPDATE,
+                                this.getTitle(),
+                                JOptionPane.ERROR_MESSAGE
+                        );
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();  // For debugging, replace with logger in production
+            JOptionPane.showMessageDialog(
+                    this,
+                    "An unexpected error occurred: " + ex.getMessage(),
+                    this.getTitle(),
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
     }//GEN-LAST:event_btn_updateActionPerformed
 
-    private void txt_brandKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_brandKeyPressed
-        //Suggest autoComplete firstNames from Database
-//        switch (evt.getKeyCode()) {
-//            case KeyEvent.VK_BACK_SPACE:
-//                break;
-//
-//            case KeyEvent.VK_ENTER:
-//                txt_brand.setText(txt_brand.getText());
-//                break;
-//            default:
-//                EventQueue.invokeLater(() -> {
-//                    String text = txt_brand.getText();
-//                    autoCompleteFromDb(brands, text, txt_brand);
-//                });
-//        }
-    }//GEN-LAST:event_txt_brandKeyPressed
-
-    private void txt_modelKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_modelKeyPressed
-        //Sugest autoComplete firstNames from Database
-//        switch (evt.getKeyCode()) {
-//            case KeyEvent.VK_BACK_SPACE:
-//                break;
-//
-//            case KeyEvent.VK_ENTER:
-//                txt_model.setText(txt_model.getText());
-//                break;
-//            default:
-//                EventQueue.invokeLater(() -> {
-//                    String text = txt_model.getText();
-//                    autoCompleteFromDb(models, text, txt_model);
-//                });
-//        }
-    }//GEN-LAST:event_txt_modelKeyPressed
-
     private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
-        int selectedRow = this.table_view_refurbs.getSelectedRow();
+        try {
+            int selectedRow = this.table_view_refurbs.getSelectedRow();
 
-        if (selectedRow >= 0) {
-            Refurb deleteRefurbProd = new Refurb();
+            if (selectedRow >= 0) {
+                Refurb deleteRefurbProd = new Refurb();
 
-            deleteRefurbProd.setIdRefurb((Integer) this._dtmRefurb.getValueAt(selectedRow, 0));
-            deleteRefurbProd.setModel(this._dtmRefurb.getValueAt(selectedRow, 2).toString());
+                deleteRefurbProd.setIdRefurb((long) this._dtmRefurb.getValueAt(selectedRow, 0));
+                deleteRefurbProd.setModel(this._dtmRefurb.getValueAt(selectedRow, 2).toString());
 
-            int confirmDeletion = JOptionPane.showConfirmDialog(this, CommonConstant.CONFIRM_DELETE, this.getTitle(), JOptionPane.YES_NO_OPTION);
+                int confirmDeletion = JOptionPane.showConfirmDialog(
+                        this,
+                        CommonConstant.CONFIRM_DELETE,
+                        this.getTitle(),
+                        JOptionPane.YES_NO_OPTION
+                );
 
-            if (confirmDeletion == 0) {
-                boolean isDeleted = this._refurbController.deleteRefurbProduct(deleteRefurbProd);
+                if (confirmDeletion == JOptionPane.YES_OPTION) {
+                    boolean isDeleted = this._refurbController.deleteRefurbProduct(deleteRefurbProd);
 
-                if (isDeleted) {
-                    loadRefurbProdListTable();
-                } else {
-                    JOptionPane.showMessageDialog(this, CommonConstant.ERROR_DELETE_ITEM, this.getTitle(), JOptionPane.ERROR_MESSAGE);
+                    if (isDeleted) {
+                        loadRefurbProdListTable(); // Refresh the table
+                    } else {
+                        JOptionPane.showMessageDialog(
+                                this,
+                                CommonConstant.ERROR_DELETE,
+                                this.getTitle(),
+                                JOptionPane.ERROR_MESSAGE
+                        );
+                    }
                 }
+            } else {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Please select a row to delete.",
+                        this.getTitle(),
+                        JOptionPane.WARNING_MESSAGE
+                );
             }
+        } catch (Exception ex) {
+            ex.printStackTrace(); // Consider replacing with a logger
+            JOptionPane.showMessageDialog(
+                    this,
+                    "An unexpected error occurred: " + ex.getMessage(),
+                    this.getTitle(),
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
+
     }//GEN-LAST:event_btn_deleteActionPerformed
 
     private void btn_clear_fieldsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_clear_fieldsActionPerformed
@@ -1120,7 +1120,6 @@ public class RefurbView extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lbl_processor;
     private javax.swing.JLabel lbl_qty;
     private javax.swing.JLabel lbl_ram;
-    private javax.swing.JLabel lbl_refurb_id;
     private javax.swing.JLabel lbl_refurb_notes;
     private javax.swing.JLabel lbl_screen;
     private javax.swing.JLabel lbl_search_icon;
@@ -1146,7 +1145,6 @@ public class RefurbView extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txt_processor;
     private javax.swing.JTextField txt_qty;
     private javax.swing.JTextField txt_ram;
-    private javax.swing.JTextField txt_refurb_id;
     private javax.swing.JTextField txt_screen;
     private javax.swing.JTextField txt_search_refurb;
     private javax.swing.JTextField txt_serial_number;
