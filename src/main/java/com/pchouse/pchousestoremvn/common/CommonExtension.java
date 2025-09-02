@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.net.URL;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,10 +15,11 @@ import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.List;
 import java.util.Locale;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -239,17 +241,17 @@ public class CommonExtension {
     public static String normalizePhone(String phone) {
         return phone.replaceAll("[^0-9]", "");
     }
-    
-    public static double parseTextFieldToDouble(JTextField jTextField){
+
+    public static double parseTextFieldToDouble(JTextField jTextField) {
         if (!jTextField.getText().trim().isEmpty()) {
             return Double.parseDouble(jTextField.getText());
-        } else{
+        } else {
             return 0;
         }
     }
-    
-    public static void EnableRefurbCustomfields(JTextField jTextField, JPanel panel){
-         boolean currentlyVisible = jTextField.isVisible(); // assuming all are synced
+
+    public static void EnableRefurbCustomfields(JTextField jTextField, JPanel panel) {
+        boolean currentlyVisible = jTextField.isVisible(); // assuming all are synced
 
         for (int i = 1; i <= 6; i++) {
             JPanel parentPanel = panel; // or your actual panel variable
@@ -262,5 +264,15 @@ public class CommonExtension {
 
         panel.revalidate();
         panel.repaint();
+    }
+
+    public static Icon loadIcon(String path) {
+        URL iconURL = CommonExtension.class.getResource(path);
+        if (iconURL != null) {
+            return new ImageIcon(iconURL);
+        } else {
+            System.err.println("Icon not found: " + path);
+            return null;
+        }
     }
 }
