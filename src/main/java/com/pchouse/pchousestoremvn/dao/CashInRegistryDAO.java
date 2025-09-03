@@ -5,6 +5,8 @@ import com.pchouse.pchousestoremvn.models.Company;
 import com.pchouse.pchousestoremvn.util.JPAUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 import java.util.List;
@@ -58,15 +60,19 @@ public class CashInRegistryDAO {
     }
 
     public List<CashInRegistry> getAllCashInByDateRange(Company currentCompany, Date from, Date to) {
-        EntityManager em = JPAUtil.getEntityManager(); 
+        EntityManager em = JPAUtil.getEntityManager();
         try {
+            // Conversão de java.util.Date -> java.time.LocalDateTime
+            LocalDateTime fromDateTime = from.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+            LocalDateTime toDateTime = to.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+
             TypedQuery<CashInRegistry> query = em.createQuery(
-                    "SELECT c FROM CashInRegistry c WHERE c.company = :company AND c.date BETWEEN :from AND :to ORDER BY c.date ASC",
+                    "SELECT c FROM CashInRegistry c WHERE c.company = :company AND c.transactionDate BETWEEN :from AND :to ORDER BY c.transactionDate ASC",
                     CashInRegistry.class
             );
             query.setParameter("company", currentCompany);
-            query.setParameter("from", from);
-            query.setParameter("to", to);
+            query.setParameter("from", fromDateTime);
+            query.setParameter("to", toDateTime);
 
             return query.getResultList();
         } finally {

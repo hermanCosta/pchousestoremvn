@@ -299,7 +299,7 @@ public class MenuViewTest extends JFrame {
     }
 
     private void menuItemCashInActionPerformed(ActionEvent evt) {
-        openInternalFrame(new CashInRegistryView());
+        openInternalFrame(new CashInRegistryViewTeste());
     }
 
     private void menuItemCashOutActionPerformed(ActionEvent evt) {
