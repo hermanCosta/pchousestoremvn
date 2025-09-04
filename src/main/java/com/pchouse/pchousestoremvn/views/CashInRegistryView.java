@@ -2,467 +2,294 @@ package com.pchouse.pchousestoremvn.views;
 
 import com.pchouse.pchousestoremvn.common.CommonConstant;
 import com.pchouse.pchousestoremvn.common.CommonSetting;
-import com.pchouse.pchousestoremvn.controllers.FaultController;
-import com.pchouse.pchousestoremvn.models.Fault;
-import java.util.List;
-import javax.swing.JOptionPane;
+import com.pchouse.pchousestoremvn.common.CommonExtension;
+import com.pchouse.pchousestoremvn.controllers.CashInRegistryController;
+import com.pchouse.pchousestoremvn.controllers.EmployeeController;
+import com.pchouse.pchousestoremvn.models.CashInRegistry;
+import com.pchouse.pchousestoremvn.models.Employee;
+import com.toedter.calendar.JDateChooser;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
-public class CashInRegistryView extends javax.swing.JInternalFrame {
+public class CashInRegistryView extends JInternalFrame {
 
-    private long hdnFaultId;
-    private final DefaultTableModel _dtmFault;
-    private final FaultController _faultController;
-    private List<Fault> _listFaults;
+    private DefaultTableModel dtmCashIn;
+    private final CashInRegistryController cashInController;
+    private final EmployeeController employeeController;
+
+    private JDateChooser dateFrom, dateTo;
+    private JTextField txtAmount, txtNote;
+    private JButton btnAdd, btnSearch, btnClear;
+    private JTable tableCashIn;
+    private Date todayFromDate;
+    private Date todayToDate;
 
     public CashInRegistryView() {
+        this.cashInController = new CashInRegistryController();
+        this.employeeController = new EmployeeController();
+
         initComponents();
+        CommonSetting.requestTxtFocus(txtAmount);
+        CommonSetting.tableSettings(tableCashIn);
+        dtmCashIn.setRowCount(0);
 
-        //CommonSetting.requestTxtFocus(this.txt_search_fault);
-        CommonSetting.tableSettings(this.table_view_cash_ins);
-
-        this._dtmFault = (DefaultTableModel) this.table_view_cash_ins.getModel();
-        this._faultController = new FaultController();
-
-        loadFaultListTable();
+        // Load data
+        Date today = new Date();
+        todayFromDate = CommonSetting.getStartOfDay(today);
+        todayToDate = CommonSetting.getEndOfDay(today);
+        loadCashInTable(todayFromDate, todayToDate);
     }
 
-    private void loadFaultListTable() {
-        this._listFaults = this._faultController.getAllFault();
-
-        _dtmFault.setRowCount(0);
-
-        if (this._listFaults != null) {
-            for (Fault fault : _listFaults) {
-                _dtmFault.addRow(
-                        new Object[]{
-                            fault.getIdFault(),
-                            fault.getDescription(),}
-                );
-            }
-        }
-    }
-
-    private Fault getFaultFields() {
-        Fault getFault = null;
-
-        if (txt_amount.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, CommonConstant.WARN_EMPTY_FIELDS, this.getTitle(), JOptionPane.WARNING_MESSAGE);
-
-            return getFault;
-        } else {
-            getFault = new Fault(this.txt_amount.getText().toUpperCase());
-
-            long idFault = hdnFaultId;
-            getFault.setIdFault(idFault);
-
-            return getFault;
-        }
-    }
-
-    private void setFaultFields(Fault pFault) {
-        hdnFaultId = pFault.getIdFault();
-        this.txt_amount.setText(pFault.getDescription());
-    }
-
-    private void getItemFault(long idFault) {
-        if (idFault != 0) {
-            Fault faultItem = _faultController.getItemFault(idFault);
-
-            this._dtmFault.setRowCount(0);
-            _dtmFault.addRow(
-                    new Object[]{
-                        faultItem.getIdFault(),
-                        faultItem.getDescription(),}
-            );
-        } else {
-            loadFaultListTable();
-        }
-    }
-
-    private void clearFields() {
-        this.hdnFaultId = 0;
-       // this.txt_search_fault.setText("");
-        this.txt_amount.setText("");
-    }
-
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-
-        panel_cash_in_registry = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        table_view_cash_ins = new javax.swing.JTable();
-        panel_cash_in_input = new javax.swing.JPanel();
-        lbl_amount = new javax.swing.JLabel();
-        txt_amount = new javax.swing.JTextField();
-        lbl_first_name_star = new javax.swing.JLabel();
-        lbl_first_name_star1 = new javax.swing.JLabel();
-        lbl_notes = new javax.swing.JLabel();
-        txt_notes = new javax.swing.JTextField();
-        lbl_amount1 = new javax.swing.JLabel();
-        txt_amount1 = new javax.swing.JTextField();
-        lbl_amount2 = new javax.swing.JLabel();
-        txt_amount2 = new javax.swing.JTextField();
-        panel_cash_buttons = new javax.swing.JPanel();
-        btn_clear_fields = new javax.swing.JButton();
-        btn_update = new javax.swing.JButton();
-        btn_add = new javax.swing.JButton();
-        btn_delete = new javax.swing.JButton();
-
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
-        setTitle("Faults");
-        setMaximumSize(new java.awt.Dimension(0, 0));
-        setMinimumSize(new java.awt.Dimension(0, 0));
-        setPreferredSize(new java.awt.Dimension(1050, 650));
+        setTitle("Cash-In Registry");
+        setPreferredSize(new Dimension(1050, 650));
+        setLayout(new BorderLayout());
 
-        panel_cash_in_registry.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        panel_cash_in_registry.setPreferredSize(new java.awt.Dimension(1026, 607));
+        // === Main Wrapper Panel with 6px padding ===
+        JPanel wrapperPanel = new JPanel(new BorderLayout(10, 10));
+        wrapperPanel.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
 
-        table_view_cash_ins.setAutoCreateRowSorter(true);
-        table_view_cash_ins.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        table_view_cash_ins.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "ID", "Amount", "Notes", "Date", "User"
+        // === Table Setup ===
+        dtmCashIn = new DefaultTableModel(new Object[]{"ID", "Amount", "Notes", "Date", "User"}, 0) {
+            public boolean isCellEditable(int row, int column) {
+                return false;
             }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
-            };
+        };
+        tableCashIn = new JTable(dtmCashIn);
+        JScrollPane scrollPane = new JScrollPane(tableCashIn);
+        scrollPane.setBorder(BorderFactory.createEtchedBorder());
+        scrollPane.setPreferredSize(new Dimension(1000, 300));
+        wrapperPanel.add(scrollPane, BorderLayout.CENTER);
 
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        table_view_cash_ins.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                table_view_cash_insMouseClicked(evt);
-            }
-        });
-        jScrollPane2.setViewportView(table_view_cash_ins);
-        if (table_view_cash_ins.getColumnModel().getColumnCount() > 0) {
-            table_view_cash_ins.getColumnModel().getColumn(0).setMinWidth(0);
-            table_view_cash_ins.getColumnModel().getColumn(0).setPreferredWidth(20);
-            table_view_cash_ins.getColumnModel().getColumn(0).setMaxWidth(20);
-            table_view_cash_ins.getColumnModel().getColumn(1).setPreferredWidth(50);
-            table_view_cash_ins.getColumnModel().getColumn(1).setMaxWidth(60);
-            table_view_cash_ins.getColumnModel().getColumn(3).setPreferredWidth(80);
-            table_view_cash_ins.getColumnModel().getColumn(3).setMaxWidth(80);
-            table_view_cash_ins.getColumnModel().getColumn(4).setPreferredWidth(80);
-            table_view_cash_ins.getColumnModel().getColumn(4).setMaxWidth(80);
+        // === Input + Buttons Panel ===
+        JPanel inputPanel = new JPanel(new GridBagLayout());
+        inputPanel.setBorder(BorderFactory.createEtchedBorder());
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 10, 5, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+
+        // Row 1: Amount | From Date
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        inputPanel.add(new JLabel("Amount"), gbc);
+        txtAmount = new JTextField(20);
+        gbc.gridx = 1;
+        inputPanel.add(txtAmount, gbc);
+
+        gbc.gridx = 2;
+        inputPanel.add(new JLabel("From Date"), gbc);
+        dateFrom = new JDateChooser();
+        dateFrom.setDateFormatString("dd/MM/yyyy");
+        dateFrom.getDateEditor().getUiComponent().setForeground(Color.WHITE);
+
+        gbc.gridx = 3;
+        inputPanel.add(dateFrom, gbc);
+
+        // Row 2: Notes | To Date
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        inputPanel.add(new JLabel("Notes"), gbc);
+        txtNote = new JTextField(50);
+        gbc.gridx = 1;
+        inputPanel.add(txtNote, gbc);
+
+        gbc.gridx = 2;
+        inputPanel.add(new JLabel("To Date"), gbc);
+        dateTo = new JDateChooser();
+        dateTo.setDateFormatString("dd/MM/yyyy");
+        dateTo.getDateEditor().getUiComponent().setForeground(Color.WHITE);
+        gbc.gridx = 3;
+        inputPanel.add(dateTo, gbc);
+
+        // === Buttons inside the input panel, left-aligned ===
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 4;
+        gbc.anchor = GridBagConstraints.WEST;
+
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
+        buttonsPanel.setBorder(BorderFactory.createEtchedBorder());
+        buttonsPanel.setPreferredSize(new Dimension(1000, 60));
+
+        btnAdd = new JButton("Add", CommonExtension.loadIcon("/icons/icon_add.png"));
+        btnSearch = new JButton("Search", CommonExtension.loadIcon("/icons/icon_search.png"));
+        btnClear = new JButton("Clear", CommonExtension.loadIcon("/icons/icon_clear.png"));
+        //JButton btnPrint = new JButton("Print", CommonExtension.loadIcon("/icons/icon_print.png"));
+
+        Color btnColor = new Color(21, 76, 121);
+        Color txtColor = Color.WHITE;
+        for (JButton btn : new JButton[]{btnAdd, btnSearch, btnClear}) {
+            btn.setBackground(btnColor);
+            btn.setForeground(txtColor);
+            buttonsPanel.add(btn);
         }
 
-        panel_cash_in_input.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        inputPanel.add(buttonsPanel, gbc);
 
-        lbl_amount.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
-        lbl_amount.setText("Amount");
+        // === Bottom Area Panel ===
+        JPanel bottomAreaPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        bottomAreaPanel.setBorder(BorderFactory.createEtchedBorder());
+        bottomAreaPanel.add(inputPanel);
 
-        txt_amount.setMinimumSize(new java.awt.Dimension(80, 32));
-        txt_amount.setPreferredSize(new java.awt.Dimension(600, 25));
+        // Add to wrapper
+        wrapperPanel.add(bottomAreaPanel, BorderLayout.SOUTH);
 
-        lbl_first_name_star.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
-        lbl_first_name_star.setForeground(java.awt.Color.red);
-        lbl_first_name_star.setText("*");
+        // Add wrapper to frame
+        add(wrapperPanel, BorderLayout.CENTER);
 
-        lbl_first_name_star1.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
-        lbl_first_name_star1.setForeground(java.awt.Color.red);
-        lbl_first_name_star1.setText("*");
+        // === Listeners ===
+        btnAdd.addActionListener(e -> addCashIn());
+        btnSearch.addActionListener(e -> searchCashIns());
+        btnClear.addActionListener(e -> clearAll());
 
-        lbl_notes.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
-        lbl_notes.setText("Notes");
+        // Table settings
+        CommonSetting.tableSettings(tableCashIn);
+        resizeTableColumns();
+    }
 
-        txt_notes.setMinimumSize(new java.awt.Dimension(80, 32));
-        txt_notes.setPreferredSize(new java.awt.Dimension(600, 25));
-
-        lbl_amount1.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
-        lbl_amount1.setText("From Date");
-
-        txt_amount1.setMinimumSize(new java.awt.Dimension(80, 32));
-        txt_amount1.setPreferredSize(new java.awt.Dimension(600, 25));
-
-        lbl_amount2.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
-        lbl_amount2.setText("From Date");
-
-        txt_amount2.setMinimumSize(new java.awt.Dimension(80, 32));
-        txt_amount2.setPreferredSize(new java.awt.Dimension(600, 25));
-
-        javax.swing.GroupLayout panel_cash_in_inputLayout = new javax.swing.GroupLayout(panel_cash_in_input);
-        panel_cash_in_input.setLayout(panel_cash_in_inputLayout);
-        panel_cash_in_inputLayout.setHorizontalGroup(
-            panel_cash_in_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panel_cash_in_inputLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(panel_cash_in_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panel_cash_in_inputLayout.createSequentialGroup()
-                        .addComponent(lbl_first_name_star1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lbl_notes)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txt_notes, javax.swing.GroupLayout.DEFAULT_SIZE, 639, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(lbl_amount2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txt_amount2, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(panel_cash_in_inputLayout.createSequentialGroup()
-                        .addComponent(lbl_first_name_star)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lbl_amount)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txt_amount, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(lbl_amount1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txt_amount1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(19, 19, 19))
-        );
-        panel_cash_in_inputLayout.setVerticalGroup(
-            panel_cash_in_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panel_cash_in_inputLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(panel_cash_in_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lbl_amount)
-                    .addComponent(lbl_first_name_star, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txt_amount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lbl_amount1)
-                    .addComponent(txt_amount1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(panel_cash_in_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panel_cash_in_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lbl_amount2)
-                        .addComponent(txt_amount2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(panel_cash_in_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lbl_notes)
-                        .addComponent(lbl_first_name_star1, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(txt_notes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        panel_cash_buttons.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        btn_clear_fields.setBackground(new java.awt.Color(21, 76, 121));
-        btn_clear_fields.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        btn_clear_fields.setForeground(new java.awt.Color(255, 255, 255));
-        btn_clear_fields.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_clear.png"))); // NOI18N
-        btn_clear_fields.setText("Clear");
-        btn_clear_fields.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_clear_fieldsActionPerformed(evt);
-            }
-        });
-
-        btn_update.setBackground(new java.awt.Color(21, 76, 121));
-        btn_update.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        btn_update.setForeground(new java.awt.Color(255, 255, 255));
-        btn_update.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_search.png"))); // NOI18N
-        btn_update.setText("Search");
-        btn_update.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_updateActionPerformed(evt);
-            }
-        });
-
-        btn_add.setBackground(new java.awt.Color(21, 76, 121));
-        btn_add.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        btn_add.setForeground(new java.awt.Color(255, 255, 255));
-        btn_add.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_add.png"))); // NOI18N
-        btn_add.setText("Add");
-        btn_add.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_addActionPerformed(evt);
-            }
-        });
-
-        btn_delete.setBackground(new java.awt.Color(21, 76, 121));
-        btn_delete.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        btn_delete.setForeground(new java.awt.Color(255, 255, 255));
-        btn_delete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_print.png"))); // NOI18N
-        btn_delete.setText("Print");
-        btn_delete.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_deleteActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout panel_cash_buttonsLayout = new javax.swing.GroupLayout(panel_cash_buttons);
-        panel_cash_buttons.setLayout(panel_cash_buttonsLayout);
-        panel_cash_buttonsLayout.setHorizontalGroup(
-            panel_cash_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panel_cash_buttonsLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(btn_add)
-                .addGap(12, 12, 12)
-                .addComponent(btn_update)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btn_clear_fields)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btn_delete)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        panel_cash_buttonsLayout.setVerticalGroup(
-            panel_cash_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panel_cash_buttonsLayout.createSequentialGroup()
-                .addGap(15, 15, 15)
-                .addGroup(panel_cash_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btn_clear_fields, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btn_delete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btn_update, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btn_add, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(15, 15, 15))
-        );
-
-        javax.swing.GroupLayout panel_cash_in_registryLayout = new javax.swing.GroupLayout(panel_cash_in_registry);
-        panel_cash_in_registry.setLayout(panel_cash_in_registryLayout);
-        panel_cash_in_registryLayout.setHorizontalGroup(
-            panel_cash_in_registryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_cash_in_registryLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(panel_cash_in_registryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane2)
-                    .addComponent(panel_cash_buttons, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-            .addComponent(panel_cash_in_input, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        panel_cash_in_registryLayout.setVerticalGroup(
-            panel_cash_in_registryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panel_cash_in_registryLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 399, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(panel_cash_in_input, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(panel_cash_buttons, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(panel_cash_in_registry, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(panel_cash_in_registry, javax.swing.GroupLayout.DEFAULT_SIZE, 602, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
-        getAccessibleContext().setAccessibleName("Cash IN Registry");
-
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
-
-    private void btn_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
-        Fault addFault = this.getFaultFields();
-
-        if (addFault != null) {
-            long idExistFault = _faultController.checkIfFaultExists(addFault.getDescription());
-            if (addFault.getIdFault() == 0 && idExistFault == 0) {
-
-                long idFault = this._faultController.addFault(addFault);
-                if (idFault > 0) {
-                    getItemFault(idFault);
-                    this.txt_amount.setText("");
-                } else {
-                    JOptionPane.showMessageDialog(this, CommonConstant.ERROR_SAVE, this.getTitle(), JOptionPane.ERROR_MESSAGE);
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, CommonConstant.WARN_EXIST_ITEM, this.getTitle(), JOptionPane.WARNING_MESSAGE);
-                getItemFault(idExistFault);
-            }
-
+    private void loadCashInTable(Date from, Date to) {
+        // Validate inputs
+        if (from == null || to == null) {
+            JOptionPane.showMessageDialog(this, "Both 'from' and 'to' dates must be provided.", "Invalid Input", JOptionPane.WARNING_MESSAGE);
+            return;
         }
-    }//GEN-LAST:event_btn_addActionPerformed
 
-    private void btn_updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_updateActionPerformed
-        Fault updateFault = this.getFaultFields();
+        // Validate range: max 6 months
+        Calendar calFrom = Calendar.getInstance();
+        calFrom.setTime(from);
 
-        if (updateFault != null) {
-            int confirmEditing = JOptionPane.showConfirmDialog(this, CommonConstant.CONFIRM_UPDATE, this.getTitle(), JOptionPane.YES_NO_OPTION);
+        Calendar calTo = Calendar.getInstance();
+        calTo.setTime(to);
 
-            if (confirmEditing == 0) {
-                boolean isUpdated = this._faultController.updateFault(updateFault);
+        calFrom.add(Calendar.MONTH, 6);
+        if (calFrom.before(calTo)) {
+            JOptionPane.showMessageDialog(this, "Search period cannot exceed 6 months.", "Invalid Date Range", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
-                if (isUpdated) {
-                    getItemFault(updateFault.getIdFault());
-                    this.txt_amount.setText("");
-                } else {
-                    JOptionPane.showMessageDialog(this, CommonConstant.ERROR_UPDATE, this.getTitle(), JOptionPane.ERROR_MESSAGE);
-                }
+        // Normalize to start/end of day
+        from = CommonSetting.getStartOfDay(from);
+        to = CommonSetting.getEndOfDay(to);
+
+        List<CashInRegistry> list = cashInController.getAllCashInByDateRange(CommonSetting.COMPANY, from, to);
+        dtmCashIn.setRowCount(0);
+
+        if (list != null && !list.isEmpty()) {
+            for (CashInRegistry c : list) {
+                dtmCashIn.addRow(new Object[]{
+                    c.getIdCashInRegistry(),
+                    CommonExtension.formatEuroCurrency(c.getAmount()),
+                    c.getNote(),
+                    CommonExtension.formatDateTime(c.getTransactionDate()),
+                    c.getEmployee() != null ? c.getEmployee().getUsername() : ""
+                });
             }
         }
-    }//GEN-LAST:event_btn_updateActionPerformed
+    }
 
-    private void table_view_cash_insMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table_view_cash_insMouseClicked
-        if (evt.getClickCount() == 2) {
-            int selectedRow = this.table_view_cash_ins.getSelectedRow();
-
-            Fault updateFault = new Fault(
-                    _dtmFault.getValueAt(selectedRow, 1).toString()
-            );
-
-            updateFault.setIdFault((long) this._dtmFault.getValueAt(selectedRow, 0));
-            setFaultFields(updateFault);
+    private void addCashIn() {
+        String amt = txtAmount.getText().trim();
+        if (amt.isEmpty()) {
+            JOptionPane.showMessageDialog(this, CommonConstant.WARN_EMPTY_FIELDS, getTitle(), JOptionPane.WARNING_MESSAGE);
+            txtAmount.requestFocus();
+            return;
         }
-    }//GEN-LAST:event_table_view_cash_insMouseClicked
 
-    private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
-        int selectedRow = this.table_view_cash_ins.getSelectedRow();
-
-        if (selectedRow >= 0) {
-
-            Fault deleteFault = new Fault();
-
-            deleteFault.setIdFault((Integer) _dtmFault.getValueAt(selectedRow, 0));
-            deleteFault.setDescription(_dtmFault.getValueAt(selectedRow, 1).toString());
-
-            int confirmDeletion = JOptionPane.showConfirmDialog(this, CommonConstant.CONFIRM_DELETE, this.getTitle(), JOptionPane.YES_NO_OPTION);
-
-            if (confirmDeletion == 0) {
-                boolean isDeleted = this._faultController.deleteFault(deleteFault);
-
-                if (isDeleted) {
-                    loadFaultListTable();
-                } else {
-                    JOptionPane.showMessageDialog(this, CommonConstant.ERROR_DELETE, this.getTitle(), JOptionPane.ERROR_MESSAGE);
-                }
-            }
+        // Notes validation
+        String note = txtNote.getText().trim();
+        if (note.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Notes field must not be empty.", getTitle(), JOptionPane.WARNING_MESSAGE);
+            txtNote.requestFocus();
+            return;
         }
-    }//GEN-LAST:event_btn_deleteActionPerformed
 
-    private void btn_clear_fieldsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_clear_fieldsActionPerformed
-        clearFields();
-        loadFaultListTable();
-    }//GEN-LAST:event_btn_clear_fieldsActionPerformed
+        Employee emp = authorizeUser();
+        if (emp == null) {
+            return;
+        }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btn_add;
-    private javax.swing.JButton btn_clear_fields;
-    private javax.swing.JButton btn_delete;
-    private javax.swing.JButton btn_update;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JLabel lbl_amount;
-    private javax.swing.JLabel lbl_amount1;
-    private javax.swing.JLabel lbl_amount2;
-    private javax.swing.JLabel lbl_first_name_star;
-    private javax.swing.JLabel lbl_first_name_star1;
-    private javax.swing.JLabel lbl_notes;
-    private javax.swing.JPanel panel_cash_buttons;
-    private javax.swing.JPanel panel_cash_in_input;
-    private javax.swing.JPanel panel_cash_in_registry;
-    private javax.swing.JTable table_view_cash_ins;
-    private javax.swing.JTextField txt_amount;
-    private javax.swing.JTextField txt_amount1;
-    private javax.swing.JTextField txt_amount2;
-    private javax.swing.JTextField txt_notes;
-    // End of variables declaration//GEN-END:variables
+        double amount;
+        try {
+            amount = Double.parseDouble(amt);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid amount", getTitle(), JOptionPane.WARNING_MESSAGE);
+            txtAmount.requestFocus();
+            return;
+        }
+
+        CashInRegistry entry = new CashInRegistry();
+        entry.setAmount(amount);
+        entry.setNote(note.toUpperCase());
+        entry.setTransactionDate(LocalDateTime.now());
+        entry.setEmployee(emp);
+        entry.setCompany(CommonSetting.COMPANY);
+
+        boolean ok = cashInController.addCashIn(entry);
+        if (ok) {
+            clearAll();
+            loadCashInTable(todayFromDate, todayToDate);
+        } else {
+            JOptionPane.showMessageDialog(this, CommonConstant.ERROR_SAVE, getTitle(), JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private Employee authorizeUser() {
+        String password = CommonExtension.requestUserPassword();
+        Employee emp = employeeController.getEmployeeByPass(password);
+        if (emp == null) {
+            JOptionPane.showMessageDialog(this, CommonConstant.NOT_AUTHORIZED, getTitle(), JOptionPane.ERROR_MESSAGE);
+        }
+        return emp;
+    }
+
+    private void searchCashIns() {
+        Date from = dateFrom.getDate();
+        Date to = dateTo.getDate();
+        if (from != null && to != null && from.after(to)) {
+            JOptionPane.showMessageDialog(this, "'From Date' must be before 'To Date'", getTitle(), JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        loadCashInTable(from, to);
+    }
+
+    private void clearAll() {
+        txtAmount.setText("");
+        txtNote.setText("");
+        dateFrom.setDate(null);
+        dateTo.setDate(null);
+        loadCashInTable(todayFromDate, todayToDate);
+    }
+
+    private void resizeTableColumns() {
+        if (tableCashIn.getColumnModel().getColumnCount() < 5) {
+            return;
+        }
+
+        // Hide ID column (column 0)
+        tableCashIn.getColumnModel().getColumn(0).setMinWidth(0);
+        tableCashIn.getColumnModel().getColumn(0).setMaxWidth(0);
+        tableCashIn.getColumnModel().getColumn(0).setPreferredWidth(0);
+
+        // Amount column
+        tableCashIn.getColumnModel().getColumn(1).setPreferredWidth(80);
+
+        // Notes column - wider
+        tableCashIn.getColumnModel().getColumn(2).setPreferredWidth(480);
+
+        // Date column
+        tableCashIn.getColumnModel().getColumn(3).setPreferredWidth(120);
+
+        // User column
+        tableCashIn.getColumnModel().getColumn(4).setPreferredWidth(100);
+    }
 }

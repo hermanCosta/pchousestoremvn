@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.pchouse.pchousestoremvn.views;
 
 import com.pchouse.pchousestoremvn.common.CommonSetting;
@@ -299,11 +295,11 @@ public class MenuViewTest extends JFrame {
     }
 
     private void menuItemCashInActionPerformed(ActionEvent evt) {
-        openInternalFrame(new CashInRegistryViewTeste());
+        openInternalFrame(new CashInRegistryView());
     }
 
     private void menuItemCashOutActionPerformed(ActionEvent evt) {
-        //openInternalFrame(new CashOutView());
+        openInternalFrame(new CashOutRegistryView());
     }
 
     private boolean isDevMode() {

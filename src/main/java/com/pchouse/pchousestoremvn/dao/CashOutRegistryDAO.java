@@ -5,6 +5,9 @@ import com.pchouse.pchousestoremvn.models.Company;
 import com.pchouse.pchousestoremvn.util.JPAUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 import java.util.List;
 
@@ -51,6 +54,27 @@ public class CashOutRegistryDAO {
                 em.getTransaction().rollback();
             }
             return false;
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<CashOutRegistry> getAllCashInByDateRange(Company currentCompany, Date from, Date to) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            // Conversão de java.util.Date -> java.time.LocalDateTime
+            LocalDateTime fromDateTime = from.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+            LocalDateTime toDateTime = to.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+            TypedQuery<CashOutRegistry> query = em.createQuery(
+                    "SELECT c FROM CashOutRegistry c WHERE c.company = :company AND c.transactionDate BETWEEN :from AND :to ORDER BY c.transactionDate ASC",
+                    CashOutRegistry.class
+            );
+            query.setParameter("company", currentCompany);
+            query.setParameter("from", fromDateTime);
+            query.setParameter("to", toDateTime);
+
+            return query.getResultList();
         } finally {
             em.close();
         }

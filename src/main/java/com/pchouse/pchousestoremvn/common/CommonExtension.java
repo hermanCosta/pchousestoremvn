@@ -11,8 +11,12 @@ import java.net.URL;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.Base64.Encoder;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import javax.swing.Icon;
@@ -32,6 +36,7 @@ public class CommonExtension {
     public static ServiceOrderPayment orderPayment = null;
     public static ServiceOrder orderModel = null;
     public static SalePayment salePayment = null;
+    private static final DateTimeFormatter DEFAULT_DATETIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
     public static int setIdExtension(JTextField jTextField) {
         if (jTextField.getText().trim().isEmpty()) {
@@ -274,5 +279,13 @@ public class CommonExtension {
             System.err.println("Icon not found: " + path);
             return null;
         }
+    }
+
+    public static String formatDateTime(LocalDateTime ldt) {
+        return ldt == null ? "" : DEFAULT_DATETIME_FORMATTER.format(ldt);
+    }
+
+    public static String formatDateTime(Date date) {
+        return date == null ? "" : DEFAULT_DATETIME_FORMATTER.format(date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
     }
 }

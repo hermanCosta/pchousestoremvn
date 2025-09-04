@@ -3,48 +3,53 @@ package com.pchouse.pchousestoremvn.views;
 import com.pchouse.pchousestoremvn.common.CommonConstant;
 import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.common.CommonExtension;
-import com.pchouse.pchousestoremvn.controllers.CashInRegistryController;
+import com.pchouse.pchousestoremvn.controllers.CashOutRegistryController;
 import com.pchouse.pchousestoremvn.controllers.EmployeeController;
-import com.pchouse.pchousestoremvn.models.CashInRegistry;
+import com.pchouse.pchousestoremvn.models.CashOutRegistry;
 import com.pchouse.pchousestoremvn.models.Employee;
 import com.toedter.calendar.JDateChooser;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class CashInRegistryViewTeste extends JInternalFrame {
+public class CashOutRegistryView extends JInternalFrame {
 
-    private DefaultTableModel dtmCashIn;
-    private final CashInRegistryController cashInController;
+    private DefaultTableModel dtmCashOut;
+    private final CashOutRegistryController cashOutController;
     private final EmployeeController employeeController;
 
     private JDateChooser dateFrom, dateTo;
     private JTextField txtAmount, txtNote;
     private JButton btnAdd, btnSearch, btnClear;
-    private JTable tableCashIn;
+    private JTable tableCashOut;
+    private Date todayFromDate;
+    private Date todayToDate;
 
-    public CashInRegistryViewTeste() {
-        this.cashInController = new CashInRegistryController();
+    public CashOutRegistryView() {
+        this.cashOutController = new CashOutRegistryController();
         this.employeeController = new EmployeeController();
 
         initComponents();
         CommonSetting.requestTxtFocus(txtAmount);
-        CommonSetting.tableSettings(tableCashIn);
-        dtmCashIn.setRowCount(0);
-        loadCashInTable(null, null);
+        CommonSetting.tableSettings(tableCashOut);
+        dtmCashOut.setRowCount(0);
+
+        // Load data
+        Date today = new Date();
+        todayFromDate = CommonSetting.getStartOfDay(today);
+        todayToDate = CommonSetting.getEndOfDay(today);
+        loadCashOutTable(todayFromDate, todayToDate);
     }
 
     private void initComponents() {
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
-        setTitle("Cash-In Registry");
+        setTitle("Cash-Out Registry");
         setPreferredSize(new Dimension(1050, 650));
         setLayout(new BorderLayout());
 
@@ -53,13 +58,13 @@ public class CashInRegistryViewTeste extends JInternalFrame {
         wrapperPanel.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
 
         // === Table Setup ===
-        dtmCashIn = new DefaultTableModel(new Object[]{"ID", "Amount", "Notes", "Date", "User"}, 0) {
+        dtmCashOut = new DefaultTableModel(new Object[]{"ID", "Date", "Amount", "Notes", "User"}, 0) {
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-        tableCashIn = new JTable(dtmCashIn);
-        JScrollPane scrollPane = new JScrollPane(tableCashIn);
+        tableCashOut = new JTable(dtmCashOut);
+        JScrollPane scrollPane = new JScrollPane(tableCashOut);
         scrollPane.setBorder(BorderFactory.createEtchedBorder());
         scrollPane.setPreferredSize(new Dimension(1000, 300));
         wrapperPanel.add(scrollPane, BorderLayout.CENTER);
@@ -94,7 +99,7 @@ public class CashInRegistryViewTeste extends JInternalFrame {
         gbc.gridx = 0;
         gbc.gridy = 1;
         inputPanel.add(new JLabel("Notes"), gbc);
-        txtNote = new JTextField(20);
+        txtNote = new JTextField(50);
         gbc.gridx = 1;
         inputPanel.add(txtNote, gbc);
 
@@ -114,15 +119,16 @@ public class CashInRegistryViewTeste extends JInternalFrame {
 
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
         buttonsPanel.setBorder(BorderFactory.createEtchedBorder());
+        buttonsPanel.setPreferredSize(new Dimension(1000, 60));
 
         btnAdd = new JButton("Add", CommonExtension.loadIcon("/icons/icon_add.png"));
         btnSearch = new JButton("Search", CommonExtension.loadIcon("/icons/icon_search.png"));
         btnClear = new JButton("Clear", CommonExtension.loadIcon("/icons/icon_clear.png"));
-        JButton btnPrint = new JButton("Print", CommonExtension.loadIcon("/icons/icon_print.png"));
+        //JButton btnPrint = new JButton("Print", CommonExtension.loadIcon("/icons/icon_print.png"));
 
         Color btnColor = new Color(21, 76, 121);
         Color txtColor = Color.WHITE;
-        for (JButton btn : new JButton[]{btnAdd, btnSearch, btnClear, btnPrint}) {
+        for (JButton btn : new JButton[]{btnAdd, btnSearch, btnClear}) {
             btn.setBackground(btnColor);
             btn.setForeground(txtColor);
             buttonsPanel.add(btn);
@@ -142,20 +148,16 @@ public class CashInRegistryViewTeste extends JInternalFrame {
         add(wrapperPanel, BorderLayout.CENTER);
 
         // === Listeners ===
-        btnAdd.addActionListener(e -> addCashIn());
-        btnSearch.addActionListener(e -> searchCashIns());
+        btnAdd.addActionListener(e -> addCashOut());
+        btnSearch.addActionListener(e -> searchCashOuts());
         btnClear.addActionListener(e -> clearAll());
 
         // Table settings
-        CommonSetting.tableSettings(tableCashIn);
+        CommonSetting.tableSettings(tableCashOut);
         resizeTableColumns();
-
-        // Load data
-        Date today = new Date();
-        loadCashInTable(CommonSetting.getStartOfDay(today), CommonSetting.getEndOfDay(today));
     }
 
-    private void loadCashInTable(Date from, Date to) {
+    private void loadCashOutTable(Date from, Date to) {
         // Validate inputs
         if (from == null || to == null) {
             JOptionPane.showMessageDialog(this, "Both 'from' and 'to' dates must be provided.", "Invalid Input", JOptionPane.WARNING_MESSAGE);
@@ -179,34 +181,40 @@ public class CashInRegistryViewTeste extends JInternalFrame {
         from = CommonSetting.getStartOfDay(from);
         to = CommonSetting.getEndOfDay(to);
 
-        List<CashInRegistry> list = cashInController.getAllCashInByDateRange(CommonSetting.COMPANY, from, to);
-        dtmCashIn.setRowCount(0);
-
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss"); // Fixed pattern (no double /dd)
+        List<CashOutRegistry> list = cashOutController.getAllCashOutByDateRange(CommonSetting.COMPANY, from, to);
+        dtmCashOut.setRowCount(0);
 
         if (list != null && !list.isEmpty()) {
-            for (CashInRegistry c : list) {
-                dtmCashIn.addRow(new Object[]{
-                    c.getIdCashInRegistry(),
-                    c.getAmount(),
+            for (CashOutRegistry c : list) {
+                dtmCashOut.addRow(new Object[]{
+                    c.getIdCashOutRegistry(),
+                    CommonExtension.formatDateTime(c.getTransactionDate()),
+                    CommonExtension.formatEuroCurrency(c.getAmount()),
                     c.getNote(),
-                    sdf.format(c.getTransactionDate()),
                     c.getEmployee() != null ? c.getEmployee().getUsername() : ""
                 });
             }
         }
     }
 
-    private void addCashIn() {
-        Employee emp = authorizeUser();
-        if (emp == null) {
-            return;
-        }
-
+    private void addCashOut() {
         String amt = txtAmount.getText().trim();
         if (amt.isEmpty()) {
             JOptionPane.showMessageDialog(this, CommonConstant.WARN_EMPTY_FIELDS, getTitle(), JOptionPane.WARNING_MESSAGE);
             txtAmount.requestFocus();
+            return;
+        }
+
+        // Notes validation
+        String note = txtNote.getText().trim();
+        if (note.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Notes field must not be empty.", getTitle(), JOptionPane.WARNING_MESSAGE);
+            txtNote.requestFocus();
+            return;
+        }
+
+        Employee emp = authorizeUser();
+        if (emp == null) {
             return;
         }
 
@@ -219,17 +227,17 @@ public class CashInRegistryViewTeste extends JInternalFrame {
             return;
         }
 
-        CashInRegistry entry = new CashInRegistry();
-        entry.setAmount(amount);
-        entry.setNote(txtNote.getText().trim());
-        entry.setTransactionDate(LocalDateTime.now());
-        entry.setEmployee(emp);
-        entry.setCompany(CommonSetting.COMPANY);
+        CashOutRegistry take = new CashOutRegistry();
+        take.setAmount(amount);
+        take.setNote(note.toUpperCase());
+        take.setTransactionDate(LocalDateTime.now());
+        take.setEmployee(emp);
+        take.setCompany(CommonSetting.COMPANY);
 
-        boolean ok = cashInController.addCashIn(entry);
+        boolean ok = cashOutController.addCashOut(take);
         if (ok) {
-            JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_SAVE, getTitle(), JOptionPane.INFORMATION_MESSAGE);
             clearAll();
+            loadCashOutTable(todayFromDate, todayToDate);
         } else {
             JOptionPane.showMessageDialog(this, CommonConstant.ERROR_SAVE, getTitle(), JOptionPane.ERROR_MESSAGE);
         }
@@ -244,14 +252,14 @@ public class CashInRegistryViewTeste extends JInternalFrame {
         return emp;
     }
 
-    private void searchCashIns() {
+    private void searchCashOuts() {
         Date from = dateFrom.getDate();
         Date to = dateTo.getDate();
         if (from != null && to != null && from.after(to)) {
             JOptionPane.showMessageDialog(this, "'From Date' must be before 'To Date'", getTitle(), JOptionPane.WARNING_MESSAGE);
             return;
         }
-        loadCashInTable(from, to);
+        loadCashOutTable(from, to);
     }
 
     private void clearAll() {
@@ -259,29 +267,29 @@ public class CashInRegistryViewTeste extends JInternalFrame {
         txtNote.setText("");
         dateFrom.setDate(null);
         dateTo.setDate(null);
-        loadCashInTable(null, null);
+        loadCashOutTable(todayFromDate, todayToDate);
     }
 
     private void resizeTableColumns() {
-        if (tableCashIn.getColumnModel().getColumnCount() < 5) {
+        if (tableCashOut.getColumnModel().getColumnCount() < 5) {
             return;
         }
 
         // Hide ID column (column 0)
-        tableCashIn.getColumnModel().getColumn(0).setMinWidth(0);
-        tableCashIn.getColumnModel().getColumn(0).setMaxWidth(0);
-        tableCashIn.getColumnModel().getColumn(0).setPreferredWidth(0);
+        tableCashOut.getColumnModel().getColumn(0).setMinWidth(0);
+        tableCashOut.getColumnModel().getColumn(0).setMaxWidth(0);
+        tableCashOut.getColumnModel().getColumn(0).setPreferredWidth(0);
 
         // Amount column
-        tableCashIn.getColumnModel().getColumn(1).setPreferredWidth(100);
-
-        // Notes column - wider
-        tableCashIn.getColumnModel().getColumn(2).setPreferredWidth(350);
+        tableCashOut.getColumnModel().getColumn(1).setPreferredWidth(80);
 
         // Date column
-        tableCashIn.getColumnModel().getColumn(3).setPreferredWidth(180);
+        tableCashOut.getColumnModel().getColumn(2).setPreferredWidth(120);
+
+        // Notes column - wider
+        tableCashOut.getColumnModel().getColumn(3).setPreferredWidth(480);
 
         // User column
-        tableCashIn.getColumnModel().getColumn(4).setPreferredWidth(150);
+        tableCashOut.getColumnModel().getColumn(4).setPreferredWidth(100);
     }
 }

@@ -5,6 +5,8 @@ import com.pchouse.pchousestoremvn.models.CashOutRegistry;
 import com.pchouse.pchousestoremvn.models.Company;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class CashOutRegistryController {
@@ -34,6 +36,17 @@ public class CashOutRegistryController {
             System.err.println("Error inserting cash-out: " + e.getMessage());
             e.printStackTrace();
             return false;
+        }
+    }
+    
+    public List<CashOutRegistry> getAllCashOutByDateRange(Company currentCompany, Date from, Date to) {
+        try {
+            return cashOutRegistryDAO.getAllCashInByDateRange(currentCompany, from, to);
+        } catch (Exception ex) {
+            // You can log this exception or display an error dialog depending on the app type
+            System.err.println("Error fetching cash-out records by date range: " + ex.getMessage());
+            ex.printStackTrace();
+            return Collections.emptyList(); // Return empty list on failure
         }
     }
 }
