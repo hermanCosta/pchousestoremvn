@@ -81,12 +81,13 @@ public class Refurb implements Serializable {
     @JoinColumn(name = "ID_COMPANY", nullable = false)
     private Company company;
 
-    public Refurb() {}
+    public Refurb() {
+    }
 
     public Refurb(String category, String brand, String model, double price, int qty, String serialNumber,
-                  String note, String screen, String processor, String ramMemory, String storage,
-                  String gpuBoard, String batteryHealth, String custom1, String custom2, String custom3,
-                  String custom4, String custom5, String custom6, Company company) {
+            String note, String screen, String processor, String ramMemory, String storage,
+            String gpuBoard, String batteryHealth, String custom1, String custom2, String custom3,
+            String custom4, String custom5, String custom6, Company company) {
         if (price < 0) {
             throw new IllegalArgumentException("Price cannot be negative.");
         }
@@ -116,7 +117,6 @@ public class Refurb implements Serializable {
     }
 
     // Getters e Setters
-
     public long getIdRefurb() {
         return idRefurb;
     }
@@ -284,5 +284,12 @@ public class Refurb implements Serializable {
     public void setCompany(Company company) {
         this.company = company;
     }
-    
+
+    @Override
+    public String toString() {
+        return category + " | "
+                + brand + " | "
+                + model;
+
+    }
 }

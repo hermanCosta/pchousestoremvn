@@ -10,6 +10,7 @@ import com.pchouse.pchousestoremvn.models.Person;
 import com.pchouse.pchousestoremvn.models.Sale;
 import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.models.SaleProdServ;
+import com.pchouse.pchousestoremvn.models.SaleRefurb;
 import com.pchouse.pchousestoremvn.util.JPAUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
@@ -236,6 +237,110 @@ public class SaleDAO {
             // Persist SaleProdServ items
             if (items != null) {
                 for (SaleProdServ item : items) {
+                    item.setSale(sale);
+                    em.persist(item);
+                }
+            }
+
+            // Persist Deposit
+            if (deposit != null) {
+                deposit.setSale(sale);
+                //deposit.setSalePayment(payment);
+
+                // Reattach Employee for Deposit
+                if (deposit.getEmployee() != null) {
+                    Employee managedEmployee = em.getReference(Employee.class, deposit.getEmployee().getIdEmployee());
+                    deposit.setEmployee(managedEmployee);
+                }
+
+                em.persist(deposit);
+            }
+
+            // Persist SalePayment
+            if (payments != null) {
+
+                for (SalePayment payment : payments) {
+                    payment.setSale(sale);
+                    em.persist(payment);
+                }
+            }
+
+            // Persist OrderNote
+            if (note != null) {
+                note.setSale(sale);
+
+                // Reattach Employee for Note
+                if (note.getEmployee() != null) {
+                    Employee managedEmployee = em.getReference(Employee.class, note.getEmployee().getIdEmployee());
+                    note.setEmployee(managedEmployee);
+                }
+
+                em.persist(note);
+            }
+
+            tx.commit();
+
+            return sale.getIdSale();
+
+        } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            throw new BusinessException("Failed to add sale: " + e.getMessage(), e);
+        } finally {
+            em.close();
+        }
+    }
+    
+     public long addRefurbSaleDAO(
+            Sale sale,
+            List<SaleRefurb> items,
+            List<SalePayment> payments,
+            Deposit deposit,
+            OrderNote note) throws Exception {
+
+        EntityManager em = JPAUtil.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        try {
+            tx.begin();
+
+            // Persist Person if new
+            Customer customer = sale.getCustomer();
+            Person person = customer.getPerson();
+
+            if (person.getIdPerson() == 0) {
+                em.persist(person);
+                em.flush(); // ensure ID generated
+            }
+
+            // Persist Customer if new, else reattach managed instance
+            if (customer.getIdCustomer() == 0) {
+                em.persist(customer);
+                em.flush();
+            } else {
+                customer = em.find(Customer.class, customer.getIdCustomer());
+            }
+            sale.setCustomer(customer);
+
+            // Reattach Employee to managed entity (for Sale)
+            if (sale.getEmployee() != null) {
+                Employee managedEmployee = em.getReference(Employee.class, sale.getEmployee().getIdEmployee());
+                sale.setEmployee(managedEmployee);
+            }
+
+            // Reattach Company to managed entity (if present)
+            if (sale.getCompany() != null) {
+                Company managedCompany = em.find(Company.class, sale.getCompany().getIdCompany());
+                sale.setCompany(managedCompany);
+            }
+
+            // Persist Sale
+            em.persist(sale);
+
+            // Persist SaleProdServ items
+            if (items != null) {
+                for (SaleRefurb item : items) {
                     item.setSale(sale);
                     em.persist(item);
                 }

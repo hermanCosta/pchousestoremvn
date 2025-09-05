@@ -51,6 +51,9 @@ public class Sale implements Serializable {
     @Column(name = "STATUS", nullable = false)
     private OrderStatus status;
 
+    @Column(name = "IMPORTANT_NOTES")
+    private String importantNotes;
+
     public Sale() {
     }
 
@@ -132,6 +135,14 @@ public class Sale implements Serializable {
 
     public void setStatus(OrderStatus status) {
         this.status = status;
+    }
+
+    public String getImportantNotes() {
+        return importantNotes;
+    }
+
+    public void setImportantNotes(String importantNotes) {
+        this.importantNotes = importantNotes;
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.pchouse.pchousestoremvn.models.OrderNote;
 import com.pchouse.pchousestoremvn.models.Sale;
 import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.models.SaleProdServ;
+import com.pchouse.pchousestoremvn.models.SaleRefurb;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,6 +80,20 @@ public class SaleController {
     ) throws BusinessException {
         try {
             return SALE_DAO.addOrderSaleDAO(sale, items, payments, deposit, note);
+        } catch (Exception e) {
+            throw new BusinessException("Failed to add sale with payment", e);
+        }
+    }
+    
+        public long addRefurbSale(
+        Sale sale,
+        List<SaleRefurb> items,
+        List<SalePayment> payments,
+        Deposit deposit,
+        OrderNote note
+    ) throws BusinessException {
+        try {
+            return SALE_DAO.addRefurbSaleDAO(sale, items, payments, deposit, note);
         } catch (Exception e) {
             throw new BusinessException("Failed to add sale with payment", e);
         }

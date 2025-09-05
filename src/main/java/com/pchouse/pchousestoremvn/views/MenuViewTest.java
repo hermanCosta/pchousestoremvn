@@ -102,6 +102,11 @@ public class MenuViewTest extends JFrame {
         menuItemNewSale.setAccelerator(KeyStroke.getKeyStroke("F2"));
         menuItemNewSale.addActionListener(this::menuItemNewSaleActionPerformed);
         menuCreate.add(menuItemNewSale);
+        
+        JMenuItem menuItemNewRefurbSale = new JMenuItem("New Refurb Sale");
+        menuItemNewRefurbSale.setAccelerator(KeyStroke.getKeyStroke("F2"));
+        menuItemNewRefurbSale.addActionListener(this::menuItemNewRefurbSaleActionPerformed);
+        menuCreate.add(menuItemNewRefurbSale);
 
         // --- MANAGE ---
         JMenu menuManage = new JMenu("Manage");
@@ -242,6 +247,10 @@ public class MenuViewTest extends JFrame {
         openInternalFrame(new NewSaleView());
     }
 
+    private void menuItemNewRefurbSaleActionPerformed(ActionEvent e) {
+        openInternalFrame(new NewRefurbSaleView());
+    }
+        
     private void menuItemCustomerActionPerformed(ActionEvent evt) {
         openInternalFrame(new CustomerView());
     }

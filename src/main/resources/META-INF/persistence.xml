@@ -21,6 +21,8 @@
     <class>com.pchouse.pchousestoremvn.models.OrderNote</class>
     <class>com.pchouse.pchousestoremvn.models.CashInRegistry</class>
     <class>com.pchouse.pchousestoremvn.models.CashOutRegistry</class>
+    <class>com.pchouse.pchousestoremvn.models.SaleRefurb</class>
+    
     <properties>
       <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
       <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/PC_HOUSE_STORE"/>

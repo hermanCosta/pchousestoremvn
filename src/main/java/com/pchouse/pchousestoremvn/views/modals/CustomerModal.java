@@ -8,6 +8,7 @@ import com.pchouse.pchousestoremvn.models.Customer;
 import com.pchouse.pchousestoremvn.models.Person;
 import com.pchouse.pchousestoremvn.views.CreatedOrderView;
 import com.pchouse.pchousestoremvn.views.NewOrderView;
+import com.pchouse.pchousestoremvn.views.NewRefurbSaleView;
 import com.pchouse.pchousestoremvn.views.NewSaleView;
 import java.awt.Color;
 import java.awt.Frame;
@@ -33,6 +34,7 @@ public class CustomerModal extends javax.swing.JDialog {
     private NewOrderView _newOrderView;
     private CreatedOrderView _createdOrderView;
     private NewSaleView _newSaleView;
+    private NewRefurbSaleView _newRefurbSaleView;
     public final ServiceOrderController _orderController;
     private final DefaultTableModel _dtmCustomer;
     private final CustomerController _customerController;
@@ -52,6 +54,11 @@ public class CustomerModal extends javax.swing.JDialog {
     public CustomerModal(NewSaleView newSaleView, Frame parent, boolean modal, Customer customer) {
         this(parent, modal, customer);
         this._newSaleView = newSaleView;
+    }
+
+    public CustomerModal(NewRefurbSaleView newRefurbSaleView, Frame parent, boolean modal, Customer customer) {
+        this(parent, modal, customer);
+        this._newRefurbSaleView = newRefurbSaleView;
     }
 
     // Construtor base privado
@@ -644,6 +651,8 @@ public class CustomerModal extends javax.swing.JDialog {
                 _createdOrderView.setCustomerFields(useCustomer);
             } else if (_newSaleView != null) {
                 _newSaleView.setCustomerFields(useCustomer);
+            } else if(_newRefurbSaleView != null){
+                _newRefurbSaleView.setCustomerFields(_customer);
             }
 
             this.dispose();
