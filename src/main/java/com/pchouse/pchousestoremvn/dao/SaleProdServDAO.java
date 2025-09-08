@@ -1,6 +1,7 @@
 package com.pchouse.pchousestoremvn.dao;
 
 import com.pchouse.pchousestoremvn.models.ProductService;
+import com.pchouse.pchousestoremvn.models.RefurbSale;
 import com.pchouse.pchousestoremvn.models.Sale;
 import com.pchouse.pchousestoremvn.models.SaleProdServ;
 import com.pchouse.pchousestoremvn.util.JPAUtil;
@@ -73,5 +74,22 @@ public class SaleProdServDAO {
             em.close();
         }
         return result;
+    }
+
+    public List<RefurbSale> getRefurbSaleDAO(Sale pSale) {
+        EntityManager em = JPAUtil.getEntityManager();
+        List<RefurbSale> listRefurbSale = null;
+        try {
+            TypedQuery<RefurbSale> query = em.createQuery(
+                    "FROM RefurbSale r WHERE r.sale = :pSale", RefurbSale.class);
+            query.setParameter("pSale", pSale);
+            listRefurbSale = query.getResultList();
+        } catch (Exception e) {
+            System.err.println("Error retrieving RefurbSale: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+        return listRefurbSale;
     }
 }

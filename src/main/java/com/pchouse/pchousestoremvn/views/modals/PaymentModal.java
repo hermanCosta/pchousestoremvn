@@ -7,6 +7,8 @@ import static com.pchouse.pchousestoremvn.enums.PayMethod.CARD;
 import static com.pchouse.pchousestoremvn.enums.PayMethod.CASH;
 import static com.pchouse.pchousestoremvn.enums.PayMethod.COMBINE;
 import com.pchouse.pchousestoremvn.enums.PaymentType;
+import com.pchouse.pchousestoremvn.models.Employee;
+import com.pchouse.pchousestoremvn.models.RefurbSale;
 import com.pchouse.pchousestoremvn.models.Sale;
 import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
@@ -22,6 +24,7 @@ public class PaymentModal extends javax.swing.JDialog {
 
     private ServiceOrder _serviceOrderModel;
     private Sale _saleModel;
+    private RefurbSale _refurbSale;
     private List<ServiceOrderPayment> _serviceOrderPayments = new ArrayList<>();
     private List<SalePayment> _salePayments = new ArrayList<>();
     private String _amountToPay;
@@ -35,25 +38,36 @@ public class PaymentModal extends javax.swing.JDialog {
         this._saleModel = sale;
         this._amountToPay = amountToPay;
         this._paymentType = paymentType;
-        clearFields();
-
         this.setTitle(_paymentType.toString() + " Payment");
+
+        clearFields();
         loadOrderPaymentFields(amountToPay);
     }
 
     public PaymentModal(ServiceOrder serviceOrder, PaymentType paymentType, String amountToPay, Window owner, boolean modal) {
         super(owner, ModalityType.APPLICATION_MODAL);
-        this._serviceOrderModel = serviceOrder;
-        this._amountToPay = amountToPay;
         initComponents();
         initListeners();
 
         this._serviceOrderModel = serviceOrder;
         this._amountToPay = amountToPay;
         this._paymentType = paymentType;
-        clearFields();
-
         this.setTitle(_paymentType.toString() + " Payment");
+
+        clearFields();
+        loadOrderPaymentFields(amountToPay);
+    }
+
+    public PaymentModal(RefurbSale serviceOrder, PaymentType paymentType, String amountToPay, Window owner, boolean modal) {
+        super(owner, ModalityType.APPLICATION_MODAL);
+        initComponents();
+        initListeners();
+
+        this._refurbSale = _refurbSale;
+        this._amountToPay = amountToPay;
+        this._paymentType = paymentType;
+        this.setTitle(_paymentType.toString() + " Payment");
+        clearFields();
         loadOrderPaymentFields(amountToPay);
     }
 
@@ -110,19 +124,13 @@ public class PaymentModal extends javax.swing.JDialog {
     }
 
     public boolean confirmPayment() {
-        Object selectedItem = this.combo_box_pay_method.getSelectedItem();
-        if (selectedItem == null) {
-            JOptionPane.showMessageDialog(this, "Please select a payment method.");
+        PayMethod selectedPayMethod = getSelectedPayMethod();
+        if (selectedPayMethod == null) {
             return false;
         }
 
-        PayMethod selectedPayMethod = (PayMethod) selectedItem;
-        double amountToPay;
-
-        try {
-            amountToPay = Double.parseDouble(_amountToPay);
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Invalid amount to pay.");
+        double amountToPay = parseAmount(_amountToPay, "Invalid amount to pay.");
+        if (amountToPay < 0) {
             return false;
         }
 
@@ -130,25 +138,15 @@ public class PaymentModal extends javax.swing.JDialog {
         double cashAmount = 0.0;
 
         try {
-            switch (selectedPayMethod) {
-                case CARD -> {
-                    cardAmount = Double.parseDouble(txt_card_amount.getText().trim());
-                }
-                case CASH -> {
-                    cashAmount = Double.parseDouble(txt_cash_amount.getText().trim());
-                }
-                case COMBINE -> {
-                    cardAmount = Double.parseDouble(txt_card_amount.getText().trim());
-                    cashAmount = Double.parseDouble(txt_cash_amount.getText().trim());
-                }
-            }
+            cardAmount = parsePaymentAmount(txt_card_amount.getText(), selectedPayMethod, PayMethod.CARD, PayMethod.COMBINE);
+            cashAmount = parsePaymentAmount(txt_cash_amount.getText(), selectedPayMethod, PayMethod.CASH, PayMethod.COMBINE);
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Invalid payment amounts.");
+            showMessage("Invalid payment amounts.");
             return false;
         }
 
         if (cardAmount < 0 || cashAmount < 0) {
-            JOptionPane.showMessageDialog(this, "Payment amounts cannot be negative.");
+            showMessage("Payment amounts cannot be negative.");
             return false;
         }
 
@@ -156,101 +154,112 @@ public class PaymentModal extends javax.swing.JDialog {
         double changeAmount = totalPaid < amountToPay ? 0 : totalPaid - amountToPay;
 
         if (totalPaid < amountToPay) {
-            JOptionPane.showMessageDialog(this, CommonConstant.ERROR_ORDER_DIVERG_PAYMENT);
+            showMessage(CommonConstant.ERROR_ORDER_DIVERG_PAYMENT);
             return false;
         }
 
-        // Update UI labels
-        lbl_total_paid_amount.setText(String.format("%.2f", totalPaid));
-        lbl_change_value.setText(String.format("%.2f", changeAmount));
+        updateLabels(totalPaid, changeAmount);
+        clearPreviousPayments();
 
-        // Clear previous payments if any
-        _salePayments.clear();
-        _serviceOrderPayments.clear();
+        boolean paymentSuccess = processPayments(selectedPayMethod, amountToPay, totalPaid, cardAmount, cashAmount, changeAmount);
 
-        if (_saleModel != null) {
-            switch (selectedPayMethod) {
-                case CARD ->
-                    _salePayments.add(new SalePayment(
-                            _saleModel.getEmployee(), _saleModel, _paymentType, CARD,
-                            amountToPay, totalPaid,
-                            cardAmount, 0.0, changeAmount,
-                            new Date()
-                    ));
-                case CASH ->
-                    _salePayments.add(new SalePayment(
-                            _saleModel.getEmployee(), _saleModel, _paymentType, CASH,
-                            amountToPay, totalPaid,
-                            0.0, cashAmount, changeAmount,
-                            new Date()
-                    ));
-                case COMBINE -> {
-                    double changeCardAmount = cardAmount < amountToPay ? 0 : cardAmount - amountToPay;
-                    double changeCashAmount = cashAmount < amountToPay ? 0 : cashAmount - amountToPay;
-                    _salePayments.add(new SalePayment(
-                            _saleModel.getEmployee(), _saleModel, _paymentType, CARD,
-                            amountToPay, cardAmount,
-                            cardAmount, 0.0, changeCardAmount,
-                            new Date()
-                    ));
-                    _salePayments.add(new SalePayment(
-                            _saleModel.getEmployee(), _saleModel, _paymentType, CASH,
-                            amountToPay, cashAmount,
-                            0.0, cashAmount, changeCashAmount,
-                            new Date()
-                    ));
-                }
-            }
-        } else if (_serviceOrderModel != null) {
-            switch (selectedPayMethod) {
-                case CARD ->
-                    _serviceOrderPayments.add(new ServiceOrderPayment(
-                            _serviceOrderModel.getEmployee(),
-                            _serviceOrderModel, _paymentType, CARD,
-                            amountToPay, totalPaid,
-                            cardAmount, 0.0, changeAmount,
-                            new Date()
-                    ));
-                case CASH ->
-                    _serviceOrderPayments.add(new ServiceOrderPayment(
-                            _serviceOrderModel.getEmployee(),
-                            _serviceOrderModel, _paymentType, CASH,
-                            amountToPay, totalPaid,
-                            0.0, cashAmount, changeAmount,
-                            new Date()
-                    ));
-                case COMBINE -> {
-                    double changeCardAmount = cardAmount < amountToPay ? 0 : cardAmount - amountToPay;
-                    double changeCashAmount = cashAmount < amountToPay ? 0 : cashAmount - amountToPay;
-                    _serviceOrderPayments.add(new ServiceOrderPayment(
-                            _serviceOrderModel.getEmployee(),
-                            _serviceOrderModel, _paymentType, CARD,
-                            amountToPay, cardAmount,
-                            cardAmount, 0.0, changeCardAmount,
-                            new Date()
-                    ));
-                    _serviceOrderPayments.add(new ServiceOrderPayment(
-                            _serviceOrderModel.getEmployee(),
-                            _serviceOrderModel, _paymentType, CASH,
-                            amountToPay, cashAmount,
-                            0.0, cashAmount, changeCashAmount,
-                            new Date()
-                    ));
-                }
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, "No sale or service order selected.");
+        if (!paymentSuccess) {
+            showMessage("No sale or service order selected.");
             return false;
         }
 
         return true;
     }
 
+    private PayMethod getSelectedPayMethod() {
+        Object selectedItem = combo_box_pay_method.getSelectedItem();
+        if (selectedItem == null) {
+            showMessage("Please select a payment method.");
+            return null;
+        }
+        return (PayMethod) selectedItem;
+    }
+
+    private double parseAmount(String value, String errorMessage) {
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            showMessage(errorMessage);
+            return -1;
+        }
+    }
+
+    private double parsePaymentAmount(String text, PayMethod selected, PayMethod... validMethods) {
+        for (PayMethod valid : validMethods) {
+            if (selected == valid) {
+                return Double.parseDouble(text.trim());
+            }
+        }
+        return 0.0;
+    }
+
+    private void showMessage(String message) {
+        JOptionPane.showMessageDialog(this, message);
+    }
+
+    private void updateLabels(double totalPaid, double changeAmount) {
+        lbl_total_paid_amount.setText(String.format("%.2f", totalPaid));
+        lbl_change_value.setText(String.format("%.2f", changeAmount));
+    }
+
+    private void clearPreviousPayments() {
+        _salePayments.clear();
+        _serviceOrderPayments.clear();
+    }
+
+    private boolean processPayments(PayMethod method, double amountToPay, double totalPaid, double cardAmount, double cashAmount, double changeAmount) {
+        Date now = new Date();
+
+        if (_saleModel != null) {
+            addSalePayments(_saleModel.getEmployee(), _saleModel, method, amountToPay, totalPaid, cardAmount, cashAmount, changeAmount, now);
+        } else if (_serviceOrderModel != null) {
+            addServiceOrderPayments(_serviceOrderModel.getEmployee(), _serviceOrderModel, method, amountToPay, totalPaid, cardAmount, cashAmount, changeAmount, now);
+        } else if (_refurbSale != null) {
+            var sale = _refurbSale.getSale();
+            addSalePayments(sale.getEmployee(), sale, method, amountToPay, totalPaid, cardAmount, cashAmount, changeAmount, now);
+        } else {
+            return false;
+        }
+        return true;
+    }
+
+    private void addSalePayments(Employee emp, Sale sale, PayMethod method, double amountToPay, double totalPaid,
+            double cardAmount, double cashAmount, double changeAmount, Date now) {
+        switch (method) {
+            case CARD ->
+                _salePayments.add(new SalePayment(emp, sale, _paymentType, CARD, amountToPay, totalPaid, cardAmount, 0.0, changeAmount, now));
+            case CASH ->
+                _salePayments.add(new SalePayment(emp, sale, _paymentType, CASH, amountToPay, totalPaid, 0.0, cashAmount, changeAmount, now));
+            case COMBINE -> {
+                _salePayments.add(new SalePayment(emp, sale, _paymentType, CARD, amountToPay, cardAmount, cardAmount, 0.0, Math.max(0, cardAmount - amountToPay), now));
+                _salePayments.add(new SalePayment(emp, sale, _paymentType, CASH, amountToPay, cashAmount, 0.0, cashAmount, Math.max(0, cashAmount - amountToPay), now));
+            }
+        }
+    }
+
+    private void addServiceOrderPayments(Employee emp, ServiceOrder order, PayMethod method, double amountToPay, double totalPaid,
+            double cardAmount, double cashAmount, double changeAmount, Date now) {
+        switch (method) {
+            case CARD ->
+                _serviceOrderPayments.add(new ServiceOrderPayment(emp, order, _paymentType, CARD, amountToPay, totalPaid, cardAmount, 0.0, changeAmount, now));
+            case CASH ->
+                _serviceOrderPayments.add(new ServiceOrderPayment(emp, order, _paymentType, CASH, amountToPay, totalPaid, 0.0, cashAmount, changeAmount, now));
+            case COMBINE -> {
+                _serviceOrderPayments.add(new ServiceOrderPayment(emp, order, _paymentType, CARD, amountToPay, cardAmount, cardAmount, 0.0, Math.max(0, cardAmount - amountToPay), now));
+                _serviceOrderPayments.add(new ServiceOrderPayment(emp, order, _paymentType, CASH, amountToPay, cashAmount, 0.0, cashAmount, Math.max(0, cashAmount - amountToPay), now));
+            }
+        }
+    }
+    
     private void calculateChangeAndTotal() {
         double amountToPay = CommonExtension.formatEuroToDouble(this.lbl_amount_value.getText());
         boolean clearField = false;
-
-        //if (!this.txt_card_amount.getText().trim().isEmpty()) {
+        
         double cash = CommonExtension.parseTextFieldToDouble(this.txt_card_amount);
         double card = CommonExtension.parseTextFieldToDouble(this.txt_cash_amount);
         double total = card + cash;
@@ -261,8 +270,7 @@ public class PaymentModal extends javax.swing.JDialog {
             this.lbl_change_value.setText(CommonExtension.formatEuroCurrency(total - amountToPay));
         } else {
             clearField = true;
-        }
-        //}
+        }        
 
         if (clearField) {
             this.lbl_change_value.setText("");

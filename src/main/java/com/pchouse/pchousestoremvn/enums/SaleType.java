@@ -4,12 +4,7 @@
  */
 package com.pchouse.pchousestoremvn.enums;
 
-public enum PaymentType {
-    DEPOSIT,
-    SALE,
-    ORDER,
-    REFUND,
-    REFURB,
-    INSTALLMENT
+public enum SaleType {
+    COMMON,
+    REFURB
 }
-

@@ -1,6 +1,5 @@
 package com.pchouse.pchousestoremvn.models;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -108,15 +107,15 @@ public class SaleProdServ implements Serializable {
     public Integer getQuantity() {
         return qty;
     }
-    
+
     @Override
     public String toString() {
-        return "SaleProdServ{" +
-                "idSaleProdServ=" + idSaleProdServ +
-                ", sale=" + sale +
-                ", saleProdServ=" + prodServ +
-                ", qty=" + qty +
-                ", total=" + total +
-                '}';
+        return "SaleProdServ{"
+                + "idSaleProdServ=" + idSaleProdServ
+                + ", sale=" + sale
+                + ", saleProdServ=" + prodServ
+                + ", qty=" + qty
+                + ", total=" + total
+                + '}';
     }
 }

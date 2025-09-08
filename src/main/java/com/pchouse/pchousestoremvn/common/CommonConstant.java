@@ -45,7 +45,12 @@ public class CommonConstant {
     public static final String SALE_CREATED_NOTE = "SALE CREATED";
     public static final String SALE_PICKED_NOTE = "SALE PICKED";
     public static final String SALE_REFUND_NOTE = "SALE REFUNDED";
+    public static final String CONFIRM_PAYMENT_SALE = "Are you sure you want to PAY this Sale?";
 
+    public static final String REFURB_SALE_CREATED_NOTE = "REFURB SALE CREATED";
+    public static final String REFURB_SALE_PICKED_NOTE = "REFURB SALE PICKED";
+    public static final String REFURB_SALE_REFUNDED_NOTE = "REFURB SALE REFUNDED";
+    
     public static final String WARN_EMPTY_FIELDS = "Please, check empty fields";
     public static final String WARN_EXIST_PERSON = "There is another person associated to this contact numer";
     public static final String WARN_EMPTY_CUSTOM_FIELDS = "Please, enter title and value for custom fields ";

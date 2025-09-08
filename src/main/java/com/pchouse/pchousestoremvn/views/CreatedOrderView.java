@@ -11,7 +11,6 @@ import com.pchouse.pchousestoremvn.controllers.FaultController;
 import com.pchouse.pchousestoremvn.controllers.ServiceOrderController;
 import com.pchouse.pchousestoremvn.controllers.OrderNoteController;
 import com.pchouse.pchousestoremvn.controllers.ProductServiceController;
-import com.pchouse.pchousestoremvn.controllers.RefundController;
 import com.pchouse.pchousestoremvn.enums.OrderStatus;
 import com.pchouse.pchousestoremvn.enums.PaymentType;
 import com.pchouse.pchousestoremvn.exception.BusinessException;
@@ -53,8 +52,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
 
     private long hdnCustomerId;
     private List<ProductService> _listProdServ;
-    private List<Fault> _listFault;
-    private List<Deposit> _orderDeposits;
+    private List<Fault> _listFault;    
     private final ServiceOrder _serviceOrderModel;
     private final List<ServiceOrderFault> _listServiceOrderFault;
     private final List<ServiceOrderProdServ> _listServiceOrderProdServ;
@@ -65,8 +63,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
     private final CustomerController _customerController;
     private final EmployeeController _employeeController;
     private final OrderNoteController _orderNoteController;
-    private final DeviceController _deviceController;
-    private final RefundController _refundController;
+    private final DeviceController _deviceController;    
     private final DefaultTableModel _dtmProdServ;
     private final DefaultTableModel _dtmFault;
     private final DefaultListModel _defaultListModelProdServ;
@@ -91,8 +88,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
         this._customerController = new CustomerController();
         this._employeeController = new EmployeeController();
         this._orderNoteController = new OrderNoteController();
-        this._deviceController = new DeviceController();
-        this._refundController = new RefundController();
+        this._deviceController = new DeviceController();       
         this._dtmProdServ = (DefaultTableModel) this.table_view_products.getModel();
         this._dtmFault = (DefaultTableModel) this.table_view_faults.getModel();
         this._defaultListModelProdServ = new DefaultListModel();
@@ -104,7 +100,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
         this._listServiceOrderFault = listOrderFault;
         this._listServiceOrderProdServ = listOrderProdServ;
         this._listOrderDeposit = listOrderDeposit;
-        this._orderDeposits = listOrderDeposit;
+        
         loadOrderFields(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
     }
 
@@ -115,7 +111,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
         this.lbl_auto_order_no.setText(CommonStrings.formatOrderNumber(orderModel.getIdServiceOrder()));
         this.spn_bad_sectors.setValue(orderModel.getBadSector());
         this.editor_pane_notes.setText(orderModel.getNote());
-        this.lbl_total_field.setText(CommonExtension.formatEuroCurrency(orderModel.getTotal()));
+        this.lbl_total_amount.setText(CommonExtension.formatEuroCurrency(orderModel.getTotal()));
         this.lbl_due_field.setText(CommonExtension.formatEuroCurrency(orderModel.getDue()));
 
         loadOrderDeposit(listOrderDeposit);
@@ -216,8 +212,8 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
             sum += Double.parseDouble(this._dtmProdServ.getValueAt(i, 3).toString());
         }
 
-        this.lbl_total_field.setText(String.valueOf(sum));
-        this.lbl_due_field.setText(this.lbl_total_field.getText());
+        this.lbl_total_amount.setText(String.valueOf(sum));
+        this.lbl_due_field.setText(this.lbl_total_amount.getText());
     }
 
     private ServiceOrder getOrderFields() {
@@ -291,7 +287,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
                     device,
                     employee,
                     CommonSetting.COMPANY,
-                    CommonExtension.formatEuroToDouble(this.lbl_total_field.getText()),
+                    CommonExtension.formatEuroToDouble(this.lbl_total_amount.getText()),
                     CommonExtension.formatEuroToDouble(this.lbl_due_field.getText()),
                     OrderStatus.IN_PROGRESS,
                     new Date(),
@@ -474,7 +470,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
         lbl_deposit = new javax.swing.JLabel();
         txt_deposit = new javax.swing.JTextField();
         lbl_due = new javax.swing.JLabel();
-        lbl_total_field = new javax.swing.JLabel();
+        lbl_total_amount = new javax.swing.JLabel();
         lbl_due_field = new javax.swing.JLabel();
         lbl_deposit_paid = new javax.swing.JLabel();
         panel_order_buttons = new javax.swing.JPanel();
@@ -807,8 +803,8 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
         lbl_due.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         lbl_due.setText("Due:");
 
-        lbl_total_field.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
-        lbl_total_field.setText("totalFiled");
+        lbl_total_amount.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
+        lbl_total_amount.setText("totalAmount");
 
         lbl_due_field.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
         lbl_due_field.setText("totalDue");
@@ -826,7 +822,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
                     .addGroup(panel_total_amountLayout.createSequentialGroup()
                         .addComponent(lbl_total)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lbl_total_field))
+                        .addComponent(lbl_total_amount))
                     .addGroup(panel_total_amountLayout.createSequentialGroup()
                         .addComponent(lbl_due)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -845,7 +841,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(panel_total_amountLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbl_total)
-                    .addComponent(lbl_total_field))
+                    .addComponent(lbl_total_amount))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_total_amountLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbl_deposit)
@@ -1393,34 +1389,8 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_list_prod_serv_searchMousePressed
 
     private void table_view_productsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table_view_productsMouseClicked
-        if (evt.getClickCount() == 2) {
-            int selectedRow = this.table_view_products.getSelectedRow();
+        if (evt.getClickCount() == 2) {           
             this._dtmProdServ.removeRow(table_view_products.getSelectedRow());
-
-//            if (this._dtmProdServ.getValueAt(selectedRow, 5) != null) {
-//                String password = CommonExtension.requestUserPassword();
-//                Employee employee = _employeeController.getEmployeeByPass(password);
-//
-//                if (employee != null) {
-//                    long idDeleteOrderProdServ = this._orderProdServController.deleteOrderProdServ((long) this._dtmProdServ.getValueAt(selectedRow, 5));
-//
-//                    if (idDeleteOrderProdServ > 0) {
-//                        this._dtmProdServ.removeRow(this.table_view_products.getSelectedRow());
-//                        // Sum price column and set into total textField
-//                        getPriceSum();
-//
-//                        _serviceOrderModel.setTotal(Double.parseDouble(this.lbl_total_field.getText()));
-//                        _serviceOrderModel.setDue(Double.parseDouble(this.lbl_due_field.getText()));
-//                        _orderController.updateOrder(_serviceOrderModel);
-//                    } else {
-//                        JOptionPane.showMessageDialog(this, CommonConstant.ERROR_DELETE_ITEM, this.getTitle(), JOptionPane.ERROR_MESSAGE);
-//                    }
-//                } else {
-//                    JOptionPane.showMessageDialog(this, CommonConstant.NOT_AUTHORIZED, this.getTitle(), JOptionPane.ERROR_MESSAGE);
-//                }
-//            } else {
-//                this._dtmProdServ.removeRow(this.table_view_products.getSelectedRow());
-//            }
         }
     }//GEN-LAST:event_table_view_productsMouseClicked
 
@@ -1437,8 +1407,8 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
                 sum += priceTotal;
             }
 
-            this.lbl_total_field.setText(String.valueOf((sum)));
-            this.lbl_due_field.setText(String.valueOf(this.lbl_total_field.getText()));
+            this.lbl_total_amount.setText(String.valueOf((sum)));
+            this.lbl_due_field.setText(String.valueOf(this.lbl_total_amount.getText()));
         }
     }//GEN-LAST:event_table_view_productsKeyReleased
 
@@ -1538,7 +1508,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btn_depositActionPerformed
 
     private void txt_depositKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_depositKeyReleased
-        double totalPrice = CommonExtension.formatEuroToDouble(this.lbl_total_field.getText());
+        double totalPrice = CommonExtension.formatEuroToDouble(this.lbl_total_amount.getText());
         if (!this.txt_deposit.getText().trim().isEmpty()) {
             double depositPaid = CommonExtension.formatEuroToDouble(this.lbl_deposit_paid.getText());
             double deposit = Double.parseDouble(this.txt_deposit.getText());
@@ -1595,7 +1565,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lbl_serial_number_star;
     private javax.swing.JLabel lbl_sn;
     private javax.swing.JLabel lbl_total;
-    private javax.swing.JLabel lbl_total_field;
+    private javax.swing.JLabel lbl_total_amount;
     private javax.swing.JList<String> list_fault_search;
     private javax.swing.JList<String> list_prod_serv_search;
     private javax.swing.JPanel panel_input_detail;

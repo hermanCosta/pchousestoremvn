@@ -49,8 +49,7 @@ public class CustomerModal extends javax.swing.JDialog {
         this(parent, modal, customer);
         this._createdOrderView = createdOrderView;
     }
-
-    //CustomerModal(this, new MainMenuView(CommonSetting.COMPANY), true, null);
+    
     public CustomerModal(NewSaleView newSaleView, Frame parent, boolean modal, Customer customer) {
         this(parent, modal, customer);
         this._newSaleView = newSaleView;
@@ -652,7 +651,7 @@ public class CustomerModal extends javax.swing.JDialog {
             } else if (_newSaleView != null) {
                 _newSaleView.setCustomerFields(useCustomer);
             } else if(_newRefurbSaleView != null){
-                _newRefurbSaleView.setCustomerFields(_customer);
+                _newRefurbSaleView.setCustomerFields(useCustomer);
             }
 
             this.dispose();

@@ -1,5 +1,9 @@
 package com.pchouse.pchousestoremvn.util;
 
+import static com.pchouse.pchousestoremvn.enums.PayMethod.CARD;
+import static com.pchouse.pchousestoremvn.enums.PayMethod.CASH;
+import static com.pchouse.pchousestoremvn.enums.PayMethod.COMBINE;
+import com.pchouse.pchousestoremvn.models.RefurbSale;
 import com.pchouse.pchousestoremvn.models.Sale;
 import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.models.SaleProdServ;
@@ -185,9 +189,7 @@ public class ReportGenerator {
             JasperPrint jasperPrint = JasperFillManager.fillReport(mainReport, parameters, new JREmptyDataSource());
 
             // View the filled report
-            JasperViewer.viewReport(jasperPrint, false);
-
-            System.out.println("Report generated successfully.");
+            JasperViewer.viewReport(jasperPrint, false);            
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -299,6 +301,98 @@ public class ReportGenerator {
         }
     }
 
+    public void generateRefurbSaleReceiptReport(Sale sale, List<RefurbSale> refurbsSale, List<SalePayment> salePayments) {
+        try {
+            // Sum amounts by payment method
+            double totalCash = 0.0;
+            double totalCard = 0.0;
+            double totalChange = 0.0;
+
+            for (SalePayment payment : salePayments) {
+                if (payment.getPayMethod() != null) {
+                    totalChange += payment.getChangeAmount();
+
+                    switch (payment.getPayMethod()) {
+                        case CASH:
+                            totalCash += payment.getCashAmount();
+                            break;
+                        case CARD:
+                            totalCard += payment.getCardAmount();
+                            break;
+                        case COMBINE:
+                            totalCash += payment.getCashAmount();
+                            totalCard += payment.getCardAmount();
+                            break;
+                        default:
+                            break; // ignore other payment methods
+                    }
+                }
+            }
+
+            // Paths to your reports
+            String mainReportPath = "/com/pchouse/pchousestoremvn/reports/RefurbSaleReceiptReport.jasper";
+            String headerSubreportPath = "/com/pchouse/pchousestoremvn/reports/subreport_header.jasper";
+            String subreportDir = "/com/pchouse/pchousestoremvn/reports/";
+
+            // Load the header subreport JasperReport object
+            JasperReport headerSubreport = (JasperReport) JRLoader.loadObject(
+                    getClass().getResource(headerSubreportPath)
+            );
+
+            // Create data sources
+            JRBeanCollectionDataSource refurbsSaleDataSource = new JRBeanCollectionDataSource(refurbsSale);
+
+            // Prepare parameters for main report (and subreport)
+            Map<String, Object> parameters = new HashMap<>();
+
+            // Company info (shared with header subreport)
+            parameters.put("companyName", sale.getCompany().getName());
+            parameters.put("companyAddress", sale.getCompany().getAddress());
+            parameters.put("companyPhone", sale.getCompany().getContactOne());
+            parameters.put("companyEmail", sale.getCompany().getEmail());
+
+            // Logo InputStream
+            InputStream logoStream = getClass().getResourceAsStream("/icons/icon_logo_header_lg.png");
+            if (logoStream == null) {
+                System.err.println("Logo not found!");
+            }
+            parameters.put("companyLogo", logoStream);
+
+            // Pass the compiled header subreport to main report
+            parameters.put("subreport_header", headerSubreport);
+
+            // Other fields for main report
+            parameters.put("saleId", sale.getIdSale());
+            parameters.put("customerName", sale.getCustomer().getPerson().getFirstName() + " " + sale.getCustomer().getPerson().getLastName());
+            parameters.put("customerPhone", sale.getCustomer().getPerson().getContactNo());
+            parameters.put("customerEmail", sale.getCustomer().getPerson().getEmail());
+            parameters.put("createdDate", salePayments.getLast().getDtTransaction());
+            parameters.put("total", sale.getTotal());
+
+            // Set summed payment method values
+            parameters.put("payMethodCash", totalCash);
+            parameters.put("payMethodCard", totalCard);
+            parameters.put("change", totalChange);
+
+            parameters.put("refurbsSaleDataSource", refurbsSaleDataSource);
+
+            // Set subreport directory parameter (useful for subreports inside main report)
+            parameters.put("SUBREPORT_DIR", getClass().getResource(subreportDir).getPath());
+
+            // Load main report
+            JasperReport mainReport = (JasperReport) JRLoader.loadObject(getClass().getResource(mainReportPath));
+
+            // Fill main report
+            JasperPrint jasperPrint = JasperFillManager.fillReport(mainReport, parameters, new JREmptyDataSource());
+
+            // View the filled report
+            JasperViewer.viewReport(jasperPrint, false);            
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
     public void generateServiceOrderReportTest() {
         try {
             Map<String, Object> params = new HashMap<>();

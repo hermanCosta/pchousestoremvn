@@ -288,7 +288,7 @@ public class Refurb implements Serializable {
     @Override
     public String toString() {
         return category + " | "
-                + brand + " | "
+                + brand + " - "
                 + model;
 
     }

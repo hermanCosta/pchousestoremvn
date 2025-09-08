@@ -26,18 +26,7 @@ public class ServiceOrderController {
             return -1;
         }
     }
-
-// Add a new order to the database
-    public long addOrder(ServiceOrder pOrder) throws BusinessException {
-        try {
-            return ORDER_DAO.addOrderDAO(pOrder);
-        } catch (Exception e) {
-            System.err.println("Error adding order: " + e.getMessage());
-            e.printStackTrace();
-            throw new BusinessException("Unable to add order.");
-        }
-    }
-
+    
 // Get order details by ID
     public ServiceOrder getServiceOrderById(long pIdOrder) {
         try {

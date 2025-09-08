@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "SALE_REFURB")
-public class SaleRefurb implements Serializable {
+@Table(name = "REFURB_SALE")
+public class RefurbSale implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,11 +27,10 @@ public class SaleRefurb implements Serializable {
     private double total;
 
     // === Constructors ===
-
-    public SaleRefurb() {
+    public RefurbSale() {
     }
 
-    public SaleRefurb(Sale sale, Refurb refurb, int qty, double total) {
+    public RefurbSale(Sale sale, Refurb refurb, int qty, double total) {
         this.sale = sale;
         this.refurb = refurb;
         this.qty = qty;
@@ -39,7 +38,6 @@ public class SaleRefurb implements Serializable {
     }
 
     // === Getters and Setters ===
-
     public long getIdSaleRefurb() {
         return idSaleRefurb;
     }
@@ -80,16 +78,24 @@ public class SaleRefurb implements Serializable {
         this.total = total;
     }
 
-    // === Optional: toString ===
+    // Getters para o JasperReport
+    public String getDescription() {
+        return refurb.getCategory() + " | " + refurb.getBrand() + " - " + refurb.getModel();
+    }
 
+    public Double getUnitPrice() {
+        return refurb != null ? refurb.getPrice() : 0.0;
+    }
+
+    // === Optional: toString ===
     @Override
     public String toString() {
-        return "SaleRefurb{" +
-                "idSaleRefurb=" + idSaleRefurb +
-                ", sale=" + (sale != null ? sale.getIdSale() : null) +
-                ", refurb=" + (refurb != null ? refurb.getIdRefurb() : null) +
-                ", qty=" + qty +
-                ", total=" + total +
-                '}';
+        return "SaleRefurb{"
+                + "idSaleRefurb=" + idSaleRefurb
+                + ", sale=" + (sale != null ? sale.getIdSale() : null)
+                + ", refurb=" + (refurb != null ? refurb.getIdRefurb() : null)
+                + ", qty=" + qty
+                + ", total=" + total
+                + '}';
     }
 }

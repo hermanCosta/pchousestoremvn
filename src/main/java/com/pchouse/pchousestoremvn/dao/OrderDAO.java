@@ -35,58 +35,7 @@ public class OrderDAO {
             em.close();
         }
         return orderId;
-    }
-    
-    public long addOrderDAO(ServiceOrder pOrderModel) throws BusinessException {
-        EntityManager em = JPAUtil.getEntityManager();
-        long idServiceOrderAdded = 0;
-        try {
-            em.getTransaction().begin();
-            
-            Customer customer = pOrderModel.getCustomer();
-            Person person = customer.getPerson();
-            Device device = pOrderModel.getDevice();
-            
-            if (device != null && device.getIdDevice() == 0) {
-                em.persist(device);
-                em.flush();
-            }
-            
-            if (person.getIdPerson() == 0) {
-                em.persist(person);
-                em.flush();
-            }
-            
-            if (customer.getIdCustomer() == 0) {
-                em.persist(customer);
-                em.flush();
-            } else {
-                // If customer already exists, attach managed entity
-                customer = em.find(Customer.class, customer.getIdCustomer());
-            }
-            
-            pOrderModel.setCustomer(customer); // assign the managed or new customer
-
-            // Certificar-se de que a Company está anexada ao contexto antes de persistir
-            if (pOrderModel.getCompany() != null) {
-                Company managedCompany = em.find(Company.class, pOrderModel.getCompany().getIdCompany());
-                pOrderModel.setCompany(managedCompany);
-            }
-
-            // Persistir a ordem com suas associações gerenciadas
-            ServiceOrder managedOrder = em.merge(pOrderModel);
-            em.getTransaction().commit();
-            idServiceOrderAdded = managedOrder.getIdServiceOrder();
-        } catch (Exception e) {
-            e.printStackTrace();
-            em.getTransaction().rollback();
-            throw new BusinessException("Failed to add order: " + e.getMessage(), e);
-            
-        } finally {
-            em.close();
-        }
-        return idServiceOrderAdded;
-    }
+    }        
     
     public ServiceOrder getItemOrderDAO(long pIdOrder) {
         EntityManager em = JPAUtil.getEntityManager();

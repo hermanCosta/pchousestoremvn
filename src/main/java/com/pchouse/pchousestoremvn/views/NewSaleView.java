@@ -10,6 +10,7 @@ import com.pchouse.pchousestoremvn.controllers.ProductServiceController;
 import com.pchouse.pchousestoremvn.controllers.SalePaymentController;
 import com.pchouse.pchousestoremvn.enums.OrderStatus;
 import com.pchouse.pchousestoremvn.enums.PaymentType;
+import com.pchouse.pchousestoremvn.enums.SaleType;
 import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Customer;
 import com.pchouse.pchousestoremvn.models.Deposit;
@@ -218,7 +219,8 @@ public class NewSaleView extends javax.swing.JInternalFrame {
                 totalAmount,
                 remaining,
                 new Date(),
-                OrderStatus.FINISHED
+                OrderStatus.PICKED,
+                SaleType.COMMON
         );
     }
 
@@ -764,8 +766,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
                     addSale.setIdSale(idSaleAdded);
                 }
 
-                if (isAdded) {
-                    JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_SAVE);
+                if (isAdded) {                    
                     clearFields();
 
                     List<SalePayment> salePayments = _salePaymentController.getSalePayments(addSale);

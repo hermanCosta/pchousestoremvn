@@ -1,5 +1,9 @@
 package com.pchouse.pchousestoremvn.dao;
 
+import com.pchouse.pchousestoremvn.enums.OrderStatus;
+import com.pchouse.pchousestoremvn.exception.BusinessException;
+import com.pchouse.pchousestoremvn.models.Employee;
+import com.pchouse.pchousestoremvn.models.OrderNote;
 import com.pchouse.pchousestoremvn.models.Sale;
 import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.util.JPAUtil;
@@ -63,4 +67,59 @@ public class SalePaymentDAO {
         return payments;
     }
 
+    public long addRefurbSalePaymentDAO(List<SalePayment> pSalePayments, OrderNote note) throws Exception {
+        EntityManager em = JPAUtil.getEntityManager();
+        SalePayment lastPayment = null;
+
+        try {
+            em.getTransaction().begin();
+
+            if (pSalePayments != null && !pSalePayments.isEmpty()) {
+                for (SalePayment payment : pSalePayments) {
+                    if (payment.getSale() != null) {
+                        // Reattach ServiceOrder properly
+                        Sale managedSale = em.getReference(
+                                Sale.class,
+                                payment.getSale().getIdSale()
+                        );
+                        payment.setSale(managedSale);
+                    }
+
+                    em.persist(payment);
+                    lastPayment = payment;
+                }
+
+                // Update status AFTER persisting last payment
+                if (lastPayment != null && lastPayment.getSale() != null) {
+                    lastPayment.getSale().setStatus(OrderStatus.PICKED);
+                }
+            }
+
+            // Persist OrderNote
+            if (note != null && lastPayment != null) {
+                note.setSale(lastPayment.getSale());
+
+                // Reattach Employee
+                if (note.getEmployee() != null) {
+                    Employee managedEmployee = em.getReference(
+                            Employee.class,
+                            note.getEmployee().getIdEmployee()
+                    );
+                    note.setEmployee(managedEmployee);
+                }
+
+                em.persist(note);
+            }
+
+            em.getTransaction().commit();
+            return lastPayment != null ? lastPayment.getIdSalePayment() : -1;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new BusinessException("Failed to add payment: " + e.getMessage(), e);
+        } finally {
+            em.close();
+        }
+    }
 }

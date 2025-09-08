@@ -10,7 +10,7 @@ import com.pchouse.pchousestoremvn.models.Person;
 import com.pchouse.pchousestoremvn.models.Sale;
 import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.models.SaleProdServ;
-import com.pchouse.pchousestoremvn.models.SaleRefurb;
+import com.pchouse.pchousestoremvn.models.RefurbSale;
 import com.pchouse.pchousestoremvn.util.JPAUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
@@ -291,10 +291,10 @@ public class SaleDAO {
             em.close();
         }
     }
-    
-     public long addRefurbSaleDAO(
+
+    public long addRefurbSaleDAO(
             Sale sale,
-            List<SaleRefurb> items,
+            List<RefurbSale> items,
             List<SalePayment> payments,
             Deposit deposit,
             OrderNote note) throws Exception {
@@ -340,7 +340,7 @@ public class SaleDAO {
 
             // Persist SaleProdServ items
             if (items != null) {
-                for (SaleRefurb item : items) {
+                for (RefurbSale item : items) {
                     item.setSale(sale);
                     em.persist(item);
                 }
@@ -349,7 +349,6 @@ public class SaleDAO {
             // Persist Deposit
             if (deposit != null) {
                 deposit.setSale(sale);
-                //deposit.setSalePayment(payment);
 
                 // Reattach Employee for Deposit
                 if (deposit.getEmployee() != null) {

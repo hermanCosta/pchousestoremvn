@@ -31,7 +31,7 @@ public class DepositModal extends javax.swing.JDialog {
     public DepositModal(ServiceOrder serviceOrderModel, java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-
+                
         this._serviceOrderModel = serviceOrderModel;
         this._depositController = new DepositController();
         this._salePaymentController = new SalePaymentController();
@@ -90,7 +90,7 @@ public class DepositModal extends javax.swing.JDialog {
                 }
             }
 
-            this.lbl_total.setText(CommonExtension.formatEuroCurrency(totalDeposit));
+            this.lbl_total_deposit_amount.setText(CommonExtension.formatEuroCurrency(totalDeposit));
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(
@@ -153,8 +153,8 @@ public class DepositModal extends javax.swing.JDialog {
         scroll_pane_deposit = new javax.swing.JScrollPane();
         table_view_deposits = new javax.swing.JTable();
         panel_deposit_total = new javax.swing.JPanel();
-        lbl_deposit_paid = new javax.swing.JLabel();
-        lbl_total = new javax.swing.JLabel();
+        lbl_total_deposit = new javax.swing.JLabel();
+        lbl_total_deposit_amount = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Deposit History View");
@@ -199,9 +199,11 @@ public class DepositModal extends javax.swing.JDialog {
 
         panel_deposit_total.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        lbl_deposit_paid.setText("Total:");
+        lbl_total_deposit.setFont(new java.awt.Font("Helvetica Neue", 0, 14)); // NOI18N
+        lbl_total_deposit.setText("Total:");
 
-        lbl_total.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
+        lbl_total_deposit_amount.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
+        lbl_total_deposit_amount.setText("totalDepositAmount");
 
         javax.swing.GroupLayout panel_deposit_totalLayout = new javax.swing.GroupLayout(panel_deposit_total);
         panel_deposit_total.setLayout(panel_deposit_totalLayout);
@@ -209,19 +211,19 @@ public class DepositModal extends javax.swing.JDialog {
             panel_deposit_totalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_deposit_totalLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lbl_deposit_paid)
+                .addComponent(lbl_total_deposit)
                 .addGap(9, 9, 9)
-                .addComponent(lbl_total, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(330, Short.MAX_VALUE))
+                .addComponent(lbl_total_deposit_amount, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panel_deposit_totalLayout.setVerticalGroup(
             panel_deposit_totalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_deposit_totalLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panel_deposit_totalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(lbl_total, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lbl_deposit_paid))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(lbl_total_deposit_amount, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lbl_total_deposit))
+                .addContainerGap(9, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout panel_notesLayout = new javax.swing.GroupLayout(panel_notes);
@@ -248,9 +250,9 @@ public class DepositModal extends javax.swing.JDialog {
                     .addComponent(lbl_order_no)
                     .addComponent(lbl_order_deposit_id, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(scroll_pane_deposit, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(scroll_pane_deposit, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(panel_deposit_total, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(panel_deposit_total, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -276,10 +278,10 @@ public class DepositModal extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel lbl_deposit_paid;
     private javax.swing.JLabel lbl_order_deposit_id;
     private javax.swing.JLabel lbl_order_no;
-    private javax.swing.JLabel lbl_total;
+    private javax.swing.JLabel lbl_total_deposit;
+    private javax.swing.JLabel lbl_total_deposit_amount;
     private javax.swing.JPanel panel_deposit_total;
     private javax.swing.JPanel panel_notes;
     private javax.swing.JScrollPane scroll_pane_deposit;

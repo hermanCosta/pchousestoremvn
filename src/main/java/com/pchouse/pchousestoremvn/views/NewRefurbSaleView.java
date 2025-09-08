@@ -7,9 +7,9 @@ import com.pchouse.pchousestoremvn.controllers.CustomerController;
 import com.pchouse.pchousestoremvn.controllers.EmployeeController;
 import com.pchouse.pchousestoremvn.controllers.SaleController;
 import com.pchouse.pchousestoremvn.controllers.RefurbController;
-import com.pchouse.pchousestoremvn.controllers.SalePaymentController;
 import com.pchouse.pchousestoremvn.enums.OrderStatus;
 import com.pchouse.pchousestoremvn.enums.PaymentType;
+import com.pchouse.pchousestoremvn.enums.SaleType;
 import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Customer;
 import com.pchouse.pchousestoremvn.models.Deposit;
@@ -17,7 +17,7 @@ import com.pchouse.pchousestoremvn.models.Employee;
 import com.pchouse.pchousestoremvn.models.Person;
 import com.pchouse.pchousestoremvn.models.Refurb;
 import com.pchouse.pchousestoremvn.models.Sale;
-import com.pchouse.pchousestoremvn.models.SaleRefurb;
+import com.pchouse.pchousestoremvn.models.RefurbSale;
 import com.pchouse.pchousestoremvn.models.OrderNote;
 import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
@@ -48,7 +48,6 @@ public class NewRefurbSaleView extends javax.swing.JInternalFrame {
     private final RefurbController _refurbController;
     private final CustomerController _customerController;
     private final EmployeeController _employeeController;
-    private final SalePaymentController _salePaymentController;
     private final DefaultTableModel _dtmRefurb;
     private final DefaultListModel _defaultListModelRefurb;
     Frame _parentFrame = JOptionPane.getFrameForComponent(this);
@@ -56,7 +55,6 @@ public class NewRefurbSaleView extends javax.swing.JInternalFrame {
     public NewRefurbSaleView() {
         initComponents();
 
-        this.txt_deposit.setVisible(false);
         this.lbl_total_amount.setText("");
         this.lbl_remaining_amount.setText("");
         //avoid auto old value by focus loosing
@@ -70,7 +68,6 @@ public class NewRefurbSaleView extends javax.swing.JInternalFrame {
         this._refurbController = new RefurbController();
         this._customerController = new CustomerController();
         this._employeeController = new EmployeeController();
-        this._salePaymentController = new SalePaymentController();
 
         this._dtmRefurb = (DefaultTableModel) this.table_view_refurbs.getModel();
         this._defaultListModelRefurb = new DefaultListModel();
@@ -121,7 +118,7 @@ public class NewRefurbSaleView extends javax.swing.JInternalFrame {
         this.txt_email.setText("");
         this.editor_pane_notes.setText("");
         this.lbl_total_amount.setText("");
-        this.txt_deposit.setText("");
+        this.txt_deposit_amount.setText("");
         this.lbl_remaining_amount.setText("");
 
         this._dtmRefurb.setRowCount(0);
@@ -201,10 +198,11 @@ public class NewRefurbSaleView extends javax.swing.JInternalFrame {
         }
 
         Person person = customer.getPerson();
-        return person.getFirstName().equals(firstName)
-                && person.getLastName().equals(lastName)
+
+        return person.getFirstName().trim().equals(firstName)
+                && person.getLastName().trim().equals(lastName)
                 && CommonExtension.normalizePhone(person.getContactNo()).equals(contact)
-                && Objects.equals(person.getEmail(), email);
+                && Objects.equals(person.getEmail().trim(), email);
     }
 
     private Sale createSale(Customer customer, Employee employee) {
@@ -218,12 +216,13 @@ public class NewRefurbSaleView extends javax.swing.JInternalFrame {
                 totalAmount,
                 remaining,
                 new Date(),
-                OrderStatus.FINISHED
+                OrderStatus.CREATED,
+                SaleType.REFURB
         );
     }
 
-    private List<SaleRefurb> getSaleRefurb(Sale sale) {
-        List<SaleRefurb> listSaleRefurb = new ArrayList<>();
+    private List<RefurbSale> getRefurbSales(Sale sale) {
+        List<RefurbSale> listSaleRefurb = new ArrayList<>();
 
         if (this.table_view_refurbs.getRowCount() == 0) {
             JOptionPane.showMessageDialog(this, CommonConstant.WARN_ADD_ITEM + "Refurbs", this.getTitle(), JOptionPane.WARNING_MESSAGE);
@@ -232,10 +231,9 @@ public class NewRefurbSaleView extends javax.swing.JInternalFrame {
         } else {
 
             for (int i = 0; i < _dtmRefurb.getRowCount(); i++) {
-                Refurb refurbItem = new Refurb();
-                SaleRefurb saleRefurbItem = new SaleRefurb();
+                RefurbSale saleRefurbItem = new RefurbSale();
 
-                refurbItem = _refurbController.getRefurbProductById(Integer.parseInt(_dtmRefurb.getValueAt(i, 0).toString()));
+                Refurb refurbItem = _refurbController.getRefurbProductById(Integer.parseInt(_dtmRefurb.getValueAt(i, 0).toString()));
 
                 saleRefurbItem.setSale(sale);
                 saleRefurbItem.setRefurb(refurbItem);
@@ -269,7 +267,7 @@ public class NewRefurbSaleView extends javax.swing.JInternalFrame {
             if (!isAdded) {
                 _dtmRefurb.addRow(new Object[]{
                     refurb.getIdRefurb(),
-                    refurb.getBrand(),
+                    refurb.toString(),
                     CommonConstant.DEFAULT_QTY,
                     CommonExtension.formatToPriceField(refurb.getPrice()),
                     CommonExtension.formatToPriceField(refurb.getPrice() * CommonConstant.DEFAULT_QTY)
@@ -312,7 +310,7 @@ public class NewRefurbSaleView extends javax.swing.JInternalFrame {
         panel_total_amount = new javax.swing.JPanel();
         lbl_total = new javax.swing.JLabel();
         lbl_deposit = new javax.swing.JLabel();
-        txt_deposit = new javax.swing.JTextField();
+        txt_deposit_amount = new javax.swing.JTextField();
         lbl_remaining = new javax.swing.JLabel();
         lbl_total_amount = new javax.swing.JLabel();
         lbl_remaining_amount = new javax.swing.JLabel();
@@ -508,15 +506,15 @@ public class NewRefurbSaleView extends javax.swing.JInternalFrame {
         lbl_deposit.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         lbl_deposit.setText("Deposit:");
 
-        txt_deposit.setFont(new java.awt.Font("sansserif", 0, 13)); // NOI18N
-        txt_deposit.setNextFocusableComponent(btn_save_sale);
-        txt_deposit.setPreferredSize(new java.awt.Dimension(100, 25));
-        txt_deposit.addKeyListener(new java.awt.event.KeyAdapter() {
+        txt_deposit_amount.setFont(new java.awt.Font("sansserif", 0, 13)); // NOI18N
+        txt_deposit_amount.setNextFocusableComponent(btn_save_sale);
+        txt_deposit_amount.setPreferredSize(new java.awt.Dimension(100, 25));
+        txt_deposit_amount.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                txt_depositKeyPressed(evt);
+                txt_deposit_amountKeyPressed(evt);
             }
             public void keyReleased(java.awt.event.KeyEvent evt) {
-                txt_depositKeyReleased(evt);
+                txt_deposit_amountKeyReleased(evt);
             }
         });
 
@@ -543,7 +541,7 @@ public class NewRefurbSaleView extends javax.swing.JInternalFrame {
                     .addGroup(panel_total_amountLayout.createSequentialGroup()
                         .addComponent(lbl_deposit)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txt_deposit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(txt_deposit_amount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panel_total_amountLayout.createSequentialGroup()
                         .addComponent(lbl_remaining)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -560,7 +558,7 @@ public class NewRefurbSaleView extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_total_amountLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbl_deposit)
-                    .addComponent(txt_deposit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txt_deposit_amount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_total_amountLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbl_remaining)
@@ -614,7 +612,7 @@ public class NewRefurbSaleView extends javax.swing.JInternalFrame {
                 .addContainerGap())
         );
 
-        txt_search_refurb.setNextFocusableComponent(txt_deposit);
+        txt_search_refurb.setNextFocusableComponent(txt_deposit_amount);
         txt_search_refurb.setPreferredSize(new java.awt.Dimension(518, 25));
         txt_search_refurb.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
@@ -750,39 +748,39 @@ public class NewRefurbSaleView extends javax.swing.JInternalFrame {
 
     private void btn_save_saleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_save_saleActionPerformed
         Sale addSale = getSaleFields();
-        List<SaleRefurb> listRefurbItems = getSaleRefurb(addSale);
+        List<RefurbSale> listRefurbSales = getRefurbSales(addSale);
         boolean isAdded = false;
 
         if (addSale != null) {
             try {
-                List<SalePayment> payments = new ArrayList<>();
                 Deposit deposit = null;
-                OrderNote saleNote = null;
+                String amountTopay = this.lbl_remaining_amount.getText().replaceAll("[^\\d.\\-]", ""); // Keeps digits, dot, minus sign; 
+                String refurbSaleStatus = CommonConstant.REFURB_SALE_PICKED_NOTE;
+                
+                if (!this.txt_deposit_amount.getText().trim().isEmpty()) {
+                    amountTopay = this.txt_deposit_amount.getText();
+                    deposit = new Deposit(addSale, addSale.getEmployee(), Double.parseDouble(this.txt_deposit_amount.getText()), addSale.getCreated());
+                    refurbSaleStatus = CommonConstant.REFURB_SALE_CREATED_NOTE;
+                }
 
-//                if (!this.txt_deposit.getText().trim().isEmpty()) { 
-//                    deposit = new Deposit(addSale, addSale.getEmployee(), CommonExtension.parseTextFieldToDouble(txt_deposit), addSale.getCreated());
-//                }
-                PaymentModal paymentModal = new PaymentModal(
-                        addSale,
-                        PaymentType.SALE,
-                        String.valueOf(addSale.getRemaining()),
-                        SwingUtilities.getWindowAncestor(this), // use current window as parent
-                        true
-                );
-
-                //PaymentModal paymentModal = new PaymentModal(addSale, String.valueOf(addSale.getRemaining()), new MainMenuView(CommonSetting.COMPANY), true);
+                PaymentModal paymentModal = new PaymentModal(addSale, PaymentType.REFURB, amountTopay, SwingUtilities.getWindowAncestor(this), true);
                 paymentModal.setVisible(true);
 
-                payments = paymentModal.getSalePayments();
+                List<SalePayment> payments = paymentModal.getSalePayments();
 
                 if (payments == null || payments.isEmpty()) {
                     showError("Payment was not completed.");
                     return;
                 }
 
-                saleNote = new OrderNote(addSale, addSale.getEmployee(), CommonConstant.SALE_PICKED_NOTE, new Date());
+                if (payments.isEmpty()) {
+                    showError("Payment was not completed.");
+                    return;
+                }
 
-                long idSaleAdded = this._saleController.addRefurbSale(addSale, listRefurbItems, payments, deposit, saleNote);
+                OrderNote saleNote = new OrderNote(addSale, addSale.getEmployee(), refurbSaleStatus, new Date());
+
+                long idSaleAdded = this._saleController.addRefurbSale(addSale, listRefurbSales, payments, deposit, saleNote);
 
                 if (idSaleAdded > 0) {
                     isAdded = true;
@@ -793,28 +791,26 @@ public class NewRefurbSaleView extends javax.swing.JInternalFrame {
                     JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_SAVE);
                     clearFields();
 
-                    List<SalePayment> salePayments = _salePaymentController.getSalePayments(addSale);
-                    //new ReportGenerator().generateSaleReceiptReport(addSale, listRefurbItems, salePayments);
+                    //new ReportGenerator().generateSaleReceiptReport(addSale, listRefurbSales, payments);
                 }
 
             } catch (BusinessException e) {
                 JOptionPane.showMessageDialog(this, e.getMessage(), this.getTitle(), JOptionPane.ERROR_MESSAGE);
-                e.printStackTrace();
             }
         }
     }//GEN-LAST:event_btn_save_saleActionPerformed
 
-    private void txt_depositKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_depositKeyReleased
+    private void txt_deposit_amountKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_deposit_amountKeyReleased
         double totalPrice = CommonExtension.formatEuroToDouble(this.lbl_total_amount.getText());
-        if (!this.txt_deposit.getText().trim().isEmpty()) {
+        if (!this.txt_deposit_amount.getText().trim().isEmpty()) {
             //totalPrice = Double.parseDouble(this.lbl_total_field.getText());
-            double deposit = CommonExtension.formatEuroToDouble(this.txt_deposit.getText());
+            double deposit = CommonExtension.formatEuroToDouble(this.txt_deposit_amount.getText());
 
             this.lbl_remaining_amount.setText(CommonExtension.formatEuroCurrency(totalPrice - deposit));
         } else {
             this.lbl_remaining_amount.setText(CommonExtension.formatEuroCurrency(totalPrice));
         }
-    }//GEN-LAST:event_txt_depositKeyReleased
+    }//GEN-LAST:event_txt_deposit_amountKeyReleased
 
     private void btn_cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelActionPerformed
         int confirmCancelling = JOptionPane.showConfirmDialog(this, CommonConstant.CONFIRM_CANCEL, this.getTitle(),
@@ -825,14 +821,14 @@ public class NewRefurbSaleView extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_btn_cancelActionPerformed
 
-    private void txt_depositKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_depositKeyPressed
+    private void txt_deposit_amountKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_deposit_amountKeyPressed
         //Accepts number characters only
         if (Character.isLetter(evt.getKeyChar())) {
-            this.txt_deposit.setEditable(false);
+            this.txt_deposit_amount.setEditable(false);
         } else {
-            this.txt_deposit.setEditable(true);
+            this.txt_deposit_amount.setEditable(true);
         }
-    }//GEN-LAST:event_txt_depositKeyPressed
+    }//GEN-LAST:event_txt_deposit_amountKeyPressed
 
     private void btn_seacrh_customerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_seacrh_customerActionPerformed
         this.hdnCustomerId = 0;
@@ -958,7 +954,7 @@ public class NewRefurbSaleView extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane scroll_pane_refurbs;
     private javax.swing.JTable table_view_refurbs;
     private javax.swing.JFormattedTextField txt_contact;
-    private javax.swing.JTextField txt_deposit;
+    private javax.swing.JTextField txt_deposit_amount;
     private javax.swing.JTextField txt_email;
     private javax.swing.JTextField txt_first_name;
     private javax.swing.JTextField txt_last_name;

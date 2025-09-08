@@ -7,5 +7,6 @@ public enum OrderStatus {
     FINISHED,
     PICKED,
     REFUNDED,
-    CANCELLED
+    CANCELLED,
+    CREATED
 }

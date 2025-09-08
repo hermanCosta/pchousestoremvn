@@ -108,9 +108,8 @@ public class CommonExtension {
     }
 
     public static String formatEuroCurrency(double value) {
-        Locale ireland = new Locale("en", "IE");
+        Locale ireland = Locale.forLanguageTag("en-IE");
         NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(ireland);
-
         return currencyFormatter.format(value);
     }
 
@@ -128,7 +127,7 @@ public class CommonExtension {
         double dValue = 0;
 
         if (!pString.trim().isEmpty()) {
-            String replace = pString.replace("€", "").replace(",", "").replace(" ", "").trim();
+            String replace = pString.replaceAll("[^\\d.\\-]", ""); // Keeps digits, dot, minus sign
 
             dValue = Double.parseDouble(replace);
         }

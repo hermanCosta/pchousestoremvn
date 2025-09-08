@@ -1,6 +1,7 @@
 package com.pchouse.pchousestoremvn.models;
 
 import com.pchouse.pchousestoremvn.enums.OrderStatus;
+import com.pchouse.pchousestoremvn.enums.SaleType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -54,10 +55,14 @@ public class Sale implements Serializable {
     @Column(name = "IMPORTANT_NOTES")
     private String importantNotes;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "SALE_TYPE", nullable = false)
+    private SaleType saleType;
+
     public Sale() {
     }
 
-    public Sale(Customer customer, Employee employee, Company company, double total, Double remaining, Date created, OrderStatus status) {
+    public Sale(Customer customer, Employee employee, Company company, double total, Double remaining, Date created, OrderStatus status, SaleType saleType) {
         this.customer = customer;
         this.employee = employee;
         this.company = company;
@@ -65,6 +70,7 @@ public class Sale implements Serializable {
         this.remaining = remaining;
         this.created = created;
         this.status = status;
+        this.saleType = saleType;
     }
 
     public long getIdSale() {
@@ -143,6 +149,14 @@ public class Sale implements Serializable {
 
     public void setImportantNotes(String importantNotes) {
         this.importantNotes = importantNotes;
+    }
+
+    public SaleType getSaleType() {
+        return saleType;
+    }
+
+    public void setSaleType(SaleType saleType) {
+        this.saleType = saleType;
     }
 
     @Override

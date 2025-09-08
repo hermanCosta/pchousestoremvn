@@ -14,7 +14,9 @@ import com.pchouse.pchousestoremvn.controllers.ServiceOrderFaultController;
 import com.pchouse.pchousestoremvn.controllers.ServiceOrderPaymentController;
 import com.pchouse.pchousestoremvn.controllers.ServiceOrderProdServController;
 import com.pchouse.pchousestoremvn.enums.OrderStatus;
+import com.pchouse.pchousestoremvn.enums.SaleType;
 import com.pchouse.pchousestoremvn.models.Deposit;
+import com.pchouse.pchousestoremvn.models.RefurbSale;
 import com.pchouse.pchousestoremvn.models.Sale;
 import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.models.SaleProdServ;
@@ -114,7 +116,8 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
                         sale.getCustomer().getPerson().getFirstName() + " " + sale.getCustomer().getPerson().getLastName(),
                         sale.getCustomer().getPerson().getContactNo(),
                         sale.getTotal(),
-                        sale.getStatus()
+                        sale.getStatus(),
+                        sale.getSaleType()
                     });
                 }
             }
@@ -226,16 +229,24 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
 
             try {
                 Sale saleModel = _saleController.getItemSale(saleId);
+                List<RefurbSale> listRefurbSale = _saleProdServController.getRefurbSale(saleModel);
                 List<SaleProdServ> listSaleProdServ = _saleProdServController.getSaleProdServ(saleModel);
                 List<Deposit> listSaleDeposit = _orderDepositController.getSaleDeposit(saleModel);
                 List<SalePayment> salePayments = _salePaymentController.getSalePayments(saleModel);
+                
 
-                if (saleModel.getStatus() == OrderStatus.PICKED) {
-                    CreatedSaleView createdSaleView = new CreatedSaleView(saleModel, listSaleProdServ, listSaleDeposit, salePayments);
+                if (saleModel.getStatus() == OrderStatus.PICKED && saleModel.getSaleType()== SaleType.COMMON) {
+                    PickedSaleView createdSaleView = new PickedSaleView(saleModel, listSaleProdServ, listSaleDeposit, salePayments);
                     openInternalFrame(createdSaleView, "Sale: " + saleId);
-                } else if (saleModel.getStatus() == OrderStatus.REFUNDED) {
+                } else if (saleModel.getStatus() == OrderStatus.REFUNDED && saleModel.getSaleType()== SaleType.COMMON) {
                     RefundSaleView refundSaleView = new RefundSaleView(saleModel, listSaleProdServ, listSaleDeposit, salePayments);
                     openInternalFrame(refundSaleView, "Refunded Sale" + saleId);
+                } else if (saleModel.getStatus() == OrderStatus.CREATED && saleModel.getSaleType()== SaleType.REFURB) {
+                    CreatedRefurbSaleView createdRefurbSaleView = new CreatedRefurbSaleView(saleModel, listRefurbSale, listSaleDeposit, salePayments);
+                    openInternalFrame(createdRefurbSaleView, "Created Refurb Sale" + saleId);
+                } else if (saleModel.getStatus() == OrderStatus.PICKED && saleModel.getSaleType() == SaleType.REFURB){
+                    PickedRefurbSaleView pickedRefurbSaleView = new PickedRefurbSaleView(saleModel, listRefurbSale, listSaleDeposit, salePayments);
+                    openInternalFrame(pickedRefurbSaleView, "Picked Refurb Sale" + saleId);
                 }
 
             } catch (Exception e) {
@@ -326,11 +337,11 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
         table_view_sale_list.setModel(new javax.swing.table.DefaultTableModel(
                 new Object[][]{},
                 new String[]{
-                    "Sale No", "Customer", "Contact", "Total", "Status"
+                    "Sale No", "Customer", "Contact", "Total", "Status", "Type"
                 }
         ) {
             boolean[] canEdit = new boolean[]{
-                false, false, false, false, false
+                false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
