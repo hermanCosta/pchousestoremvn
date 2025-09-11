@@ -58,12 +58,12 @@ public class PaymentModal extends javax.swing.JDialog {
         loadOrderPaymentFields(amountToPay);
     }
 
-    public PaymentModal(RefurbSale serviceOrder, PaymentType paymentType, String amountToPay, Window owner, boolean modal) {
+    public PaymentModal(RefurbSale refurbSale, PaymentType paymentType, String amountToPay, Window owner, boolean modal) {
         super(owner, ModalityType.APPLICATION_MODAL);
         initComponents();
         initListeners();
 
-        this._refurbSale = _refurbSale;
+        this._refurbSale = refurbSale;
         this._amountToPay = amountToPay;
         this._paymentType = paymentType;
         this.setTitle(_paymentType.toString() + " Payment");
@@ -120,7 +120,7 @@ public class PaymentModal extends javax.swing.JDialog {
     private void loadOrderPaymentFields(String amount) {
         this.lbl_amount_value.setText(CommonExtension.formatEuroCurrency(Double.parseDouble(amount)));
         this.txt_card_amount.setText("");
-        this.lbl_change_value.setText("");
+        this.lbl_change_amount.setText("");
     }
 
     public boolean confirmPayment() {
@@ -204,7 +204,7 @@ public class PaymentModal extends javax.swing.JDialog {
 
     private void updateLabels(double totalPaid, double changeAmount) {
         lbl_total_paid_amount.setText(String.format("%.2f", totalPaid));
-        lbl_change_value.setText(String.format("%.2f", changeAmount));
+        lbl_change_amount.setText(String.format("%.2f", changeAmount));
     }
 
     private void clearPreviousPayments() {
@@ -230,14 +230,23 @@ public class PaymentModal extends javax.swing.JDialog {
 
     private void addSalePayments(Employee emp, Sale sale, PayMethod method, double amountToPay, double totalPaid,
             double cardAmount, double cashAmount, double changeAmount, Date now) {
+
         switch (method) {
             case CARD ->
-                _salePayments.add(new SalePayment(emp, sale, _paymentType, CARD, amountToPay, totalPaid, cardAmount, 0.0, changeAmount, now));
-            case CASH ->
-                _salePayments.add(new SalePayment(emp, sale, _paymentType, CASH, amountToPay, totalPaid, 0.0, cashAmount, changeAmount, now));
+                _salePayments.add(new SalePayment(emp, sale, _paymentType, CARD, amountToPay, totalPaid, cardAmount, 0.0, 0.0, now));
+
+            case CASH -> {
+                double change = Math.max(0, cashAmount - amountToPay);
+                _salePayments.add(new SalePayment(emp, sale, _paymentType, CASH, amountToPay, totalPaid, 0.0, cashAmount, change, now));
+            }
+
             case COMBINE -> {
-                _salePayments.add(new SalePayment(emp, sale, _paymentType, CARD, amountToPay, cardAmount, cardAmount, 0.0, Math.max(0, cardAmount - amountToPay), now));
-                _salePayments.add(new SalePayment(emp, sale, _paymentType, CASH, amountToPay, cashAmount, 0.0, cashAmount, Math.max(0, cashAmount - amountToPay), now));
+                double totalCombined = cardAmount + cashAmount;
+                double change = Math.max(0, totalCombined - amountToPay);
+
+                // Allocate change only to cash (as is standard practice)
+                _salePayments.add(new SalePayment(emp, sale, _paymentType, CARD, amountToPay, cardAmount, cardAmount, 0.0, 0.0, now));
+                _salePayments.add(new SalePayment(emp, sale, _paymentType, CASH, amountToPay, cashAmount, 0.0, cashAmount, change, now));
             }
         }
     }
@@ -245,35 +254,59 @@ public class PaymentModal extends javax.swing.JDialog {
     private void addServiceOrderPayments(Employee emp, ServiceOrder order, PayMethod method, double amountToPay, double totalPaid,
             double cardAmount, double cashAmount, double changeAmount, Date now) {
         switch (method) {
-            case CARD ->
+            case CARD -> {
                 _serviceOrderPayments.add(new ServiceOrderPayment(emp, order, _paymentType, CARD, amountToPay, totalPaid, cardAmount, 0.0, changeAmount, now));
-            case CASH ->
-                _serviceOrderPayments.add(new ServiceOrderPayment(emp, order, _paymentType, CASH, amountToPay, totalPaid, 0.0, cashAmount, changeAmount, now));
+            }
+            case CASH -> {
+                double change = Math.max(0, cashAmount - amountToPay);
+                _serviceOrderPayments.add(new ServiceOrderPayment(emp, order, _paymentType, CASH, amountToPay, totalPaid, 0.0, cashAmount, change, now));
+            }
             case COMBINE -> {
+                double totalCombined = cardAmount + cashAmount;
+                double change = Math.max(0, totalCombined - amountToPay);
+
                 _serviceOrderPayments.add(new ServiceOrderPayment(emp, order, _paymentType, CARD, amountToPay, cardAmount, cardAmount, 0.0, Math.max(0, cardAmount - amountToPay), now));
-                _serviceOrderPayments.add(new ServiceOrderPayment(emp, order, _paymentType, CASH, amountToPay, cashAmount, 0.0, cashAmount, Math.max(0, cashAmount - amountToPay), now));
+                _serviceOrderPayments.add(new ServiceOrderPayment(emp, order, _paymentType, CASH, amountToPay, cashAmount, 0.0, cashAmount, change, now));
             }
         }
     }
-    
-    private void calculateChangeAndTotal() {
-        double amountToPay = CommonExtension.formatEuroToDouble(this.lbl_amount_value.getText());
+
+    private void calculatePaidRemainingTotal(){
+     double amountToPay = CommonExtension.formatEuroToDouble(this.lbl_amount_value.getText());
         boolean clearField = false;
-        
+
         double cash = CommonExtension.parseTextFieldToDouble(this.txt_card_amount);
         double card = CommonExtension.parseTextFieldToDouble(this.txt_cash_amount);
         double total = card + cash;
 
         this.lbl_total_paid_amount.setText(CommonExtension.formatEuroCurrency(total));
-
+        this.lbl_remaining_amount.setText(CommonExtension.formatEuroCurrency(amountToPay - total));
+        
         if (total > amountToPay) {
-            this.lbl_change_value.setText(CommonExtension.formatEuroCurrency(total - amountToPay));
-        } else {
             clearField = true;
-        }        
+        } 
 
         if (clearField) {
-            this.lbl_change_value.setText("");
+            this.lbl_remaining_amount.setText("");
+        }   
+    }
+    
+    private void calculateChangeAndTotal() {
+        double amountToPay = CommonExtension.formatEuroToDouble(this.lbl_amount_value.getText());
+        boolean clearField = false;
+
+        double cash = CommonExtension.parseTextFieldToDouble(this.txt_card_amount);
+        double card = CommonExtension.parseTextFieldToDouble(this.txt_cash_amount);
+        double total = card + cash;        
+
+        if (total > amountToPay) {
+            this.lbl_change_amount.setText(CommonExtension.formatEuroCurrency(total - amountToPay));
+        } else {
+            clearField = true;
+        }
+
+        if (clearField) {
+            this.lbl_change_amount.setText("");
         }
     }
 
@@ -281,7 +314,8 @@ public class PaymentModal extends javax.swing.JDialog {
         this.txt_card_amount.setText("");
         this.txt_cash_amount.setText("");
         this.lbl_total_paid_amount.setText("");
-        this.lbl_change_value.setText("");
+        this.lbl_remaining_amount.setText("");
+        this.lbl_change_amount.setText("");
     }
 
     @SuppressWarnings("unchecked")
@@ -289,22 +323,24 @@ public class PaymentModal extends javax.swing.JDialog {
     private void initComponents() {
 
         panel_notes = new javax.swing.JPanel();
-        panel_note_input = new javax.swing.JPanel();
+        panel_sumary_amount = new javax.swing.JPanel();
+        lbl_total_paid = new javax.swing.JLabel();
+        lbl_total_paid_amount = new javax.swing.JLabel();
+        lbl_remaining = new javax.swing.JLabel();
+        lbl_remaining_amount = new javax.swing.JLabel();
         lbl_change = new javax.swing.JLabel();
-        lbl_change_value = new javax.swing.JLabel();
+        lbl_change_amount = new javax.swing.JLabel();
         lbl_pay_method = new javax.swing.JLabel();
         combo_box_pay_method = new javax.swing.JComboBox<PayMethod>();
         lbl_amount = new javax.swing.JLabel();
         lbl_amount_value = new javax.swing.JLabel();
         lbl_card_payment = new javax.swing.JLabel();
         txt_card_amount = new javax.swing.JTextField();
-        panel_fault_buttons = new javax.swing.JPanel();
+        panel_payment_buttons = new javax.swing.JPanel();
         btn_pay = new javax.swing.JButton();
         btn_cancel = new javax.swing.JButton();
         lbl_cash_payment = new javax.swing.JLabel();
         txt_cash_amount = new javax.swing.JTextField();
-        lbl_total_paid = new javax.swing.JLabel();
-        lbl_total_paid_amount = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Payment");
@@ -312,31 +348,61 @@ public class PaymentModal extends javax.swing.JDialog {
 
         panel_notes.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        panel_note_input.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        panel_sumary_amount.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        lbl_total_paid.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        lbl_total_paid.setText("Total Paid:");
+
+        lbl_total_paid_amount.setFont(new java.awt.Font("Dialog", 1, 15)); // NOI18N
+        lbl_total_paid_amount.setText("totalPaidAmount");
+
+        lbl_remaining.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        lbl_remaining.setText("Remaining:");
+
+        lbl_remaining_amount.setFont(new java.awt.Font("Dialog", 1, 15)); // NOI18N
+        lbl_remaining_amount.setText("remainingAmount");
 
         lbl_change.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         lbl_change.setText("Change:");
 
-        lbl_change_value.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        lbl_change_value.setText("change");
+        lbl_change_amount.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        lbl_change_amount.setText("changeAmount");
 
-        javax.swing.GroupLayout panel_note_inputLayout = new javax.swing.GroupLayout(panel_note_input);
-        panel_note_input.setLayout(panel_note_inputLayout);
-        panel_note_inputLayout.setHorizontalGroup(
-            panel_note_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panel_note_inputLayout.createSequentialGroup()
+        javax.swing.GroupLayout panel_sumary_amountLayout = new javax.swing.GroupLayout(panel_sumary_amount);
+        panel_sumary_amount.setLayout(panel_sumary_amountLayout);
+        panel_sumary_amountLayout.setHorizontalGroup(
+            panel_sumary_amountLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panel_sumary_amountLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lbl_change)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lbl_change_value, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(panel_sumary_amountLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panel_sumary_amountLayout.createSequentialGroup()
+                        .addComponent(lbl_total_paid)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lbl_total_paid_amount, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(panel_sumary_amountLayout.createSequentialGroup()
+                        .addComponent(lbl_remaining)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lbl_remaining_amount, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(panel_sumary_amountLayout.createSequentialGroup()
+                        .addComponent(lbl_change)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lbl_change_amount, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
-        panel_note_inputLayout.setVerticalGroup(
-            panel_note_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_note_inputLayout.createSequentialGroup()
-                .addContainerGap(18, Short.MAX_VALUE)
-                .addGroup(panel_note_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lbl_change_value)
+        panel_sumary_amountLayout.setVerticalGroup(
+            panel_sumary_amountLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panel_sumary_amountLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panel_sumary_amountLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lbl_total_paid_amount, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lbl_total_paid))
+                .addGap(3, 3, 3)
+                .addGroup(panel_sumary_amountLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lbl_remaining_amount, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lbl_remaining))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panel_sumary_amountLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lbl_change_amount)
                     .addComponent(lbl_change, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -364,7 +430,7 @@ public class PaymentModal extends javax.swing.JDialog {
             }
         });
 
-        panel_fault_buttons.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        panel_payment_buttons.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         btn_pay.setBackground(new java.awt.Color(21, 76, 121));
         btn_pay.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
@@ -388,23 +454,23 @@ public class PaymentModal extends javax.swing.JDialog {
             }
         });
 
-        javax.swing.GroupLayout panel_fault_buttonsLayout = new javax.swing.GroupLayout(panel_fault_buttons);
-        panel_fault_buttons.setLayout(panel_fault_buttonsLayout);
-        panel_fault_buttonsLayout.setHorizontalGroup(
-            panel_fault_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panel_fault_buttonsLayout.createSequentialGroup()
+        javax.swing.GroupLayout panel_payment_buttonsLayout = new javax.swing.GroupLayout(panel_payment_buttons);
+        panel_payment_buttons.setLayout(panel_payment_buttonsLayout);
+        panel_payment_buttonsLayout.setHorizontalGroup(
+            panel_payment_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panel_payment_buttonsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(btn_pay)
                 .addGap(18, 18, 18)
                 .addComponent(btn_cancel)
                 .addContainerGap(243, Short.MAX_VALUE))
         );
-        panel_fault_buttonsLayout.setVerticalGroup(
-            panel_fault_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panel_fault_buttonsLayout.createSequentialGroup()
+        panel_payment_buttonsLayout.setVerticalGroup(
+            panel_payment_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panel_payment_buttonsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panel_fault_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panel_fault_buttonsLayout.createSequentialGroup()
+                .addGroup(panel_payment_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panel_payment_buttonsLayout.createSequentialGroup()
                         .addComponent(btn_cancel, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(btn_pay, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
@@ -424,12 +490,6 @@ public class PaymentModal extends javax.swing.JDialog {
             }
         });
 
-        lbl_total_paid.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        lbl_total_paid.setText("Total Paid:");
-
-        lbl_total_paid_amount.setFont(new java.awt.Font("Dialog", 1, 15)); // NOI18N
-        lbl_total_paid_amount.setText("totalPaidAmount");
-
         javax.swing.GroupLayout panel_notesLayout = new javax.swing.GroupLayout(panel_notes);
         panel_notes.setLayout(panel_notesLayout);
         panel_notesLayout.setHorizontalGroup(
@@ -437,8 +497,8 @@ public class PaymentModal extends javax.swing.JDialog {
             .addGroup(panel_notesLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panel_notesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panel_note_input, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(panel_fault_buttons, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(panel_sumary_amount, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(panel_payment_buttons, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(panel_notesLayout.createSequentialGroup()
                         .addComponent(lbl_pay_method)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -453,10 +513,6 @@ public class PaymentModal extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txt_cash_amount))
                     .addGroup(panel_notesLayout.createSequentialGroup()
-                        .addComponent(lbl_total_paid)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lbl_total_paid_amount, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(panel_notesLayout.createSequentialGroup()
                         .addComponent(lbl_amount)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
@@ -464,11 +520,11 @@ public class PaymentModal extends javax.swing.JDialog {
         panel_notesLayout.setVerticalGroup(
             panel_notesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_notesLayout.createSequentialGroup()
-                .addContainerGap(11, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lbl_amount)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lbl_amount_value, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26)
+                .addComponent(lbl_amount_value, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(panel_notesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(combo_box_pay_method, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lbl_pay_method))
@@ -481,14 +537,10 @@ public class PaymentModal extends javax.swing.JDialog {
                     .addComponent(txt_cash_amount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lbl_cash_payment))
                 .addGap(18, 18, 18)
-                .addGroup(panel_notesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lbl_total_paid_amount, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lbl_total_paid))
+                .addComponent(panel_sumary_amount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(panel_note_input, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(panel_fault_buttons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(12, 12, 12))
+                .addComponent(panel_payment_buttons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -536,10 +588,12 @@ public class PaymentModal extends javax.swing.JDialog {
     }//GEN-LAST:event_btn_cancelActionPerformed
 
     private void txt_card_amountKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_card_amountKeyReleased
+        calculatePaidRemainingTotal();
         calculateChangeAndTotal();
     }//GEN-LAST:event_txt_card_amountKeyReleased
 
     private void txt_cash_amountKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_cash_amountKeyReleased
+        calculatePaidRemainingTotal();
         calculateChangeAndTotal();
     }//GEN-LAST:event_txt_cash_amountKeyReleased
 
@@ -552,13 +606,15 @@ public class PaymentModal extends javax.swing.JDialog {
     private javax.swing.JLabel lbl_card_payment;
     private javax.swing.JLabel lbl_cash_payment;
     private javax.swing.JLabel lbl_change;
-    private javax.swing.JLabel lbl_change_value;
+    private javax.swing.JLabel lbl_change_amount;
     private javax.swing.JLabel lbl_pay_method;
+    private javax.swing.JLabel lbl_remaining;
+    private javax.swing.JLabel lbl_remaining_amount;
     private javax.swing.JLabel lbl_total_paid;
     private javax.swing.JLabel lbl_total_paid_amount;
-    private javax.swing.JPanel panel_fault_buttons;
-    private javax.swing.JPanel panel_note_input;
     private javax.swing.JPanel panel_notes;
+    private javax.swing.JPanel panel_payment_buttons;
+    private javax.swing.JPanel panel_sumary_amount;
     private javax.swing.JTextField txt_card_amount;
     private javax.swing.JTextField txt_cash_amount;
     // End of variables declaration//GEN-END:variables

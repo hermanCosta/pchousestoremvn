@@ -151,7 +151,6 @@ public class NoteModal extends javax.swing.JDialog {
         panel_fault_buttons = new javax.swing.JPanel();
         btn_clear_fields = new javax.swing.JButton();
         btn_add = new javax.swing.JButton();
-        btn_delete = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Note View");
@@ -287,17 +286,6 @@ public class NoteModal extends javax.swing.JDialog {
             }
         });
 
-        btn_delete.setBackground(new java.awt.Color(21, 76, 121));
-        btn_delete.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        btn_delete.setForeground(new java.awt.Color(255, 255, 255));
-        btn_delete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_cancel.png"))); // NOI18N
-        btn_delete.setText("Delete");
-        btn_delete.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_deleteActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout panel_fault_buttonsLayout = new javax.swing.GroupLayout(panel_fault_buttons);
         panel_fault_buttons.setLayout(panel_fault_buttonsLayout);
         panel_fault_buttonsLayout.setHorizontalGroup(
@@ -305,9 +293,7 @@ public class NoteModal extends javax.swing.JDialog {
             .addGroup(panel_fault_buttonsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(btn_add)
-                .addGap(18, 18, 18)
-                .addComponent(btn_delete)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btn_clear_fields)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -315,12 +301,9 @@ public class NoteModal extends javax.swing.JDialog {
             panel_fault_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_fault_buttonsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panel_fault_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btn_clear_fields, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addGroup(panel_fault_buttonsLayout.createSequentialGroup()
-                        .addComponent(btn_delete, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(btn_add, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addGroup(panel_fault_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btn_add, javax.swing.GroupLayout.PREFERRED_SIZE, 35, Short.MAX_VALUE)
+                    .addComponent(btn_clear_fields, javax.swing.GroupLayout.PREFERRED_SIZE, 35, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -405,31 +388,6 @@ public class NoteModal extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_btn_addActionPerformed
 
-    private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
-        int selectedRow = this.table_view_notes.getSelectedRow();
-
-        if (selectedRow >= 0) {
-
-            OrderNote deleteNote = new OrderNote();
-
-//            deleteNote.setNote((Integer) _dtmFault.getValueAt(selectedRow, 0));
-//            deleteNote.setDescription(_dtmFault.getValueAt(selectedRow, 1).toString());
-//
-//            int confirmDeletion = JOptionPane.showConfirmDialog(this, "Do you really want to delete '"
-//                    + deleteNote.getDescription(), "Delete Fault", JOptionPane.YES_NO_OPTION);
-//
-//            if (confirmDeletion == 0) {
-//                boolean isDeleted = this._faultController.deleteFaultController(deleteNote);
-//
-//                if (isDeleted) {
-//                    loadFaultListTable();
-//                } else {
-//                    JOptionPane.showMessageDialog(this, deleteNote.getDescription() + "could not be deleted!", null, JOptionPane.ERROR_MESSAGE);
-//                }
-//            }
-        }
-    }//GEN-LAST:event_btn_deleteActionPerformed
-
     private void txt_search_noteKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_search_noteKeyReleased
         searchNote();
     }//GEN-LAST:event_txt_search_noteKeyReleased
@@ -437,7 +395,6 @@ public class NoteModal extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_add;
     private javax.swing.JButton btn_clear_fields;
-    private javax.swing.JButton btn_delete;
     private javax.swing.JEditorPane editor_pane_notes;
     private javax.swing.JTextField hdn_txt_note_id;
     private javax.swing.JLabel lbl_max_char;

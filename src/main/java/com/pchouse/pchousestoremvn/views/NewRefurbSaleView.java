@@ -21,6 +21,7 @@ import com.pchouse.pchousestoremvn.models.RefurbSale;
 import com.pchouse.pchousestoremvn.models.OrderNote;
 import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
+import com.pchouse.pchousestoremvn.util.ReportGenerator;
 import com.pchouse.pchousestoremvn.views.modals.CustomerModal;
 import com.pchouse.pchousestoremvn.views.modals.PaymentModal;
 import java.awt.Frame;
@@ -206,10 +207,11 @@ public class NewRefurbSaleView extends javax.swing.JInternalFrame {
     }
 
     private Sale createSale(Customer customer, Employee employee) {
+        String importanNotes = this.editor_pane_notes.getText();
         double totalAmount = CommonExtension.formatEuroToDouble(lbl_total_amount.getText());
         double remaining = CommonExtension.formatEuroToDouble(lbl_remaining_amount.getText());
 
-        return new Sale(
+        Sale getSale = new Sale(
                 customer,
                 employee,
                 CommonSetting.COMPANY,
@@ -219,6 +221,10 @@ public class NewRefurbSaleView extends javax.swing.JInternalFrame {
                 OrderStatus.CREATED,
                 SaleType.REFURB
         );
+
+        getSale.setImportantNotes(importanNotes);
+
+        return getSale;
     }
 
     private List<RefurbSale> getRefurbSales(Sale sale) {
@@ -756,24 +762,23 @@ public class NewRefurbSaleView extends javax.swing.JInternalFrame {
                 Deposit deposit = null;
                 String amountTopay = this.lbl_remaining_amount.getText().replaceAll("[^\\d.\\-]", ""); // Keeps digits, dot, minus sign; 
                 String refurbSaleStatus = CommonConstant.REFURB_SALE_PICKED_NOTE;
-                
+                var paymentType = PaymentType.REFURB;
+                boolean isDeposit = false;
+
                 if (!this.txt_deposit_amount.getText().trim().isEmpty()) {
                     amountTopay = this.txt_deposit_amount.getText();
                     deposit = new Deposit(addSale, addSale.getEmployee(), Double.parseDouble(this.txt_deposit_amount.getText()), addSale.getCreated());
                     refurbSaleStatus = CommonConstant.REFURB_SALE_CREATED_NOTE;
+                    paymentType = PaymentType.DEPOSIT;
+                    isDeposit = true;
                 }
 
-                PaymentModal paymentModal = new PaymentModal(addSale, PaymentType.REFURB, amountTopay, SwingUtilities.getWindowAncestor(this), true);
+                PaymentModal paymentModal = new PaymentModal(addSale, paymentType, amountTopay, SwingUtilities.getWindowAncestor(this), true);
                 paymentModal.setVisible(true);
 
                 List<SalePayment> payments = paymentModal.getSalePayments();
 
                 if (payments == null || payments.isEmpty()) {
-                    showError("Payment was not completed.");
-                    return;
-                }
-
-                if (payments.isEmpty()) {
                     showError("Payment was not completed.");
                     return;
                 }
@@ -788,10 +793,12 @@ public class NewRefurbSaleView extends javax.swing.JInternalFrame {
                 }
 
                 if (isAdded) {
-                    JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_SAVE);
                     clearFields();
 
-                    //new ReportGenerator().generateSaleReceiptReport(addSale, listRefurbSales, payments);
+                    if (!isDeposit) {
+                        // Genarate and display the report
+                        new ReportGenerator().generateRefurbSaleReceiptReport(addSale, listRefurbSales, payments);
+                    }
                 }
 
             } catch (BusinessException e) {

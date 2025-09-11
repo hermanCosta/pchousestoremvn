@@ -34,7 +34,7 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
-public class RefundOrderView extends javax.swing.JInternalFrame {
+public class RefundedOrderView extends javax.swing.JInternalFrame {
 
     private final ServiceOrderController _orderController;
     private final EmployeeController _employeeController;
@@ -52,7 +52,7 @@ public class RefundOrderView extends javax.swing.JInternalFrame {
     private List<Deposit> _listOrderDeposit;
     private List<ServiceOrderPayment> _serviceOrderPayments;
 
-    public RefundOrderView(ServiceOrder orderModel, List<ServiceOrderFault> listOrderFault, List<ServiceOrderProdServ> listOrderProdServ, List<Deposit> listOrderDeposit, List<ServiceOrderPayment> _serviceOrderPayments) {
+    public RefundedOrderView(ServiceOrder orderModel, List<ServiceOrderFault> listOrderFault, List<ServiceOrderProdServ> listOrderProdServ, List<Deposit> listOrderDeposit, List<ServiceOrderPayment> _serviceOrderPayments) {
         initComponents();
 
         //avoid auto old value by focus loosing
@@ -208,7 +208,7 @@ public class RefundOrderView extends javax.swing.JInternalFrame {
                         );
                         CommonSetting.openInternalFrame(fixedOrderView, "Order Fixed: " + _serviceOrderModel.getIdServiceOrder());
                     } else if (newStatus == OrderStatus.NOT_FIXED) {
-                        RefundOrderView notFixedOrderView = new RefundOrderView(
+                        RefundedOrderView notFixedOrderView = new RefundedOrderView(
                                 _serviceOrderModel,
                                 _listServiceOrderFault,
                                 _listServiceOrderProdServ,
@@ -268,7 +268,7 @@ public class RefundOrderView extends javax.swing.JInternalFrame {
         lbl_dev_brand_star = new javax.swing.JLabel();
         hdn_txt_customer_id = new javax.swing.JTextField();
         spn_bad_sectors = new javax.swing.JSpinner();
-        lbl_order_not_fixed = new javax.swing.JLabel();
+        lbl_order_refunded = new javax.swing.JLabel();
         panel_total_amount = new javax.swing.JPanel();
         lbl_total = new javax.swing.JLabel();
         lbl_deposit = new javax.swing.JLabel();
@@ -438,10 +438,10 @@ public class RefundOrderView extends javax.swing.JInternalFrame {
 
         spn_bad_sectors.setEnabled(false);
 
-        lbl_order_not_fixed.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
-        lbl_order_not_fixed.setForeground(new java.awt.Color(255, 102, 102));
-        lbl_order_not_fixed.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lbl_order_not_fixed.setText("ORDER REFUNDED");
+        lbl_order_refunded.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
+        lbl_order_refunded.setForeground(new java.awt.Color(255, 102, 102));
+        lbl_order_refunded.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lbl_order_refunded.setText("ORDER REFUNDED");
 
         javax.swing.GroupLayout panel_input_detailLayout = new javax.swing.GroupLayout(panel_input_detail);
         panel_input_detail.setLayout(panel_input_detailLayout);
@@ -509,7 +509,7 @@ public class RefundOrderView extends javax.swing.JInternalFrame {
                                 .addGap(7, 7, 7)
                                 .addComponent(lbl_auto_order_no)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lbl_order_not_fixed)))
+                                .addComponent(lbl_order_refunded)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -525,7 +525,7 @@ public class RefundOrderView extends javax.swing.JInternalFrame {
                 .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbl_auto_order_no)
                     .addComponent(lbl_order_no)
-                    .addComponent(lbl_order_not_fixed))
+                    .addComponent(lbl_order_refunded))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txt_first_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1018,7 +1018,7 @@ public class RefundOrderView extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lbl_last_name_star;
     private javax.swing.JLabel lbl_model;
     private javax.swing.JLabel lbl_order_no;
-    private javax.swing.JLabel lbl_order_not_fixed;
+    private javax.swing.JLabel lbl_order_refunded;
     private javax.swing.JLabel lbl_serial_number_star;
     private javax.swing.JLabel lbl_sn;
     private javax.swing.JLabel lbl_total;

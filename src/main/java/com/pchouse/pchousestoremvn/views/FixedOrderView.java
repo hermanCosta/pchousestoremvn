@@ -330,7 +330,7 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
         lbl_dev_brand_star = new javax.swing.JLabel();
         hdn_txt_customer_id = new javax.swing.JTextField();
         spn_bad_sectors = new javax.swing.JSpinner();
-        lbl_auto_order_no1 = new javax.swing.JLabel();
+        lbl_order_fixed = new javax.swing.JLabel();
         panel_total_amount = new javax.swing.JPanel();
         lbl_total = new javax.swing.JLabel();
         lbl_deposit = new javax.swing.JLabel();
@@ -500,9 +500,9 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
 
         spn_bad_sectors.setEnabled(false);
 
-        lbl_auto_order_no1.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
-        lbl_auto_order_no1.setForeground(new java.awt.Color(153, 255, 153));
-        lbl_auto_order_no1.setText("ORDER FIXED");
+        lbl_order_fixed.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
+        lbl_order_fixed.setForeground(new java.awt.Color(153, 255, 153));
+        lbl_order_fixed.setText("ORDER FIXED");
 
         javax.swing.GroupLayout panel_input_detailLayout = new javax.swing.GroupLayout(panel_input_detail);
         panel_input_detail.setLayout(panel_input_detailLayout);
@@ -570,7 +570,7 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
                                 .addGap(7, 7, 7)
                                 .addComponent(lbl_auto_order_no)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lbl_auto_order_no1)))
+                                .addComponent(lbl_order_fixed)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -586,7 +586,7 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
                 .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbl_auto_order_no)
                     .addComponent(lbl_order_no)
-                    .addComponent(lbl_auto_order_no1))
+                    .addComponent(lbl_order_fixed))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txt_first_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1083,7 +1083,6 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
     private javax.swing.JEditorPane editor_pane_notes;
     private javax.swing.JTextField hdn_txt_customer_id;
     private javax.swing.JLabel lbl_auto_order_no;
-    private javax.swing.JLabel lbl_auto_order_no1;
     private javax.swing.JLabel lbl_bad_sectors;
     private javax.swing.JLabel lbl_bad_sectors_star;
     private javax.swing.JLabel lbl_brand;
@@ -1101,6 +1100,7 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lbl_last_name;
     private javax.swing.JLabel lbl_last_name_star;
     private javax.swing.JLabel lbl_model;
+    private javax.swing.JLabel lbl_order_fixed;
     private javax.swing.JLabel lbl_order_no;
     private javax.swing.JLabel lbl_serial_number_star;
     private javax.swing.JLabel lbl_sn;

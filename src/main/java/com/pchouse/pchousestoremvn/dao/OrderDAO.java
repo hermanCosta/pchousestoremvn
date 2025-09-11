@@ -1,6 +1,5 @@
 package com.pchouse.pchousestoremvn.dao;
 
-import com.pchouse.pchousestoremvn.enums.PaymentType;
 import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Company;
 import com.pchouse.pchousestoremvn.models.Customer;

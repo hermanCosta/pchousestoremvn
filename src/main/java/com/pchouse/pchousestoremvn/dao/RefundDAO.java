@@ -155,10 +155,6 @@ public class RefundDAO {
                 refund.getSale().setStatus(OrderStatus.REFUNDED);
             }
 
-            if (refund.getServiceOrder() != null) {
-                refund.getServiceOrder().setStatus(OrderStatus.REFUNDED);
-            }
-
             // Persist OrderNote if present
             if (note != null) {
                 note.setSale(refund.getSale());

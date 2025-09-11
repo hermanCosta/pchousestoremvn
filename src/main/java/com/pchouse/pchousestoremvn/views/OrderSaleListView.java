@@ -196,16 +196,16 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
                     openInternalFrame(createdOrderView, "Order In Progress: " + orderId);
                 } else if (orderModel.getStatus() == OrderStatus.FIXED) {
                     FixedOrderView fixedOrderView = new FixedOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
-                    openInternalFrame(fixedOrderView, "Order Fixed" + orderId);
+                    openInternalFrame(fixedOrderView, "Order Fixed: " + orderId);
                 } else if (orderModel.getStatus() == OrderStatus.NOT_FIXED) {
                     NotFixedOrderView notFixedOrderView = new NotFixedOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
-                    openInternalFrame(notFixedOrderView, "Order Not Fixed" + orderId);
+                    openInternalFrame(notFixedOrderView, "Order Not Fixed: " + orderId);
                 } else if (orderModel.getStatus() == OrderStatus.PICKED) {
                     PickedOrderView pickedOrderView = new PickedOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit, listServiceOrderPayment);
                     openInternalFrame(pickedOrderView, "Picked Order: " + orderId);
                 } else if (orderModel.getStatus() == OrderStatus.REFUNDED) {
-                    RefundOrderView refundOrderView = new RefundOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit, listServiceOrderPayment);
-                    openInternalFrame(refundOrderView, "Order Refunded" + orderId);
+                    RefundedOrderView refundOrderView = new RefundedOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit, listServiceOrderPayment);
+                    openInternalFrame(refundOrderView, "Order Refunded: " + orderId);
                 }
 
             } catch (Exception e) {
@@ -239,14 +239,17 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
                     PickedSaleView createdSaleView = new PickedSaleView(saleModel, listSaleProdServ, listSaleDeposit, salePayments);
                     openInternalFrame(createdSaleView, "Sale: " + saleId);
                 } else if (saleModel.getStatus() == OrderStatus.REFUNDED && saleModel.getSaleType()== SaleType.COMMON) {
-                    RefundSaleView refundSaleView = new RefundSaleView(saleModel, listSaleProdServ, listSaleDeposit, salePayments);
-                    openInternalFrame(refundSaleView, "Refunded Sale" + saleId);
+                    RefundedSaleView refundSaleView = new RefundedSaleView(saleModel, listSaleProdServ, listSaleDeposit, salePayments);
+                    openInternalFrame(refundSaleView, "Refunded Sale: " + saleId);
                 } else if (saleModel.getStatus() == OrderStatus.CREATED && saleModel.getSaleType()== SaleType.REFURB) {
                     CreatedRefurbSaleView createdRefurbSaleView = new CreatedRefurbSaleView(saleModel, listRefurbSale, listSaleDeposit, salePayments);
-                    openInternalFrame(createdRefurbSaleView, "Created Refurb Sale" + saleId);
+                    openInternalFrame(createdRefurbSaleView, "Created Refurb Sale: " + saleId);
                 } else if (saleModel.getStatus() == OrderStatus.PICKED && saleModel.getSaleType() == SaleType.REFURB){
                     PickedRefurbSaleView pickedRefurbSaleView = new PickedRefurbSaleView(saleModel, listRefurbSale, listSaleDeposit, salePayments);
-                    openInternalFrame(pickedRefurbSaleView, "Picked Refurb Sale" + saleId);
+                    openInternalFrame(pickedRefurbSaleView, "Picked Refurb Sale: " + saleId);
+                } else if(saleModel.getStatus() == OrderStatus.REFUNDED && saleModel.getSaleType()== SaleType.REFURB) {
+                    RefundedRefurbSaleView refundedRefurbSaleView = new RefundedRefurbSaleView(saleModel, listRefurbSale, listSaleDeposit, salePayments);
+                    openInternalFrame(refundedRefurbSaleView, "Refunded Refurb Sale: ");
                 }
 
             } catch (Exception e) {

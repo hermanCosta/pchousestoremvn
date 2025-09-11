@@ -203,7 +203,7 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
                 if (refundId > 0) {
                     JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_REFUND);
 
-                    RefundOrderView refundOrderView = new RefundOrderView(_serviceOrderModel, _serviceOrderFaults, _serviceOrderProdServs, _orderDeposits, _serviceOrderPayments);
+                    RefundedOrderView refundOrderView = new RefundedOrderView(_serviceOrderModel, _serviceOrderFaults, _serviceOrderProdServs, _orderDeposits, _serviceOrderPayments);
                     CommonSetting.openInternalFrame(refundOrderView, "Refunded Order: " + _serviceOrderModel.getIdServiceOrder());
                 }
 

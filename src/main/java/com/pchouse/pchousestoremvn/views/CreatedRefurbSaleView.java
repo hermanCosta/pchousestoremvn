@@ -6,8 +6,6 @@ import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.common.CommonStrings;
 import com.pchouse.pchousestoremvn.controllers.EmployeeController;
 import com.pchouse.pchousestoremvn.controllers.RefundController;
-import com.pchouse.pchousestoremvn.controllers.SaleController;
-import com.pchouse.pchousestoremvn.controllers.RefurbController;
 import com.pchouse.pchousestoremvn.controllers.SalePaymentController;
 import com.pchouse.pchousestoremvn.enums.PaymentType;
 import com.pchouse.pchousestoremvn.exception.BusinessException;
@@ -19,7 +17,6 @@ import com.pchouse.pchousestoremvn.models.OrderNote;
 import com.pchouse.pchousestoremvn.models.Refund;
 import com.pchouse.pchousestoremvn.models.Sale;
 import com.pchouse.pchousestoremvn.models.SalePayment;
-import com.pchouse.pchousestoremvn.models.SaleProdServ;
 import com.pchouse.pchousestoremvn.util.ReportGenerator;
 import com.pchouse.pchousestoremvn.views.modals.DepositModal;
 import com.pchouse.pchousestoremvn.views.modals.NoteModal;
@@ -40,9 +37,6 @@ public class CreatedRefurbSaleView extends javax.swing.JInternalFrame {
     private List<RefurbSale> _listRefurbs;
     private List<Deposit> _orderDeposits;
     private List<SalePayment> _listSalePayments;
-
-    private final SaleController _saleController;
-    private final RefurbController _refurbController;
     private final RefundController _refundController;
     private final EmployeeController _employeeController;
     private final SalePaymentController _salePaymentController;
@@ -64,28 +58,27 @@ public class CreatedRefurbSaleView extends javax.swing.JInternalFrame {
         this._orderDeposits = listOrderDeposit;
         this._listSalePayments = salePayments;
 
-        this._saleController = new SaleController();
-        this._refurbController = new RefurbController();
         this._refundController = new RefundController();
         this._employeeController = new EmployeeController();
         this._salePaymentController = new SalePaymentController();
 
         this._dtmRefurb = (DefaultTableModel) this.table_view_refurbs.getModel();
-        
+
         loadRefurSaleFields(saleModel, listRefurbsSale);
     }
 
-    private void loadRefurSaleFields(Sale orderModel, List<RefurbSale> listRefurbsSale) {
-        setCustomerFields(orderModel.getCustomer());
+    private void loadRefurSaleFields(Sale saleModel, List<RefurbSale> listRefurbsSale) {
+        setCustomerFields(saleModel.getCustomer());
 
-        this.lbl_auto_sale_no.setText(CommonStrings.formatOrderNumber(orderModel.getIdSale()));
-        this.lbl_total_amount.setText(CommonExtension.formatEuroCurrency(orderModel.getTotal()));
-        this.lbl_remaining_amount.setText(CommonExtension.formatEuroCurrency(orderModel.getRemaining()));
+        this.editor_pane_notes.setText(saleModel.getImportantNotes());
+        this.lbl_auto_sale_no.setText(CommonStrings.formatOrderNumber(saleModel.getIdSale()));
+        this.lbl_total_amount.setText(CommonExtension.formatEuroCurrency(saleModel.getTotal()));
+        this.lbl_remaining_amount.setText(CommonExtension.formatEuroCurrency(saleModel.getRemaining()));
 
-        loadRefurbSale(listRefurbsSale);
+        loadRefurbSaleItems(listRefurbsSale);
     }
 
-    private void loadRefurbSale(List<RefurbSale> listRefurbsSale) {
+    private void loadRefurbSaleItems(List<RefurbSale> listRefurbsSale) {
         if (listRefurbsSale != null) {
             _dtmRefurb.setRowCount(0);
             for (RefurbSale orderProdServ : listRefurbsSale) {
@@ -94,15 +87,14 @@ public class CreatedRefurbSaleView extends javax.swing.JInternalFrame {
                     orderProdServ.getRefurb().toString(),
                     orderProdServ.getQty(),
                     orderProdServ.getRefurb().getPrice(),
-                    orderProdServ.getTotal(),                    
-                });
+                    orderProdServ.getTotal(),});
             }
         }
-        
+
         loadOrderDeposit(_orderDeposits);
     }
-    
-        private void loadOrderDeposit(List<Deposit> listOrderDeposit) {
+
+    private void loadOrderDeposit(List<Deposit> listOrderDeposit) {
         if (listOrderDeposit != null) {
             double totalDeposit = 0;
             for (Deposit orderDeposit : listOrderDeposit) {
@@ -111,17 +103,17 @@ public class CreatedRefurbSaleView extends javax.swing.JInternalFrame {
             this.lbl_deposit_paid.setText(CommonExtension.formatEuroCurrency(totalDeposit));
         }
     }
-    
-        private void setCustomerFields(Customer customer) {
+
+    private void setCustomerFields(Customer customer) {
         if (customer != null) {
-            this.txt_contact.setFormatterFactory(null);            
+            this.txt_contact.setFormatterFactory(null);
             this.txt_first_name.setText(customer.getPerson().getFirstName());
             this.txt_last_name.setText(customer.getPerson().getLastName());
             this.txt_contact.setText(customer.getPerson().getContactNo());
             this.txt_email.setText(customer.getPerson().getEmail());
         }
     }
-    
+
     private void payRefurbSale() {
         if (_saleModel != null) {
             int confirm = JOptionPane.showConfirmDialog(
@@ -141,7 +133,7 @@ public class CreatedRefurbSaleView extends javax.swing.JInternalFrame {
 
                         PaymentModal paymentModal = new PaymentModal(
                                 _saleModel,
-                                PaymentType.ORDER,
+                                PaymentType.REFURB,
                                 amountToPay,
                                 SwingUtilities.getWindowAncestor(this), // use current window as parent
                                 true
@@ -160,8 +152,8 @@ public class CreatedRefurbSaleView extends javax.swing.JInternalFrame {
                         long idSalePayment = +_salePaymentController.addRefurbSalePayment(payments, orderNote);
 
                         if (idSalePayment > 0) {
-//                            PickedOrderView pickedOrderView = new PickedOrderView(_serviceOrderModel, _listServiceOrderFault, _listServiceOrderProdServ, _listOrderDeposit, payments);
-//                            CommonSetting.openInternalFrame(pickedOrderView, "Picked Order: " + _serviceOrderModel.getIdServiceOrder());
+                            PickedRefurbSaleView pickedRefurbView = new PickedRefurbSaleView(_saleModel, _listRefurbs, _orderDeposits, payments);
+                            CommonSetting.openInternalFrame(pickedRefurbView, "Picked Refurb: " + _saleModel.getIdSale());
 
                             // Genarate and display the report
                             new ReportGenerator().generateRefurbSaleReceiptReport(_saleModel, _listRefurbs, payments);
@@ -316,9 +308,11 @@ public class CreatedRefurbSaleView extends javax.swing.JInternalFrame {
 
         lbl_sale_no.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         lbl_sale_no.setText("Sale");
+        lbl_sale_no.setEnabled(false);
 
         lbl_auto_sale_no.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
         lbl_auto_sale_no.setText("autoGen");
+        lbl_auto_sale_no.setEnabled(false);
 
         javax.swing.GroupLayout panel_input_detailLayout = new javax.swing.GroupLayout(panel_input_detail);
         panel_input_detail.setLayout(panel_input_detailLayout);
@@ -327,17 +321,16 @@ public class CreatedRefurbSaleView extends javax.swing.JInternalFrame {
             .addGroup(panel_input_detailLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(panel_input_detailLayout.createSequentialGroup()
-                            .addComponent(lbl_email)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(txt_email, javax.swing.GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE))
-                        .addGroup(panel_input_detailLayout.createSequentialGroup()
-                            .addComponent(lbl_contact)
-                            .addGap(19, 19, 19)
-                            .addComponent(txt_contact, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(btn_copy, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(panel_input_detailLayout.createSequentialGroup()
+                        .addComponent(lbl_email)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txt_email, javax.swing.GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE))
+                    .addGroup(panel_input_detailLayout.createSequentialGroup()
+                        .addComponent(lbl_contact)
+                        .addGap(19, 19, 19)
+                        .addComponent(txt_contact, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btn_copy, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panel_input_detailLayout.createSequentialGroup()
                         .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lbl_first_name)
@@ -515,12 +508,12 @@ public class CreatedRefurbSaleView extends javax.swing.JInternalFrame {
             panel_sale_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_sale_buttonsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panel_sale_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btn_pay_service_order)
+                .addGroup(panel_sale_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panel_sale_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(btn_notes)
                         .addComponent(btn_deposit)
-                        .addComponent(btn_refund_sale)))
+                        .addComponent(btn_refund_sale))
+                    .addComponent(btn_pay_service_order))
                 .addContainerGap())
         );
 
@@ -590,7 +583,7 @@ public class CreatedRefurbSaleView extends javax.swing.JInternalFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(panel_refurb_sale_details, javax.swing.GroupLayout.DEFAULT_SIZE, 1027, Short.MAX_VALUE)
+                .addComponent(panel_refurb_sale_details, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
