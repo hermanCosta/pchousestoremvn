@@ -2,8 +2,7 @@ package com.pchouse.pchousestoremvn.views.modals;
 
 import com.pchouse.pchousestoremvn.common.CommonExtension;
 import com.pchouse.pchousestoremvn.common.CommonStrings;
-import com.pchouse.pchousestoremvn.controllers.SalePaymentController;
-import com.pchouse.pchousestoremvn.controllers.ServiceOrderPaymentController;
+import com.pchouse.pchousestoremvn.enums.PaymentType;
 import com.pchouse.pchousestoremvn.models.Sale;
 import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
@@ -27,7 +26,7 @@ public class PaymentHistoryModal extends javax.swing.JDialog {
         this._dtmPaymentHistory = (DefaultTableModel) this.table_view_payments.getModel();
         this._serviceOrderModel = serviceOrderModel;
         this._listServiceOrderPayments = listServiceOrderPayments;
-        loadOrderDepositListTable();
+        loadOrderPaymentListTable();
     }
 
     public PaymentHistoryModal(Sale saleModel, List<SalePayment> listSalePayments, java.awt.Frame parent, boolean modal) {
@@ -37,22 +36,30 @@ public class PaymentHistoryModal extends javax.swing.JDialog {
         this._dtmPaymentHistory = (DefaultTableModel) this.table_view_payments.getModel();
         this._saleModel = saleModel;
         this._listSalePayments = listSalePayments;
-        loadOrderDepositListTable();
+        loadOrderPaymentListTable();
     }
 
-    private void loadOrderDepositListTable() {
+    private void loadOrderPaymentListTable() {
         try {
+
             if (_serviceOrderModel != null) {
-                this.lbl_order_id.setText(CommonStrings.formatOrderNumber(_serviceOrderModel.getIdServiceOrder()));                
-                
+                this.lbl_order_id.setText(CommonStrings.formatOrderNumber(_serviceOrderModel.getIdServiceOrder()));
+
                 if (this._listServiceOrderPayments != null && !_listServiceOrderPayments.isEmpty()) {
                     _dtmPaymentHistory.setRowCount(0);
 
                     for (ServiceOrderPayment servicePayment : _listServiceOrderPayments) {
+
+                        String serviceRefund = CommonExtension.formatEuroCurrency(servicePayment.getAmountPaid());
+                        if (servicePayment.getPaymentType().equals(PaymentType.REFUND)) {
+                            var refundAmount = servicePayment.getAmountPaid() - servicePayment.getChangeAmount();
+                            serviceRefund = CommonExtension.formatEuroCurrency(-refundAmount);
+                        }
+
                         _dtmPaymentHistory.addRow(new Object[]{
                             servicePayment.getIdServiceOrderPayment(),
                             CommonStrings.formatDateToString(servicePayment.getDtTransaction()),
-                            CommonExtension.formatEuroCurrency(servicePayment.getAmountPaid()),
+                            serviceRefund,
                             servicePayment.getPayMethod(),
                             CommonExtension.formatEuroCurrency(servicePayment.getChangeAmount()),
                             servicePayment.getPaymentType(),
@@ -62,16 +69,22 @@ public class PaymentHistoryModal extends javax.swing.JDialog {
                 }
             } else if (_saleModel != null) {
                 this.lbl_order_id.setText(CommonStrings.formatOrderNumber(_saleModel.getIdSale()));
-                
+
                 if (this._listSalePayments != null && !_listSalePayments.isEmpty()) {
                     _dtmPaymentHistory.setRowCount(0);
 
                     for (SalePayment salePayment : _listSalePayments) {
 
+                        String saleRefund = CommonExtension.formatEuroCurrency(salePayment.getAmountPaid());
+                        if (salePayment.getPaymentType().equals(PaymentType.REFUND)) {
+                            var refundAmount = salePayment.getAmountPaid() - salePayment.getChangeAmount();
+                            saleRefund = CommonExtension.formatEuroCurrency(-refundAmount);
+                        }
+
                         _dtmPaymentHistory.addRow(new Object[]{
                             salePayment.getIdSalePayment(),
                             CommonStrings.formatDateToString(salePayment.getDtTransaction()),
-                            CommonExtension.formatEuroCurrency(salePayment.getAmountPaid()),
+                            saleRefund,
                             salePayment.getPayMethod(),
                             CommonExtension.formatEuroCurrency(salePayment.getChangeAmount()),
                             salePayment.getPaymentType(),
@@ -80,7 +93,7 @@ public class PaymentHistoryModal extends javax.swing.JDialog {
                     }
                 }
 
-            }            
+            }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(
                     this,
@@ -103,7 +116,7 @@ public class PaymentHistoryModal extends javax.swing.JDialog {
         table_view_payments = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Deposit History View");
+        setTitle("Payment History View");
         setModal(true);
 
         panel_payments.setBorder(javax.swing.BorderFactory.createEtchedBorder());

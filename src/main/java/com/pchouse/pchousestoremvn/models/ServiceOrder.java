@@ -51,16 +51,16 @@ public class ServiceOrder implements Serializable {
     @Column(name = "STATUS")
     private OrderStatus status;
     
-    @Temporal(TemporalType.DATE)
-    @Column(name = "CREATED")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "CREATED", nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")    
     private Date created;
     
-    @Temporal(TemporalType.DATE)
-    @Column(name = "FINISHED")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "FINISHED", nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")    
     private Date finished;
     
-    @Temporal(TemporalType.DATE)
-    @Column(name = "PICKED")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "PICKED", nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private Date picked;
     
     @Column(name = "BAD_SECTOR")

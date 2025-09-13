@@ -31,7 +31,7 @@ public class SalePayment implements Serializable {
     @OneToOne
     @JoinColumn(name = "ID_EMPLOYEE", referencedColumnName = "ID_EMPLOYEE")
     private Employee employee;
-            
+
     @OneToOne
     @JoinColumn(name = "ID_SALE", referencedColumnName = "ID_SALE")
     private Sale sale;
@@ -59,8 +59,8 @@ public class SalePayment implements Serializable {
     @Column(name = "CHANGE_AMOUNT")
     private double changeAmount;
 
-    @Temporal(TemporalType.DATE)
-    @Column(name = "DT_TRANSACTION")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "DT_TRANSACTION", nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private Date dtTransaction;
 
     public SalePayment() {

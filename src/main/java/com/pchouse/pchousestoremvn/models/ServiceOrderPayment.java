@@ -61,7 +61,7 @@ public class ServiceOrderPayment implements Serializable {
     private double changeAmount;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "DT_TRANSACTION")
+    @Column(name = "DT_TRANSACTION", nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")    
     private Date dtTransaction;
 
     public ServiceOrderPayment() {

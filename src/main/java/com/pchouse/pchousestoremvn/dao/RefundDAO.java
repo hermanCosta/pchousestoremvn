@@ -176,11 +176,11 @@ public class RefundDAO {
                             refund.getSale(),
                             PaymentType.REFUND,
                             original.getPayMethod(),
-                            -original.getAmountDue(),
-                            -original.getAmountPaid(),
-                            original.getCardAmount() != null ? -original.getCardAmount() : null,
-                            original.getCashAmount() != null ? -original.getCashAmount() : null,
-                            -original.getChangeAmount(),
+                            original.getAmountDue(),
+                            original.getAmountPaid(),
+                            original.getCardAmount() != null ? original.getCardAmount() : null,
+                            original.getCashAmount() != null ? original.getCashAmount() : null,
+                            0,
                             refundDate
                     );
                     em.persist(refundPayment);
