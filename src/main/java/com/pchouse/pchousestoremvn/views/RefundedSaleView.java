@@ -18,6 +18,7 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 import java.util.List;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 public class RefundedSaleView extends javax.swing.JInternalFrame {
@@ -470,19 +471,19 @@ public class RefundedSaleView extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_table_view_productsKeyReleased
 
     private void btn_notesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_notesActionPerformed
-        NoteModal noteModal = new NoteModal(_saleModel, _parentFrame, true);
+        NoteModal noteModal = new NoteModal(_saleModel, SwingUtilities.getWindowAncestor(this), true);
         noteModal.setLocationRelativeTo(this);
         noteModal.setVisible(true);
     }//GEN-LAST:event_btn_notesActionPerformed
 
     private void btn_depositActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_depositActionPerformed
-        DepositModal depositModal = new DepositModal(_saleModel, _parentFrame, true);
+        DepositModal depositModal = new DepositModal(_saleModel, SwingUtilities.getWindowAncestor(this), true);
         depositModal.setLocationRelativeTo(this);
         depositModal.setVisible(true);
     }//GEN-LAST:event_btn_depositActionPerformed
 
     private void btn_paymentsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_paymentsActionPerformed
-        PaymentHistoryModal paymentHistoryModal = new PaymentHistoryModal(_saleModel, _salePayments, _parentFrame, true);
+        PaymentHistoryModal paymentHistoryModal = new PaymentHistoryModal(_saleModel, _salePayments, SwingUtilities.getWindowAncestor(this), true);
         paymentHistoryModal.setLocationRelativeTo(this);
         paymentHistoryModal.setVisible(true);
     }//GEN-LAST:event_btn_paymentsActionPerformed

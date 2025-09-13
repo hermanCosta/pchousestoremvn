@@ -4,6 +4,7 @@ import com.pchouse.pchousestoremvn.common.CommonExtension;
 import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.controllers.ProductServiceController;
 import com.pchouse.pchousestoremvn.models.ProductService;
+import java.awt.Window;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 
@@ -14,8 +15,8 @@ public class ProductServiceModal extends javax.swing.JDialog {
     private final ProductServiceController _productServiceController;
     private List<ProductService> _listOrderProdServ;
 
-    public ProductServiceModal(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+    public ProductServiceModal(Window owner, boolean modal) {
+        super(owner, ModalityType.APPLICATION_MODAL);
         initComponents();
 
         this._dtmProdServ = (DefaultTableModel) this.table_view_products_list.getModel();
@@ -263,7 +264,7 @@ public class ProductServiceModal extends javax.swing.JDialog {
             productService.setIdProductService((Integer) _dtmProdServ.getValueAt(selectedRow, 0));
             productService.setProdServName(_dtmProdServ.getValueAt(selectedRow, 1).toString());
             productService.setPrice((Double) _dtmProdServ.getValueAt(selectedRow, 2));
-            
+
             this._listOrderProdServ.add(productService);
         }
     }//GEN-LAST:event_table_view_products_listMouseClicked

@@ -58,7 +58,7 @@ public class CashInRegistryView extends JInternalFrame {
         wrapperPanel.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
 
         // === Table Setup ===
-        dtmCashIn = new DefaultTableModel(new Object[]{"ID", "Amount", "Notes", "Date", "User"}, 0) {
+        dtmCashIn = new DefaultTableModel(new Object[]{"ID", "Date", "Amount", "Notes", "User"}, 0) {
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
@@ -188,9 +188,9 @@ public class CashInRegistryView extends JInternalFrame {
             for (CashInRegistry c : list) {
                 dtmCashIn.addRow(new Object[]{
                     c.getIdCashInRegistry(),
-                    CommonExtension.formatEuroCurrency(c.getAmount()),
-                    c.getNote(),
                     CommonExtension.formatDateTime(c.getTransactionDate()),
+                    CommonExtension.formatEuroCurrency(c.getAmount()),
+                    c.getNote(),                    
                     c.getEmployee() != null ? c.getEmployee().getUsername() : ""
                 });
             }
@@ -280,14 +280,14 @@ public class CashInRegistryView extends JInternalFrame {
         tableCashIn.getColumnModel().getColumn(0).setMaxWidth(0);
         tableCashIn.getColumnModel().getColumn(0).setPreferredWidth(0);
 
-        // Amount column
-        tableCashIn.getColumnModel().getColumn(1).setPreferredWidth(80);
-
-        // Notes column - wider
-        tableCashIn.getColumnModel().getColumn(2).setPreferredWidth(480);
-
         // Date column
-        tableCashIn.getColumnModel().getColumn(3).setPreferredWidth(120);
+        tableCashIn.getColumnModel().getColumn(1).setPreferredWidth(1200);
+
+        // Amount column
+        tableCashIn.getColumnModel().getColumn(2).setPreferredWidth(80);
+
+        // Note column
+        tableCashIn.getColumnModel().getColumn(3).setPreferredWidth(480);
 
         // User column
         tableCashIn.getColumnModel().getColumn(4).setPreferredWidth(100);

@@ -278,6 +278,7 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
                         long idOrderPayment = _serviceOrderPaymentController.addOrderPayment(payments, orderNote);
 
                         if (idOrderPayment > 0) {
+                            payments = _serviceOrderPaymentController.getServiceOrderPayments(_serviceOrderModel);
                             PickedOrderView pickedOrderView = new PickedOrderView(_serviceOrderModel, _listServiceOrderFault, _listServiceOrderProdServ, _listOrderDeposit, payments);
                             CommonSetting.openInternalFrame(pickedOrderView, "Picked Order: " + _serviceOrderModel.getIdServiceOrder());
 

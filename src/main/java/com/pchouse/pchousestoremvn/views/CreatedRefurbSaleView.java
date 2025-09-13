@@ -193,8 +193,9 @@ public class CreatedRefurbSaleView extends javax.swing.JInternalFrame {
                 long refundId = _refundController.addSaleRefund(saleRefund, saleRefundNote, _listSalePayments);
 
                 if (refundId > 0) {
-                    JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_REFUND);
-
+                    _listSalePayments = _salePaymentController.getSalePayments(_saleModel);
+                    RefundedRefurbSaleView refundedRefurbSaleView = new RefundedRefurbSaleView(_saleModel, _listRefurbs, _orderDeposits, _listSalePayments);
+                    CommonSetting.openInternalFrame(refundedRefurbSaleView, "Refunded Refurb: " + _saleModel.getIdSale());
                 }
 
             } catch (BusinessException e) {
@@ -604,13 +605,13 @@ public class CreatedRefurbSaleView extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btn_pay_service_orderActionPerformed
 
     private void btn_notesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_notesActionPerformed
-        NoteModal noteModal = new NoteModal(_saleModel, _parentFrame, true);
+        NoteModal noteModal = new NoteModal(_saleModel, SwingUtilities.getWindowAncestor(this), true);
         noteModal.setLocationRelativeTo(this);
         noteModal.setVisible(true);
     }//GEN-LAST:event_btn_notesActionPerformed
 
     private void btn_depositActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_depositActionPerformed
-        DepositModal depositModal = new DepositModal(_saleModel, _parentFrame, true);
+        DepositModal depositModal = new DepositModal(_saleModel, SwingUtilities.getWindowAncestor(this), true);
         depositModal.setLocationRelativeTo(this);
         depositModal.setVisible(true);
     }//GEN-LAST:event_btn_depositActionPerformed

@@ -22,7 +22,6 @@ import com.pchouse.pchousestoremvn.models.ServiceOrderProdServ;
 import com.pchouse.pchousestoremvn.views.modals.DepositModal;
 import com.pchouse.pchousestoremvn.views.modals.NoteModal;
 import java.awt.EventQueue;
-import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
@@ -30,6 +29,7 @@ import java.util.Date;
 import java.util.List;
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 public class NotFixedOrderView extends javax.swing.JInternalFrame {
@@ -42,7 +42,6 @@ public class NotFixedOrderView extends javax.swing.JInternalFrame {
     private final DeviceController _deviceController;
     private final DefaultTableModel _dtmProdServ;
     private final DefaultTableModel _dtmFault;
-    Frame _parentFrame = JOptionPane.getFrameForComponent(this);
 
     private ServiceOrder _serviceOrderModel;
     private List<ServiceOrderFault> _listServiceOrderFault;
@@ -213,9 +212,9 @@ public class NotFixedOrderView extends javax.swing.JInternalFrame {
                         CommonSetting.openInternalFrame(notFixedOrderView, "Order Not Fixed: " + _serviceOrderModel.getIdServiceOrder());
                     } else if (newStatus == OrderStatus.IN_PROGRESS) {
                         CreatedOrderView createdOrderView = new CreatedOrderView(
-                                _serviceOrderModel, 
-                                _listServiceOrderFault, 
-                                _listServiceOrderProdServ, 
+                                _serviceOrderModel,
+                                _listServiceOrderFault,
+                                _listServiceOrderProdServ,
                                 _listOrderDeposit
                         );
                         CommonSetting.openInternalFrame(createdOrderView, "Order In Progress");
@@ -298,7 +297,6 @@ public class NotFixedOrderView extends javax.swing.JInternalFrame {
 
         lbl_auto_order_no.setBackground(new java.awt.Color(255, 102, 102));
         lbl_auto_order_no.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
-        lbl_auto_order_no.setForeground(new java.awt.Color(255, 102, 102));
         lbl_auto_order_no.setText("autoGen");
 
         lbl_first_name.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
@@ -971,7 +969,7 @@ public class NotFixedOrderView extends javax.swing.JInternalFrame {
 
     private void btn_notesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_notesActionPerformed
 
-        NoteModal noteModal = new NoteModal(_serviceOrderModel, _parentFrame, true);
+        NoteModal noteModal = new NoteModal(_serviceOrderModel, SwingUtilities.getWindowAncestor(this), true);
         noteModal.setLocationRelativeTo(this);
         noteModal.setVisible(true);
     }//GEN-LAST:event_btn_notesActionPerformed
@@ -985,7 +983,7 @@ public class NotFixedOrderView extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btn_undo_fixedActionPerformed
 
     private void btn_depositActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_depositActionPerformed
-        DepositModal depositModal = new DepositModal(_serviceOrderModel, _parentFrame, true);
+        DepositModal depositModal = new DepositModal(_serviceOrderModel, SwingUtilities.getWindowAncestor(this), true);
         depositModal.setLocationRelativeTo(this);
         depositModal.setVisible(true);
     }//GEN-LAST:event_btn_depositActionPerformed

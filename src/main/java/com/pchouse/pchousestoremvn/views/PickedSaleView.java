@@ -6,6 +6,7 @@ import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.common.CommonStrings;
 import com.pchouse.pchousestoremvn.controllers.EmployeeController;
 import com.pchouse.pchousestoremvn.controllers.RefundController;
+import com.pchouse.pchousestoremvn.controllers.SalePaymentController;
 import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Customer;
 import com.pchouse.pchousestoremvn.models.Deposit;
@@ -19,12 +20,12 @@ import com.pchouse.pchousestoremvn.util.ReportGenerator;
 import com.pchouse.pchousestoremvn.views.modals.DepositModal;
 import com.pchouse.pchousestoremvn.views.modals.NoteModal;
 import com.pchouse.pchousestoremvn.views.modals.PaymentHistoryModal;
-import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 public class PickedSaleView extends javax.swing.JInternalFrame {
@@ -32,11 +33,12 @@ public class PickedSaleView extends javax.swing.JInternalFrame {
     private Sale _saleModel;
     private List<SaleProdServ> _listSaleProdServs;
     private List<SalePayment> _salePayments;
+    private List<Deposit> _listOrderDeposit;
     public SalePayment _orderPayment = null;
     private final EmployeeController _employeeController;
     private final RefundController _refundController;
+    private final SalePaymentController _salePaymentController;
     private final DefaultTableModel _dtmProdServ;
-    Frame _parentFrame = JOptionPane.getFrameForComponent(this);
 
     public PickedSaleView(Sale saleModel, List<SaleProdServ> listSaleProdServ, List<Deposit> listOrderDeposit, List<SalePayment> salePayments) {
         initComponents();
@@ -47,9 +49,11 @@ public class PickedSaleView extends javax.swing.JInternalFrame {
 
         this._saleModel = saleModel;
         this._listSaleProdServs = listSaleProdServ;
+        this._listOrderDeposit = listOrderDeposit;
         this._salePayments = salePayments;
         this._employeeController = new EmployeeController();
         this._refundController = new RefundController();
+        this._salePaymentController = new SalePaymentController();
         this._dtmProdServ = (DefaultTableModel) this.table_view_products.getModel();
 
         loadSaleFields(saleModel, listSaleProdServ);
@@ -114,8 +118,9 @@ public class PickedSaleView extends javax.swing.JInternalFrame {
                 long refundId = _refundController.addSaleRefund(saleRefund, saleRefundNote, _salePayments);
 
                 if (refundId > 0) {
-                    JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_REFUND);
-
+                    _salePayments = _salePaymentController.getSalePayments(_saleModel);
+                    RefundedSaleView refundedSaleView = new RefundedSaleView(_saleModel, _listSaleProdServs, _listOrderDeposit, _salePayments);
+                    CommonSetting.openInternalFrame(refundedSaleView, "Refunded Sale: " + _saleModel.getIdSale());
                 }
 
             } catch (BusinessException e) {
@@ -142,6 +147,7 @@ public class PickedSaleView extends javax.swing.JInternalFrame {
         txt_email = new javax.swing.JTextField();
         lbl_sale_no = new javax.swing.JLabel();
         lbl_auto_sale_no = new javax.swing.JLabel();
+        lbl_sale_picked = new javax.swing.JLabel();
         panel_total_amount = new javax.swing.JPanel();
         lbl_total = new javax.swing.JLabel();
         lbl_total_field = new javax.swing.JLabel();
@@ -214,6 +220,10 @@ public class PickedSaleView extends javax.swing.JInternalFrame {
         lbl_auto_sale_no.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
         lbl_auto_sale_no.setText("autoGen");
 
+        lbl_sale_picked.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
+        lbl_sale_picked.setForeground(new java.awt.Color(0, 153, 204));
+        lbl_sale_picked.setText("SALE PICKED");
+
         javax.swing.GroupLayout panel_input_detailLayout = new javax.swing.GroupLayout(panel_input_detail);
         panel_input_detail.setLayout(panel_input_detailLayout);
         panel_input_detailLayout.setHorizontalGroup(
@@ -243,6 +253,8 @@ public class PickedSaleView extends javax.swing.JInternalFrame {
                         .addComponent(lbl_sale_no)
                         .addGap(7, 7, 7)
                         .addComponent(lbl_auto_sale_no)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lbl_sale_picked)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -252,7 +264,8 @@ public class PickedSaleView extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbl_auto_sale_no)
-                    .addComponent(lbl_sale_no))
+                    .addComponent(lbl_sale_no)
+                    .addComponent(lbl_sale_picked))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txt_first_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -271,7 +284,7 @@ public class PickedSaleView extends javax.swing.JInternalFrame {
                 .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txt_email, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lbl_email))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(315, Short.MAX_VALUE))
         );
 
         panel_total_amount.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -482,13 +495,13 @@ public class PickedSaleView extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btn_refund_saleActionPerformed
 
     private void btn_notesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_notesActionPerformed
-        NoteModal noteModal = new NoteModal(_saleModel, _parentFrame, true);
+        NoteModal noteModal = new NoteModal(_saleModel, SwingUtilities.getWindowAncestor(this), true);
         noteModal.setLocationRelativeTo(this);
         noteModal.setVisible(true);
     }//GEN-LAST:event_btn_notesActionPerformed
 
     private void btn_depositActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_depositActionPerformed
-        DepositModal depositModal = new DepositModal(_saleModel, _parentFrame, true);
+        DepositModal depositModal = new DepositModal(_saleModel, SwingUtilities.getWindowAncestor(this), true);
         depositModal.setLocationRelativeTo(this);
         depositModal.setVisible(true);
     }//GEN-LAST:event_btn_depositActionPerformed
@@ -499,7 +512,7 @@ public class PickedSaleView extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btn_printActionPerformed
 
     private void btn_paymentsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_paymentsActionPerformed
-        PaymentHistoryModal paymentHistoryModal = new PaymentHistoryModal(_saleModel, _salePayments, _parentFrame, true);
+        PaymentHistoryModal paymentHistoryModal = new PaymentHistoryModal(_saleModel, _salePayments, SwingUtilities.getWindowAncestor(this), true);
         paymentHistoryModal.setLocationRelativeTo(this);
         paymentHistoryModal.setVisible(true);
     }//GEN-LAST:event_btn_paymentsActionPerformed
@@ -517,6 +530,7 @@ public class PickedSaleView extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lbl_first_name;
     private javax.swing.JLabel lbl_last_name;
     private javax.swing.JLabel lbl_sale_no;
+    private javax.swing.JLabel lbl_sale_picked;
     private javax.swing.JLabel lbl_total;
     private javax.swing.JLabel lbl_total_field;
     private javax.swing.JPanel panel_input_detail;

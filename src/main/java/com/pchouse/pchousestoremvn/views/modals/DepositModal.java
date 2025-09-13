@@ -11,6 +11,7 @@ import com.pchouse.pchousestoremvn.models.Sale;
 import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
+import java.awt.Window;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -28,8 +29,8 @@ public class DepositModal extends javax.swing.JDialog {
     private List<SalePayment> _listSalePayments;
     private List<ServiceOrderPayment> _listServiceOrderPayment;
 
-    public DepositModal(ServiceOrder serviceOrderModel, java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+    public DepositModal(ServiceOrder serviceOrderModel, Window owner, boolean modal) {
+        super(owner, ModalityType.APPLICATION_MODAL);
         initComponents();
                 
         this._serviceOrderModel = serviceOrderModel;
@@ -40,8 +41,8 @@ public class DepositModal extends javax.swing.JDialog {
         loadOrderDepositListTable();
     }
 
-    public DepositModal(Sale saleModel, java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+    public DepositModal(Sale saleModel, Window owner, boolean modal) {
+        super(owner, ModalityType.APPLICATION_MODAL);
         initComponents();
 
         this._saleModel = saleModel;

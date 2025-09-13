@@ -7,6 +7,7 @@ import com.pchouse.pchousestoremvn.models.Sale;
 import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
+import java.awt.Window;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -19,8 +20,8 @@ public class PaymentHistoryModal extends javax.swing.JDialog {
     private List<SalePayment> _listSalePayments;
     private List<ServiceOrderPayment> _listServiceOrderPayments;
 
-    public PaymentHistoryModal(ServiceOrder serviceOrderModel, List<ServiceOrderPayment> listServiceOrderPayments, java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+    public PaymentHistoryModal(ServiceOrder serviceOrderModel, List<ServiceOrderPayment> listServiceOrderPayments, Window owner, boolean modal) {
+        super(owner, ModalityType.APPLICATION_MODAL);
         initComponents();
 
         this._dtmPaymentHistory = (DefaultTableModel) this.table_view_payments.getModel();
@@ -29,8 +30,8 @@ public class PaymentHistoryModal extends javax.swing.JDialog {
         loadOrderPaymentListTable();
     }
 
-    public PaymentHistoryModal(Sale saleModel, List<SalePayment> listSalePayments, java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+    public PaymentHistoryModal(Sale saleModel, List<SalePayment> listSalePayments, Window owner, boolean modal) {
+        super(owner, ModalityType.APPLICATION_MODAL);
         initComponents();
 
         this._dtmPaymentHistory = (DefaultTableModel) this.table_view_payments.getModel();

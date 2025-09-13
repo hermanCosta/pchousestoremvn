@@ -197,7 +197,7 @@
                                       <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
                                       <Component id="lbl_auto_order_no" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="lbl_auto_order_no1" min="-2" max="-2" attributes="0"/>
+                                      <Component id="lbl_order_picked" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
@@ -221,7 +221,7 @@
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="lbl_auto_order_no" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="lbl_order_no" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="lbl_auto_order_no1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="lbl_order_picked" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
@@ -608,7 +608,7 @@
                 <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="lbl_auto_order_no1">
+            <Component class="javax.swing.JLabel" name="lbl_order_picked">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Lucida Grande" size="16" style="1"/>

@@ -6,14 +6,11 @@ import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.common.CommonStrings;
 import com.pchouse.pchousestoremvn.controllers.DeviceController;
 import com.pchouse.pchousestoremvn.controllers.EmployeeController;
-import com.pchouse.pchousestoremvn.controllers.OrderNoteController;
 import com.pchouse.pchousestoremvn.controllers.RefundController;
 import com.pchouse.pchousestoremvn.controllers.ServiceOrderController;
 import com.pchouse.pchousestoremvn.controllers.ServiceOrderFaultController;
+import com.pchouse.pchousestoremvn.controllers.ServiceOrderPaymentController;
 import com.pchouse.pchousestoremvn.controllers.ServiceOrderProdServController;
-import com.pchouse.pchousestoremvn.enums.OrderStatus;
-import com.pchouse.pchousestoremvn.enums.PayMethod;
-import com.pchouse.pchousestoremvn.enums.PaymentType;
 import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Customer;
 import com.pchouse.pchousestoremvn.models.Deposit;
@@ -29,9 +26,7 @@ import com.pchouse.pchousestoremvn.util.ReportGenerator;
 import com.pchouse.pchousestoremvn.views.modals.DepositModal;
 import com.pchouse.pchousestoremvn.views.modals.NoteModal;
 import com.pchouse.pchousestoremvn.views.modals.PaymentHistoryModal;
-import com.pchouse.pchousestoremvn.views.modals.PaymentModal;
 import java.awt.EventQueue;
-import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
@@ -48,12 +43,11 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
     private final EmployeeController _employeeController;
     private final ServiceOrderProdServController _orderProdServController;
     private final ServiceOrderFaultController _orderFaultController;
-    private final OrderNoteController _orderNoteController;
     private final DeviceController _deviceController;
     private final RefundController _refundController;
+    private final ServiceOrderPaymentController _serviceOrderPaymentController;
     private final DefaultTableModel _dtmProdServ;
     private final DefaultTableModel _dtmFault;
-    Frame _parentFrame = JOptionPane.getFrameForComponent(this);
 
     private ServiceOrder _serviceOrderModel;
     private List<ServiceOrderFault> _serviceOrderFaults;
@@ -76,9 +70,9 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
         this._employeeController = new EmployeeController();
         this._orderProdServController = new ServiceOrderProdServController();
         this._orderFaultController = new ServiceOrderFaultController();
-        this._orderNoteController = new OrderNoteController();
         this._deviceController = new DeviceController();
         this._refundController = new RefundController();
+        this._serviceOrderPaymentController = new ServiceOrderPaymentController();
         this._dtmProdServ = (DefaultTableModel) this.table_view_products.getModel();
         this._dtmFault = (DefaultTableModel) this.table_view_faults.getModel();
 
@@ -195,14 +189,13 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
                 }
 
                 Date createdDate = new Date();
-                
+
                 Refund orderRefund = new Refund(CommonSetting.COMPANY, employee, _serviceOrderModel, _serviceOrderModel.getTotal(), createdDate);
                 OrderNote orderNoteRefundNote = new OrderNote(_serviceOrderModel, employee, CommonConstant.ORDER_REFUND_NOTE, createdDate);
                 long refundId = _refundController.addServiceOrderRefund(orderRefund, orderNoteRefundNote, _serviceOrderPayments);
 
                 if (refundId > 0) {
-                    JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_REFUND);
-
+                    _serviceOrderPayments = _serviceOrderPaymentController.getServiceOrderPayments(_serviceOrderModel);
                     RefundedOrderView refundOrderView = new RefundedOrderView(_serviceOrderModel, _serviceOrderFaults, _serviceOrderProdServs, _orderDeposits, _serviceOrderPayments);
                     CommonSetting.openInternalFrame(refundOrderView, "Refunded Order: " + _serviceOrderModel.getIdServiceOrder());
                 }
@@ -249,7 +242,7 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
         lbl_dev_brand_star = new javax.swing.JLabel();
         hdn_txt_customer_id = new javax.swing.JTextField();
         spn_bad_sectors = new javax.swing.JSpinner();
-        lbl_auto_order_no1 = new javax.swing.JLabel();
+        lbl_order_picked = new javax.swing.JLabel();
         panel_total_amount = new javax.swing.JPanel();
         lbl_total = new javax.swing.JLabel();
         lbl_deposit = new javax.swing.JLabel();
@@ -419,9 +412,9 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
 
         spn_bad_sectors.setEnabled(false);
 
-        lbl_auto_order_no1.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
-        lbl_auto_order_no1.setForeground(new java.awt.Color(0, 153, 204));
-        lbl_auto_order_no1.setText("ORDER PICKED");
+        lbl_order_picked.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
+        lbl_order_picked.setForeground(new java.awt.Color(0, 153, 204));
+        lbl_order_picked.setText("ORDER PICKED");
 
         javax.swing.GroupLayout panel_input_detailLayout = new javax.swing.GroupLayout(panel_input_detail);
         panel_input_detail.setLayout(panel_input_detailLayout);
@@ -489,7 +482,7 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
                                 .addGap(7, 7, 7)
                                 .addComponent(lbl_auto_order_no)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lbl_auto_order_no1)))
+                                .addComponent(lbl_order_picked)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -505,7 +498,7 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
                 .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbl_auto_order_no)
                     .addComponent(lbl_order_no)
-                    .addComponent(lbl_auto_order_no1))
+                    .addComponent(lbl_order_picked))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txt_first_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -983,14 +976,13 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txt_serial_numberKeyPressed
 
     private void btn_notesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_notesActionPerformed
-
-        NoteModal noteModal = new NoteModal(_serviceOrderModel, _parentFrame, true);
+        NoteModal noteModal = new NoteModal(_serviceOrderModel, SwingUtilities.getWindowAncestor(this), true);
         noteModal.setLocationRelativeTo(this);
         noteModal.setVisible(true);
     }//GEN-LAST:event_btn_notesActionPerformed
 
     private void btn_paymentsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_paymentsActionPerformed
-        PaymentHistoryModal paymentHistoryModal = new PaymentHistoryModal(_serviceOrderModel, _serviceOrderPayments, _parentFrame, true);
+        PaymentHistoryModal paymentHistoryModal = new PaymentHistoryModal(_serviceOrderModel, _serviceOrderPayments, SwingUtilities.getWindowAncestor(this), true);
         paymentHistoryModal.setLocationRelativeTo(this);
         paymentHistoryModal.setVisible(true);
     }//GEN-LAST:event_btn_paymentsActionPerformed
@@ -1006,7 +998,7 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btn_printActionPerformed
 
     private void btn_deposit1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deposit1ActionPerformed
-        DepositModal depositModal = new DepositModal(_serviceOrderModel, _parentFrame, true);
+        DepositModal depositModal = new DepositModal(_serviceOrderModel, SwingUtilities.getWindowAncestor(this), true);
         depositModal.setLocationRelativeTo(this);
         depositModal.setVisible(true);
     }//GEN-LAST:event_btn_deposit1ActionPerformed
@@ -1021,7 +1013,6 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
     private javax.swing.JEditorPane editor_pane_notes;
     private javax.swing.JTextField hdn_txt_customer_id;
     private javax.swing.JLabel lbl_auto_order_no;
-    private javax.swing.JLabel lbl_auto_order_no1;
     private javax.swing.JLabel lbl_bad_sectors;
     private javax.swing.JLabel lbl_bad_sectors_star;
     private javax.swing.JLabel lbl_brand;
@@ -1040,6 +1031,7 @@ public class PickedOrderView extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lbl_last_name_star;
     private javax.swing.JLabel lbl_model;
     private javax.swing.JLabel lbl_order_no;
+    private javax.swing.JLabel lbl_order_picked;
     private javax.swing.JLabel lbl_serial_number_star;
     private javax.swing.JLabel lbl_sn;
     private javax.swing.JLabel lbl_total;

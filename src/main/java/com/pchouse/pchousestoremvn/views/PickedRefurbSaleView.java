@@ -6,6 +6,7 @@ import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.common.CommonStrings;
 import com.pchouse.pchousestoremvn.controllers.EmployeeController;
 import com.pchouse.pchousestoremvn.controllers.RefundController;
+import com.pchouse.pchousestoremvn.controllers.SalePaymentController;
 import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Customer;
 import com.pchouse.pchousestoremvn.models.Deposit;
@@ -19,13 +20,13 @@ import com.pchouse.pchousestoremvn.util.ReportGenerator;
 import com.pchouse.pchousestoremvn.views.modals.DepositModal;
 import com.pchouse.pchousestoremvn.views.modals.NoteModal;
 import com.pchouse.pchousestoremvn.views.modals.PaymentHistoryModal;
-import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.util.Date;
 import java.util.List;
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 public class PickedRefurbSaleView extends javax.swing.JInternalFrame {
@@ -36,8 +37,8 @@ public class PickedRefurbSaleView extends javax.swing.JInternalFrame {
     private List<SalePayment> _listSalePayments;
     private final RefundController _refundController;
     private final EmployeeController _employeeController;
+    private final SalePaymentController _salePaymentController;
     private final DefaultTableModel _dtmRefurb;
-    Frame _parentFrame = JOptionPane.getFrameForComponent(this);
 
     public PickedRefurbSaleView(Sale saleModel, List<RefurbSale> listRefurbsSale, List<Deposit> listOrderDeposit, List<SalePayment> salePayments) {
         initComponents();
@@ -56,6 +57,7 @@ public class PickedRefurbSaleView extends javax.swing.JInternalFrame {
 
         this._refundController = new RefundController();
         this._employeeController = new EmployeeController();
+        this._salePaymentController = new SalePaymentController();
 
         this._dtmRefurb = (DefaultTableModel) this.table_view_refurbs.getModel();
 
@@ -133,9 +135,9 @@ public class PickedRefurbSaleView extends javax.swing.JInternalFrame {
                 long refundId = _refundController.addSaleRefund(saleRefund, saleRefundNote, _listSalePayments);
 
                 if (refundId > 0) {
+                    _listSalePayments = _salePaymentController.getSalePayments(_saleModel);
                     RefundedRefurbSaleView refundedRefurbSaleView = new RefundedRefurbSaleView(_saleModel, _listRefurbs, _orderDeposits, _listSalePayments);
                     CommonSetting.openInternalFrame(refundedRefurbSaleView, "Refunded Refurb: " + _saleModel.getIdSale());
-
                 }
 
             } catch (BusinessException e) {
@@ -258,8 +260,8 @@ public class PickedRefurbSaleView extends javax.swing.JInternalFrame {
         lbl_auto_sale_no.setEnabled(false);
 
         lbl_refurb_sale_picked.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
-        lbl_refurb_sale_picked.setForeground(new java.awt.Color(153, 255, 153));
-        lbl_refurb_sale_picked.setText("Refurb Sale Picked");
+        lbl_refurb_sale_picked.setForeground(new java.awt.Color(0, 153, 204));
+        lbl_refurb_sale_picked.setText("REFURB SALE PICKED");
 
         javax.swing.GroupLayout panel_input_detailLayout = new javax.swing.GroupLayout(panel_input_detail);
         panel_input_detail.setLayout(panel_input_detailLayout);
@@ -304,10 +306,11 @@ public class PickedRefurbSaleView extends javax.swing.JInternalFrame {
             panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_input_detailLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lbl_auto_sale_no)
-                    .addComponent(lbl_sale_no)
-                    .addComponent(lbl_refurb_sale_picked, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lbl_refurb_sale_picked, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lbl_auto_sale_no)
+                        .addComponent(lbl_sale_no)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txt_first_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -540,7 +543,7 @@ public class PickedRefurbSaleView extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(panel_refurb_sale_detailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(panel_input_detail, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(scroll_pane_refurbs, javax.swing.GroupLayout.DEFAULT_SIZE, 435, Short.MAX_VALUE))
+                    .addComponent(scroll_pane_refurbs))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(panel_total_amount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -571,13 +574,13 @@ public class PickedRefurbSaleView extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_notesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_notesActionPerformed
-        NoteModal noteModal = new NoteModal(_saleModel, _parentFrame, true);
+        NoteModal noteModal = new NoteModal(_saleModel, SwingUtilities.getWindowAncestor(this), true);
         noteModal.setLocationRelativeTo(this);
         noteModal.setVisible(true);
     }//GEN-LAST:event_btn_notesActionPerformed
 
     private void btn_depositActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_depositActionPerformed
-        DepositModal depositModal = new DepositModal(_saleModel, _parentFrame, true);
+        DepositModal depositModal = new DepositModal(_saleModel, SwingUtilities.getWindowAncestor(this), true);
         depositModal.setLocationRelativeTo(this);
         depositModal.setVisible(true);
     }//GEN-LAST:event_btn_depositActionPerformed
@@ -594,7 +597,7 @@ public class PickedRefurbSaleView extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btn_copyActionPerformed
 
     private void btn_paymentsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_paymentsActionPerformed
-        PaymentHistoryModal paymentHistoryModal = new PaymentHistoryModal(_saleModel, _listSalePayments, _parentFrame, true);
+        PaymentHistoryModal paymentHistoryModal = new PaymentHistoryModal(_saleModel, _listSalePayments, SwingUtilities.getWindowAncestor(this), true);
         paymentHistoryModal.setLocationRelativeTo(this);
         paymentHistoryModal.setVisible(true);
     }//GEN-LAST:event_btn_paymentsActionPerformed

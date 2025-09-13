@@ -18,24 +18,23 @@ import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.views.modals.DepositModal;
 import com.pchouse.pchousestoremvn.views.modals.NoteModal;
 import com.pchouse.pchousestoremvn.views.modals.PaymentHistoryModal;
-import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.util.Date;
 import java.util.List;
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 public class RefundedRefurbSaleView extends javax.swing.JInternalFrame {
 
-    private Sale _saleModel;    
+    private Sale _saleModel;
     private List<Deposit> _orderDeposits;
     private List<SalePayment> _listSalePayments;
     private final RefundController _refundController;
-    private final EmployeeController _employeeController;    
+    private final EmployeeController _employeeController;
     private final DefaultTableModel _dtmRefurb;
-    Frame _parentFrame = JOptionPane.getFrameForComponent(this);
 
     public RefundedRefurbSaleView(Sale saleModel, List<RefurbSale> listRefurbsSale, List<Deposit> listOrderDeposit, List<SalePayment> salePayments) {
         initComponents();
@@ -47,12 +46,12 @@ public class RefundedRefurbSaleView extends javax.swing.JInternalFrame {
         CommonSetting.requestTxtFocus(txt_first_name);
         CommonSetting.tableSettings(table_view_refurbs);
 
-        this._saleModel = saleModel;        
+        this._saleModel = saleModel;
         this._orderDeposits = listOrderDeposit;
         this._listSalePayments = salePayments;
 
         this._refundController = new RefundController();
-        this._employeeController = new EmployeeController();       
+        this._employeeController = new EmployeeController();
 
         this._dtmRefurb = (DefaultTableModel) this.table_view_refurbs.getModel();
 
@@ -104,7 +103,7 @@ public class RefundedRefurbSaleView extends javax.swing.JInternalFrame {
             this.txt_contact.setText(customer.getPerson().getContactNo());
             this.txt_email.setText(customer.getPerson().getEmail());
         }
-    }    
+    }
 
     private void refundSale() {
         int confirm = JOptionPane.showConfirmDialog(
@@ -160,7 +159,7 @@ public class RefundedRefurbSaleView extends javax.swing.JInternalFrame {
         editor_pane_notes = new javax.swing.JEditorPane();
         lbl_sale_no = new javax.swing.JLabel();
         lbl_auto_sale_no = new javax.swing.JLabel();
-        lbl_refurb_sale_picked = new javax.swing.JLabel();
+        lbl_refurb_sale_refunded = new javax.swing.JLabel();
         panel_total_amount = new javax.swing.JPanel();
         lbl_total = new javax.swing.JLabel();
         lbl_deposit = new javax.swing.JLabel();
@@ -251,9 +250,9 @@ public class RefundedRefurbSaleView extends javax.swing.JInternalFrame {
         lbl_auto_sale_no.setText("autoGen");
         lbl_auto_sale_no.setEnabled(false);
 
-        lbl_refurb_sale_picked.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
-        lbl_refurb_sale_picked.setForeground(new java.awt.Color(255, 102, 102));
-        lbl_refurb_sale_picked.setText("Refurb Sale Refunded");
+        lbl_refurb_sale_refunded.setFont(new java.awt.Font("Lucida Grande", 1, 16)); // NOI18N
+        lbl_refurb_sale_refunded.setForeground(new java.awt.Color(255, 102, 102));
+        lbl_refurb_sale_refunded.setText("REFURB SALE REFUNDED");
 
         javax.swing.GroupLayout panel_input_detailLayout = new javax.swing.GroupLayout(panel_input_detail);
         panel_input_detail.setLayout(panel_input_detailLayout);
@@ -285,7 +284,7 @@ public class RefundedRefurbSaleView extends javax.swing.JInternalFrame {
                         .addGap(7, 7, 7)
                         .addComponent(lbl_auto_sale_no)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lbl_refurb_sale_picked)
+                        .addComponent(lbl_refurb_sale_refunded)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -299,7 +298,7 @@ public class RefundedRefurbSaleView extends javax.swing.JInternalFrame {
             .addGroup(panel_input_detailLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lbl_refurb_sale_picked, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lbl_refurb_sale_refunded, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(panel_input_detailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(lbl_auto_sale_no)
                         .addComponent(lbl_sale_no)))
@@ -530,7 +529,7 @@ public class RefundedRefurbSaleView extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_notesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_notesActionPerformed
-        NoteModal noteModal = new NoteModal(_saleModel, _parentFrame, true);
+        NoteModal noteModal = new NoteModal(_saleModel, SwingUtilities.getWindowAncestor(this), true);
         noteModal.setLocationRelativeTo(this);
         noteModal.setVisible(true);
     }//GEN-LAST:event_btn_notesActionPerformed
@@ -543,13 +542,13 @@ public class RefundedRefurbSaleView extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btn_copyActionPerformed
 
     private void btn_depositActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_depositActionPerformed
-        DepositModal depositModal = new DepositModal(_saleModel, _parentFrame, true);
+        DepositModal depositModal = new DepositModal(_saleModel, SwingUtilities.getWindowAncestor(this), true);
         depositModal.setLocationRelativeTo(this);
         depositModal.setVisible(true);
     }//GEN-LAST:event_btn_depositActionPerformed
 
     private void btn_paymentsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_paymentsActionPerformed
-        PaymentHistoryModal paymentHistoryModal = new PaymentHistoryModal(_saleModel, _listSalePayments, _parentFrame, true);
+        PaymentHistoryModal paymentHistoryModal = new PaymentHistoryModal(_saleModel, _listSalePayments, SwingUtilities.getWindowAncestor(this), true);
         paymentHistoryModal.setLocationRelativeTo(this);
         paymentHistoryModal.setVisible(true);
     }//GEN-LAST:event_btn_paymentsActionPerformed
@@ -567,7 +566,7 @@ public class RefundedRefurbSaleView extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lbl_email;
     private javax.swing.JLabel lbl_first_name;
     private javax.swing.JLabel lbl_last_name;
-    private javax.swing.JLabel lbl_refurb_sale_picked;
+    private javax.swing.JLabel lbl_refurb_sale_refunded;
     private javax.swing.JLabel lbl_remaining;
     private javax.swing.JLabel lbl_remaining_amount;
     private javax.swing.JLabel lbl_sale_no;

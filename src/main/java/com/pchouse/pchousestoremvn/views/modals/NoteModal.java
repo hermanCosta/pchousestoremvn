@@ -9,6 +9,7 @@ import com.pchouse.pchousestoremvn.models.Employee;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.OrderNote;
 import com.pchouse.pchousestoremvn.models.Sale;
+import java.awt.Window;
 import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -23,8 +24,8 @@ public class NoteModal extends javax.swing.JDialog {
     private ServiceOrder _serviceOrderModel;
     private Sale _saleModel;
 
-    public NoteModal(ServiceOrder orderModel, java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+    public NoteModal(ServiceOrder orderModel, Window owner, boolean modal) {
+        super(owner, ModalityType.APPLICATION_MODAL);
         initComponents();
 
         this._serviceOrderModel = orderModel;
@@ -34,8 +35,8 @@ public class NoteModal extends javax.swing.JDialog {
         loadOrderNoteListTable();
     }
 
-    public NoteModal(Sale saleModel, java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+    public NoteModal(Sale saleModel, Window owner, boolean modal) {
+        super(owner, ModalityType.APPLICATION_MODAL);
         initComponents();
 
         this._saleModel = saleModel;
