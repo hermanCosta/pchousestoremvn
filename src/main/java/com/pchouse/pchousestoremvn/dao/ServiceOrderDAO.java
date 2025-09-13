@@ -18,7 +18,7 @@ import jakarta.persistence.TypedQuery;
 
 import java.util.List;
 
-public class OrderDAO {
+public class ServiceOrderDAO {
     
     public long getLastOrderIdDAO() {
         EntityManager em = JPAUtil.getEntityManager();

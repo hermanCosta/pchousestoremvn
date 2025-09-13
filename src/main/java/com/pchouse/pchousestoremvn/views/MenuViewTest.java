@@ -300,7 +300,7 @@ public class MenuViewTest extends JFrame {
     }
 
     private void menuItemCloseTillActionPerformed(ActionEvent evt) {
-        //openInternalFrame(new CloseTillView());
+        openInternalFrame(new ClosingTillView());
     }
 
     private void menuItemCashInActionPerformed(ActionEvent evt) {

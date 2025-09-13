@@ -1,6 +1,6 @@
 package com.pchouse.pchousestoremvn.controllers;
 
-import com.pchouse.pchousestoremvn.dao.OrderPaymentDAO;
+import com.pchouse.pchousestoremvn.dao.ServiceOrderPaymentDAO;
 import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.OrderNote;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ServiceOrderPaymentController {
 
-    private final OrderPaymentDAO ORDER_PAYMENT_DAO = new OrderPaymentDAO();
+    private final ServiceOrderPaymentDAO ORDER_PAYMENT_DAO = new ServiceOrderPaymentDAO();
 
     // Add a new order payment
     public long addOrderPayment(List<ServiceOrderPayment> pOrderPayments, OrderNote pOrderNote) throws BusinessException {

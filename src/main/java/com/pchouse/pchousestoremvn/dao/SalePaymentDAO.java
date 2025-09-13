@@ -8,7 +8,9 @@ import com.pchouse.pchousestoremvn.models.Sale;
 import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.util.JPAUtil;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class SalePaymentDAO {
@@ -122,4 +124,23 @@ public class SalePaymentDAO {
             em.close();
         }
     }
+
+    public List<SalePayment> getAllByDate(Date date) {
+        EntityManager em = JPAUtil.getEntityManager();
+        List<SalePayment> list = null;
+        try {
+            TypedQuery<SalePayment> query = em.createQuery(
+                    "SELECT s FROM SalePayment s WHERE DATE(s.dtTransaction) = DATE(:date)",
+                    SalePayment.class
+            );
+            query.setParameter("date", date);
+            list = query.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+        return list;
+    }
+
 }

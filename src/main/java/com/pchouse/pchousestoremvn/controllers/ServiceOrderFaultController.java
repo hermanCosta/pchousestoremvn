@@ -1,13 +1,13 @@
 package com.pchouse.pchousestoremvn.controllers;
 
-import com.pchouse.pchousestoremvn.dao.OrderFaultDAO;
+import com.pchouse.pchousestoremvn.dao.ServiceOrderFaultDAO;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderFault;
 import java.util.List;
 
 public class ServiceOrderFaultController {
 
-    private final OrderFaultDAO ORDER_FAULT_DAO = new OrderFaultDAO();
+    private final ServiceOrderFaultDAO ORDER_FAULT_DAO = new ServiceOrderFaultDAO();
 
     // Add a new order fault
     public long addOrderFault(ServiceOrderFault pOrderFault) {

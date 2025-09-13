@@ -1,6 +1,6 @@
 package com.pchouse.pchousestoremvn.controllers;
 
-import com.pchouse.pchousestoremvn.dao.OrderDAO;
+import com.pchouse.pchousestoremvn.dao.ServiceOrderDAO;
 import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Company;
 import com.pchouse.pchousestoremvn.models.Deposit;
@@ -14,7 +14,7 @@ import java.util.List;
 
 public class ServiceOrderController {
 
-    private final OrderDAO ORDER_DAO = new OrderDAO();
+    private final ServiceOrderDAO ORDER_DAO = new ServiceOrderDAO();
 
     // Retrieve the ID of the last order
     public long getLastOrderId() {

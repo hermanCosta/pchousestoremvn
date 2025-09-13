@@ -9,7 +9,7 @@ import jakarta.persistence.TypedQuery;
 
 import java.util.List;
 
-public class OrderFaultDAO {
+public class ServiceOrderFaultDAO {
 
 public long addOrderFaultDAO(ServiceOrderFault pOrderFault) {
     EntityManager em = JPAUtil.getEntityManager();

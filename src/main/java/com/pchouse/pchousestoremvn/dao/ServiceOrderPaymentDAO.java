@@ -8,10 +8,12 @@ import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
 import com.pchouse.pchousestoremvn.util.JPAUtil;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-public class OrderPaymentDAO {
+public class ServiceOrderPaymentDAO {
 
     public long addOrderPaymentDAO(List<ServiceOrderPayment> pOrderPayments, OrderNote note) throws Exception {
         EntityManager em = JPAUtil.getEntityManager();
@@ -93,4 +95,23 @@ public class OrderPaymentDAO {
 
         return payments;
     }
+
+    public List<ServiceOrderPayment> getAllByDate(Date date) {
+        EntityManager em = JPAUtil.getEntityManager();
+        List<ServiceOrderPayment> list = null;
+        try {
+            TypedQuery<ServiceOrderPayment> query = em.createQuery(
+                    "SELECT s FROM ServiceOrderPayment s WHERE DATE(s.dtTransaction) = DATE(:date)",
+                    ServiceOrderPayment.class
+            );
+            query.setParameter("date", date);
+            list = query.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+        return list;
+    }
+
 }
