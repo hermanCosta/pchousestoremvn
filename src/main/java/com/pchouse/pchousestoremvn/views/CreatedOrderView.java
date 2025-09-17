@@ -52,7 +52,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
 
     private long hdnCustomerId;
     private List<ProductService> _listProdServ;
-    private List<Fault> _listFault;    
+    private List<Fault> _listFault;
     private final ServiceOrder _serviceOrderModel;
     private final List<ServiceOrderFault> _listServiceOrderFault;
     private final List<ServiceOrderProdServ> _listServiceOrderProdServ;
@@ -63,7 +63,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
     private final CustomerController _customerController;
     private final EmployeeController _employeeController;
     private final OrderNoteController _orderNoteController;
-    private final DeviceController _deviceController;    
+    private final DeviceController _deviceController;
     private final DefaultTableModel _dtmProdServ;
     private final DefaultTableModel _dtmFault;
     private final DefaultListModel _defaultListModelProdServ;
@@ -88,7 +88,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
         this._customerController = new CustomerController();
         this._employeeController = new EmployeeController();
         this._orderNoteController = new OrderNoteController();
-        this._deviceController = new DeviceController();       
+        this._deviceController = new DeviceController();
         this._dtmProdServ = (DefaultTableModel) this.table_view_products.getModel();
         this._dtmFault = (DefaultTableModel) this.table_view_faults.getModel();
         this._defaultListModelProdServ = new DefaultListModel();
@@ -100,7 +100,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
         this._listServiceOrderFault = listOrderFault;
         this._listServiceOrderProdServ = listOrderProdServ;
         this._listOrderDeposit = listOrderDeposit;
-        
+
         loadOrderFields(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
     }
 
@@ -236,7 +236,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
                 JOptionPane.showMessageDialog(this, CommonConstant.NOT_AUTHORIZED, this.getTitle(), JOptionPane.ERROR_MESSAGE);
                 return null;
             }
-            
+
             long idCustomer = hdnCustomerId;
             if (idCustomer > 0) {
                 isNewCustomer = false;
@@ -369,6 +369,8 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
     }
 
     private void updateOrderStatus(OrderStatus newStatus, String confirmMessage, String noteMessage) {
+        Date today = new Date();
+        
         int confirm = JOptionPane.showConfirmDialog(
                 this,
                 confirmMessage,
@@ -380,46 +382,48 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
             String password = CommonExtension.requestUserPassword();
             Employee employee = _employeeController.getEmployeeByPass(password);
 
-            if (employee != null) {
-                _serviceOrderModel.setStatus(newStatus);
-                _serviceOrderModel.setEmployee(employee);
+            if (employee == null) {
 
-                boolean isOrderUpdated = this._orderController.updateServiceOrderStatus(_serviceOrderModel);
-                if (isOrderUpdated) {
-                    OrderNote orderNote = new OrderNote(
+                JOptionPane.showMessageDialog(this, CommonConstant.NOT_AUTHORIZED, null, JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            _serviceOrderModel.setStatus(newStatus);
+            _serviceOrderModel.setEmployee(employee);
+            _serviceOrderModel.setFinished(today);
+
+            boolean isOrderUpdated = this._orderController.updateServiceOrderStatus(_serviceOrderModel);
+            if (isOrderUpdated) {
+                OrderNote orderNote = new OrderNote(
+                        _serviceOrderModel,
+                        employee,
+                        noteMessage,
+                        today
+                );
+
+                long idOrderNote = _orderNoteController.addOrderNote(orderNote);
+
+                if (idOrderNote == 0) {
+                    JOptionPane.showMessageDialog(this, CommonConstant.ERROR_ADD_NOTE, null, JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (newStatus == OrderStatus.FIXED) {
+                    FixedOrderView fixedOrderView = new FixedOrderView(
                             _serviceOrderModel,
-                            employee,
-                            noteMessage,
-                            new Date()
+                            _listServiceOrderFault,
+                            _listServiceOrderProdServ,
+                            _listOrderDeposit
                     );
-
-                    long idOrderNote = _orderNoteController.addOrderNote(orderNote);
-
-                    if (idOrderNote == 0) {
-                        JOptionPane.showMessageDialog(this, CommonConstant.ERROR_ADD_NOTE, null, JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    if (newStatus == OrderStatus.FIXED) {
-                        FixedOrderView fixedOrderView = new FixedOrderView(
-                                _serviceOrderModel,
-                                _listServiceOrderFault,
-                                _listServiceOrderProdServ,
-                                _listOrderDeposit
-                        );
-                        CommonSetting.openInternalFrame(fixedOrderView, "Order Fixed: " + _serviceOrderModel.getIdServiceOrder());
-                    } else if (newStatus == OrderStatus.NOT_FIXED) {
-                        NotFixedOrderView notFixedOrderView = new NotFixedOrderView(
-                                _serviceOrderModel,
-                                _listServiceOrderFault,
-                                _listServiceOrderProdServ,
-                                _listOrderDeposit
-                        );
-                        CommonSetting.openInternalFrame(notFixedOrderView, "Order Not Fixed: " + _serviceOrderModel.getIdServiceOrder());
-                    }
-
-                } else {
-                    JOptionPane.showMessageDialog(this, CommonConstant.ERROR_UPDATE, null, JOptionPane.ERROR_MESSAGE);
+                    CommonSetting.openInternalFrame(fixedOrderView, "Order Fixed: " + _serviceOrderModel.getIdServiceOrder());
+                } else if (newStatus == OrderStatus.NOT_FIXED) {
+                    NotFixedOrderView notFixedOrderView = new NotFixedOrderView(
+                            _serviceOrderModel,
+                            _listServiceOrderFault,
+                            _listServiceOrderProdServ,
+                            _listOrderDeposit
+                    );
+                    CommonSetting.openInternalFrame(notFixedOrderView, "Order Not Fixed: " + _serviceOrderModel.getIdServiceOrder());
                 }
             }
         }
@@ -1199,10 +1203,6 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
                         return;
                     }
 
-//                    // Mark each payment with the type
-//                    for (ServiceOrderPayment payment : payments) {
-//                        payment.setPaymentType(PaymentType.DEPOSIT);
-//                    }
                     deposit = new Deposit(updateOrder, updateOrder.getEmployee(), Double.parseDouble(this.txt_deposit.getText()), updateOrder.getCreated());
                 }
 
@@ -1389,7 +1389,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_list_prod_serv_searchMousePressed
 
     private void table_view_productsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table_view_productsMouseClicked
-        if (evt.getClickCount() == 2) {           
+        if (evt.getClickCount() == 2) {
             this._dtmProdServ.removeRow(table_view_products.getSelectedRow());
         }
     }//GEN-LAST:event_table_view_productsMouseClicked

@@ -253,46 +253,47 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
                 String password = CommonExtension.requestUserPassword();
                 Employee employee = _employeeController.getEmployeeByPass(password);
 
-                if (employee != null) {
-                    try {
-                        List<ServiceOrderPayment> payments = null;
+                if (employee == null) {
+                    JOptionPane.showMessageDialog(this, CommonConstant.NOT_AUTHORIZED, null, JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                
+                try {
+                    List<ServiceOrderPayment> payments = null;
 
-                        PaymentModal paymentModal = new PaymentModal(
-                                _serviceOrderModel,
-                                PaymentType.ORDER,
-                                String.valueOf(_serviceOrderModel.getDue()),
-                                SwingUtilities.getWindowAncestor(this), // use current window as parent
-                                true
-                        );
-                        paymentModal.setVisible(true);
+                    PaymentModal paymentModal = new PaymentModal(
+                            _serviceOrderModel,
+                            PaymentType.ORDER,
+                            String.valueOf(_serviceOrderModel.getDue()),
+                            SwingUtilities.getWindowAncestor(this),
+                            true
+                    );
+                    paymentModal.setVisible(true);
 
-                        payments = paymentModal.getServiceOrderPayments();
+                    payments = paymentModal.getServiceOrderPayments();
 
-                        if (payments == null || payments.isEmpty()) {
-                            JOptionPane.showMessageDialog(this, "Payment was not completed.", getTitle(), JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-
-                        OrderNote orderNote = new OrderNote(_serviceOrderModel, _serviceOrderModel.getEmployee(), CommonConstant.ORDER_PICKED_NOTE, new Date());
-
-                        long idOrderPayment = _serviceOrderPaymentController.addOrderPayment(payments, orderNote);
-
-                        if (idOrderPayment > 0) {
-                            payments = _serviceOrderPaymentController.getServiceOrderPayments(_serviceOrderModel);
-                            PickedOrderView pickedOrderView = new PickedOrderView(_serviceOrderModel, _listServiceOrderFault, _listServiceOrderProdServ, _listOrderDeposit, payments);
-                            CommonSetting.openInternalFrame(pickedOrderView, "Picked Order: " + _serviceOrderModel.getIdServiceOrder());
-
-                            // Genarate and display the report
-                            new ReportGenerator().generateServiceOrderReceiptReport(_serviceOrderModel, _listServiceOrderProdServ, payments);
-                        }
-                    } catch (BusinessException e) {
-                        JOptionPane.showMessageDialog(this, e.getMessage(), this.getTitle(), JOptionPane.ERROR_MESSAGE);
-                        e.printStackTrace();
+                    if (payments == null || payments.isEmpty()) {
+                        JOptionPane.showMessageDialog(this, "Payment was not completed.", getTitle(), JOptionPane.ERROR_MESSAGE);
+                        return;
                     }
+
+                    OrderNote orderNote = new OrderNote(_serviceOrderModel, _serviceOrderModel.getEmployee(), CommonConstant.ORDER_PICKED_NOTE, new Date());
+                   
+                    long idOrderPayment = _serviceOrderPaymentController.addOrderPayment(payments, orderNote);
+
+                    if (idOrderPayment > 0) {
+                        payments = _serviceOrderPaymentController.getServiceOrderPayments(_serviceOrderModel);
+                        PickedOrderView pickedOrderView = new PickedOrderView(_serviceOrderModel, _listServiceOrderFault, _listServiceOrderProdServ, _listOrderDeposit, payments);
+                        CommonSetting.openInternalFrame(pickedOrderView, "Picked Order: " + _serviceOrderModel.getIdServiceOrder());
+
+                        // Genarate and display the report
+                        new ReportGenerator().generateServiceOrderReceiptReport(_serviceOrderModel, _listServiceOrderProdServ, payments);
+                    }
+                } catch (BusinessException e) {
+                    JOptionPane.showMessageDialog(this, e.getMessage(), this.getTitle(), JOptionPane.ERROR_MESSAGE);
+                    e.printStackTrace();
                 }
             }
-        } else {
-            JOptionPane.showMessageDialog(this, CommonConstant.NOT_AUTHORIZED, null, JOptionPane.ERROR_MESSAGE);
         }
     }
 

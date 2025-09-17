@@ -6,6 +6,7 @@ import com.pchouse.pchousestoremvn.models.OrderNote;
 import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ServiceOrderPaymentController {
@@ -21,10 +22,21 @@ public class ServiceOrderPaymentController {
         }
     }
 
-    // Get all payments for a specific sale
+    // Get all payments for a specific service order
     public List<ServiceOrderPayment> getServiceOrderPayments(ServiceOrder pServiceOrder) {
         try {
             return ORDER_PAYMENT_DAO.getServiceOrderPaymentDAO(pServiceOrder);
+        } catch (Exception e) {
+            System.err.println("Error in controller while fetching sale payments: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    // Get all payments for a specific date
+    public List<ServiceOrderPayment> getServiceOrderPaymentsByDate(Date date) {
+        try {
+            return ORDER_PAYMENT_DAO.getAllByDate(date);
         } catch (Exception e) {
             System.err.println("Error in controller while fetching sale payments: " + e.getMessage());
             e.printStackTrace();

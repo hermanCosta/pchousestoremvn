@@ -280,11 +280,11 @@ public class CashOutRegistryView extends JInternalFrame {
         tableCashOut.getColumnModel().getColumn(0).setMaxWidth(0);
         tableCashOut.getColumnModel().getColumn(0).setPreferredWidth(0);
 
-        // Amount column
-        tableCashOut.getColumnModel().getColumn(1).setPreferredWidth(80);
-
         // Date column
-        tableCashOut.getColumnModel().getColumn(2).setPreferredWidth(120);
+        tableCashOut.getColumnModel().getColumn(1).setPreferredWidth(120);
+
+        // Amount column
+        tableCashOut.getColumnModel().getColumn(2).setPreferredWidth(80);
 
         // Notes column - wider
         tableCashOut.getColumnModel().getColumn(3).setPreferredWidth(480);

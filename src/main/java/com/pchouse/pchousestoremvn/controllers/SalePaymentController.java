@@ -5,7 +5,9 @@ import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.OrderNote;
 import com.pchouse.pchousestoremvn.models.Sale;
 import com.pchouse.pchousestoremvn.models.SalePayment;
+import com.pchouse.pchousestoremvn.models.SalePaymentSummary;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class SalePaymentController {
@@ -33,13 +35,24 @@ public class SalePaymentController {
             return new ArrayList<>();
         }
     }
-    
+
     // Add a new refurb sale payment
     public long addRefurbSalePayment(List<SalePayment> pSalePayments, OrderNote pOrderNote) throws BusinessException {
         try {
             return SALE_PAYMENT_DAO.addRefurbSalePaymentDAO(pSalePayments, pOrderNote);
         } catch (Exception e) {
             throw new BusinessException("Error in controller while adding service refurb sale payment: " + e.getMessage());
+        }
+    }
+
+    // Get all payments for a specific date
+    public List<SalePayment> getSalePaymentsByDate(Date date) {
+        try {
+            return SALE_PAYMENT_DAO.getAllByDate(date);
+        } catch (Exception e) {
+            System.err.println("Error in controller while fetching sale payments: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
         }
     }
 }

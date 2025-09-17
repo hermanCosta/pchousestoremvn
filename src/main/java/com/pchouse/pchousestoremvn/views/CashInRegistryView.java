@@ -281,7 +281,7 @@ public class CashInRegistryView extends JInternalFrame {
         tableCashIn.getColumnModel().getColumn(0).setPreferredWidth(0);
 
         // Date column
-        tableCashIn.getColumnModel().getColumn(1).setPreferredWidth(1200);
+        tableCashIn.getColumnModel().getColumn(1).setPreferredWidth(120);
 
         // Amount column
         tableCashIn.getColumnModel().getColumn(2).setPreferredWidth(80);

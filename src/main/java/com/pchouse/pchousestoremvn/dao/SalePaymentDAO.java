@@ -1,5 +1,6 @@
 package com.pchouse.pchousestoremvn.dao;
 
+import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.enums.OrderStatus;
 import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Employee;
@@ -130,10 +131,11 @@ public class SalePaymentDAO {
         List<SalePayment> list = null;
         try {
             TypedQuery<SalePayment> query = em.createQuery(
-                    "SELECT s FROM SalePayment s WHERE DATE(s.dtTransaction) = DATE(:date)",
+                    "SELECT s FROM SalePayment s WHERE s.sale.company = :company AND DATE(s.dtTransaction) = DATE(:date)",
                     SalePayment.class
             );
             query.setParameter("date", date);
+            query.setParameter("company", CommonSetting.COMPANY);
             list = query.getResultList();
         } catch (Exception e) {
             e.printStackTrace();

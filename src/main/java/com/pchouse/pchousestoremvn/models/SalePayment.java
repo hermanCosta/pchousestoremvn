@@ -167,4 +167,6 @@ public class SalePayment implements Serializable {
     public void setDtTransaction(Date dtTransaction) {
         this.dtTransaction = dtTransaction;
     }
+    
+    
 }

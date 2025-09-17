@@ -1,5 +1,6 @@
 package com.pchouse.pchousestoremvn.dao;
 
+import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.enums.OrderStatus;
 import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Employee;
@@ -40,6 +41,7 @@ public class ServiceOrderPaymentDAO {
                 // Update status AFTER persisting last payment
                 if (lastPayment != null && lastPayment.getServiceOrder() != null) {
                     lastPayment.getServiceOrder().setStatus(OrderStatus.PICKED);
+                    lastPayment.getServiceOrder().setPicked(new Date());
                 }
             }
 
@@ -101,10 +103,11 @@ public class ServiceOrderPaymentDAO {
         List<ServiceOrderPayment> list = null;
         try {
             TypedQuery<ServiceOrderPayment> query = em.createQuery(
-                    "SELECT s FROM ServiceOrderPayment s WHERE DATE(s.dtTransaction) = DATE(:date)",
+                    "SELECT s FROM ServiceOrderPayment s WHERE s.serviceOrder.company = :company AND DATE(s.dtTransaction) = DATE(:date)",
                     ServiceOrderPayment.class
             );
             query.setParameter("date", date);
+            query.setParameter("company", CommonSetting.COMPANY);
             list = query.getResultList();
         } catch (Exception e) {
             e.printStackTrace();
