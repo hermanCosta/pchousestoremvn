@@ -2,10 +2,14 @@ package com.pchouse.pchousestoremvn.views;
 
 import com.pchouse.pchousestoremvn.common.CommonExtension;
 import com.pchouse.pchousestoremvn.common.CommonSetting;
+import com.pchouse.pchousestoremvn.controllers.CashInRegistryController;
+import com.pchouse.pchousestoremvn.controllers.CashOutRegistryController;
 import com.pchouse.pchousestoremvn.controllers.ClosingTillController;
 import com.pchouse.pchousestoremvn.controllers.EmployeeController;
 import com.pchouse.pchousestoremvn.controllers.SalePaymentController;
 import com.pchouse.pchousestoremvn.controllers.ServiceOrderPaymentController;
+import com.pchouse.pchousestoremvn.models.CashInRegistry;
+import com.pchouse.pchousestoremvn.models.CashOutRegistry;
 import com.pchouse.pchousestoremvn.models.Employee;
 import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
@@ -47,15 +51,32 @@ public class ClosingTillView extends JInternalFrame {
     private final SalePaymentController _salePaymentController;
     private final ServiceOrderPaymentController _serviceOrderPaymentController;
 
+    private JTable tableCashIn, tableCashOut;
+    private DefaultTableModel dtmCashIn, dtmCashOut;
+
+    private final CashInRegistryController _cashInRegistryController;
+    private final CashOutRegistryController _cashOutRegistryController;
+
     private double cachedTotalCash = 0;
     private double cachedTotalCard = 0;
     private double cachedTotalCombined = 0;
+
+    private Date todayFromDate;
+    private Date todayToDate;
 
     public ClosingTillView() {
         this._closingTillController = new ClosingTillController();
         this._employeeController = new EmployeeController();
         this._salePaymentController = new SalePaymentController();
         this._serviceOrderPaymentController = new ServiceOrderPaymentController();
+        this._cashInRegistryController = new CashInRegistryController();
+        this._cashOutRegistryController = new CashOutRegistryController();
+
+        // Load data
+        Date today = new Date();
+        todayFromDate = CommonSetting.getStartOfDay(today);
+        todayToDate = CommonSetting.getEndOfDay(today);
+
         initComponents();
     }
 
@@ -87,6 +108,28 @@ public class ClosingTillView extends JInternalFrame {
         tablesPanel.add(scrollService);
 
         wrapper.add(tablesPanel, BorderLayout.CENTER);
+
+        // === Right: Cash In/Out Panel ===
+        dtmCashIn = new DefaultTableModel(new Object[]{"Amount", "Note", "Date"}, 0);
+        tableCashIn = new JTable(dtmCashIn);
+        JScrollPane scrollCashIn = new JScrollPane(tableCashIn);
+        scrollCashIn.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Cash In Entries"));
+
+        dtmCashOut = new DefaultTableModel(new Object[]{"Amount", "Note", "Date"}, 0);
+        tableCashOut = new JTable(dtmCashOut);
+        JScrollPane scrollCashOut = new JScrollPane(tableCashOut);
+        scrollCashOut.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Cash Out Entries"));
+
+        JPanel rightPanel = new JPanel(new GridLayout(2, 1, 5, 5));
+        rightPanel.setPreferredSize(new Dimension(350, 10)); // adjust width as needed
+        rightPanel.add(scrollCashIn);
+        rightPanel.add(scrollCashOut);
+
+        wrapper.add(rightPanel, BorderLayout.EAST);
+
+        // Apply table settings
+        CommonSetting.tableSettings(tableCashIn);
+        CommonSetting.tableSettings(tableCashOut);
 
         add(wrapper);
 
@@ -133,6 +176,7 @@ public class ClosingTillView extends JInternalFrame {
         wrapper.add(topPanel, BorderLayout.NORTH);
 
         loadPayments();
+        
     }
 
     private void resizeTableColumns(JTable table) {
@@ -141,16 +185,16 @@ public class ClosingTillView extends JInternalFrame {
         }
 
         // Sale/Order No.
-        table.getColumnModel().getColumn(0).setPreferredWidth(80);
+        table.getColumnModel().getColumn(0).setPreferredWidth(40);
 
         // Type
-        table.getColumnModel().getColumn(1).setPreferredWidth(120);
+        table.getColumnModel().getColumn(1).setPreferredWidth(80);
 
         // Cash
-        table.getColumnModel().getColumn(2).setPreferredWidth(100);
+        table.getColumnModel().getColumn(2).setPreferredWidth(50);
 
         // Card
-        table.getColumnModel().getColumn(3).setPreferredWidth(100);
+        table.getColumnModel().getColumn(3).setPreferredWidth(50);
 
         // Date
         table.getColumnModel().getColumn(4).setPreferredWidth(120);
@@ -241,11 +285,39 @@ public class ClosingTillView extends JInternalFrame {
                 totalCard += totals[1];
             }
         }
-        
+
+        // Clear cash in/out tables
+        dtmCashIn.setRowCount(0);
+        dtmCashOut.setRowCount(0);
+
+        // Load Cash In Entries
+        List<CashInRegistry> cashIns = _cashInRegistryController.getAllCashInByDateRange(CommonSetting.COMPANY, todayFromDate, todayToDate);
+        if (cashIns != null) {
+            for (CashInRegistry ci : cashIns) {
+                dtmCashIn.addRow(new Object[]{
+                    ci.getAmount(),
+                    ci.getNote(),
+                    CommonExtension.formatDateTime(ci.getTransactionDate())
+                });
+            }
+        }
+
+        // Load Cash Out Entries
+        List<CashOutRegistry> cashOuts = _cashOutRegistryController.getAllCashOutByDateRange(CommonSetting.COMPANY, todayFromDate, todayToDate);
+        if (cashOuts != null) {
+            for (CashOutRegistry co : cashOuts) {
+                dtmCashOut.addRow(new Object[]{
+                    co.getAmount(),
+                    co.getNote(),
+                    CommonExtension.formatDateTime(co.getTransactionDate())
+                });
+            }
+        }
+
         // ---- Final Totals ----
         this.cachedTotalCash = totalCash;
         this.cachedTotalCard = totalCard;
-        this.cachedTotalCombined = totalCash + totalCard; 
+        this.cachedTotalCombined = totalCash + totalCard;
 
         // Optionally update UI labels here if you have them:
         // labelCashTotal.setText("Cash: " + totalCash);
