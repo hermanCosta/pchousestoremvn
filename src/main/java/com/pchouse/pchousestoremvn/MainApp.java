@@ -1,6 +1,7 @@
 package com.pchouse.pchousestoremvn;
 
 import com.formdev.flatlaf.FlatDarkLaf;
+import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.controllers.CompanyController;
 import com.pchouse.pchousestoremvn.models.Company;
 import com.pchouse.pchousestoremvn.views.LoginView;
@@ -18,6 +19,7 @@ public class MainApp {
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(new FlatDarkLaf());
+            CommonSetting.enableEnterKeyOnButtons();
         } catch (Exception ex) {
             ex.printStackTrace();
         }

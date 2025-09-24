@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TillCloseReport" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3f4c1d72-9e3a-4d79-90fd-2e6498c25a8b">
+	<parameter name="subreport_header" class="net.sf.jasperreports.engine.JasperReport"/>
+	<parameter name="subreport_sale_payments" class="net.sf.jasperreports.engine.JasperReport"/>
+	<parameter name="subreport_service_payments" class="net.sf.jasperreports.engine.JasperReport"/>
+	<parameter name="subreport_cash_in" class="net.sf.jasperreports.engine.JasperReport"/>
+	<parameter name="subreport_cash_out" class="net.sf.jasperreports.engine.JasperReport"/>
+	<parameter name="companyName" class="java.lang.String"/>
+	<parameter name="companyPhone" class="java.lang.String"/>
+	<parameter name="companyEmail" class="java.lang.String"/>
+	<parameter name="companyAddress" class="java.lang.String"/>
+	<parameter name="companyLogo" class="java.io.InputStream"/>
+	<parameter name="closedDate" class="java.util.Date"/>
+	<parameter name="saleDataSource" class="net.sf.jasperreports.engine.JRDataSource"/>
+	<parameter name="serviceDataSource" class="net.sf.jasperreports.engine.JRDataSource"/>
+	<parameter name="cashInDataSource" class="net.sf.jasperreports.engine.JRDataSource"/>
+	<parameter name="cashOutDataSource" class="net.sf.jasperreports.engine.JRDataSource"/>
+	<pageHeader>
+		<band height="110">
+			<subreport isUsingCache="true">
+				<reportElement x="0" y="0" width="555" height="65" uuid="eb618718-3ab7-4449-9063-e968891d39ea"/>
+				<subreportParameter name="companyName">
+					<subreportParameterExpression><![CDATA[$P{companyName}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="companyPhone">
+					<subreportParameterExpression><![CDATA[$P{companyPhone}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="companyEmail">
+					<subreportParameterExpression><![CDATA[$P{companyEmail}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="companyAddress">
+					<subreportParameterExpression><![CDATA[$P{companyAddress}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="companyLogo">
+					<subreportParameterExpression><![CDATA[$P{companyLogo}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.JREmptyDataSource(1)]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{subreport_header}]]></subreportExpression>
+			</subreport>
+			<textField>
+				<reportElement x="0" y="80" width="555" height="30" uuid="738978d7-afee-40c9-aba3-3603d3180d04"/>
+				<textElement textAlignment="Center">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["TILL CLOSURE SUMMARY"]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="690">
+			<textField pattern="dd/MM/yyyy HH:mm">
+				<reportElement x="0" y="0" width="200" height="20" uuid="f58b6ed7-7821-41c8-99f4-dbef11d02449"/>
+				<textElement>
+					<font size="10" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{closedDate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="30" width="555" height="20" uuid="8dba635a-372d-4de9-befa-40f7397aaefa"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Sale Payments]]></text>
+			</staticText>
+			<subreport>
+				<reportElement x="0" y="50" width="555" height="120" uuid="bd92d630-b2a1-4a6e-b99d-c8de597fe4dc"/>
+				<subreportParameter name="REPORT_DATA_SOURCE">
+					<subreportParameterExpression><![CDATA[$P{saleDataSource}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportExpression><![CDATA[$P{subreport_sale_payments}]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement x="0" y="180" width="555" height="20" uuid="fc0b510c-a6bc-4ee7-9418-0259e86eb4b3"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Service Order Payments]]></text>
+			</staticText>
+			<subreport>
+				<reportElement x="0" y="200" width="555" height="120" uuid="52b45e33-e67a-43b1-acb2-f65b143f6634"/>
+				<subreportParameter name="REPORT_DATA_SOURCE">
+					<subreportParameterExpression><![CDATA[$P{serviceDataSource}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportExpression><![CDATA[$P{subreport_service_payments}]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement x="0" y="330" width="555" height="20" uuid="62984bac-0839-48c6-8647-ee9d7926794a"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cash In Summary]]></text>
+			</staticText>
+			<subreport>
+				<reportElement x="0" y="350" width="555" height="120" uuid="c002d514-8ec0-4ae0-b75c-e499df8d1476"/>
+				<subreportParameter name="REPORT_DATA_SOURCE">
+					<subreportParameterExpression><![CDATA[$P{cashInDataSource}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportExpression><![CDATA[$P{subreport_cash_in}]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement x="0" y="480" width="555" height="20" uuid="43a32229-7bb9-40a2-9255-40b5d67534e6"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cash Out Summary]]></text>
+			</staticText>
+			<subreport>
+				<reportElement x="0" y="500" width="555" height="120" uuid="10509871-1208-4e57-a3c3-96c60a9c1373"/>
+				<subreportParameter name="REPORT_DATA_SOURCE">
+					<subreportParameterExpression><![CDATA[$P{cashOutDataSource}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportExpression><![CDATA[$P{subreport_cash_out}]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+</jasperReport>

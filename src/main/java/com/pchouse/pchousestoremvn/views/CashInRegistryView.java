@@ -40,8 +40,8 @@ public class CashInRegistryView extends JInternalFrame {
 
         // Load data
         Date today = new Date();
-        todayFromDate = CommonSetting.getStartOfDay(today);
-        todayToDate = CommonSetting.getEndOfDay(today);
+        todayFromDate = CommonExtension.getStartOfDay(today);
+        todayToDate = CommonExtension.getEndOfDay(today);
         loadCashInTable(todayFromDate, todayToDate);
     }
 
@@ -178,8 +178,8 @@ public class CashInRegistryView extends JInternalFrame {
         }
 
         // Normalize to start/end of day
-        from = CommonSetting.getStartOfDay(from);
-        to = CommonSetting.getEndOfDay(to);
+        from = CommonExtension.getStartOfDay(from);
+        to = CommonExtension.getEndOfDay(to);
 
         List<CashInRegistry> list = cashInController.getAllCashInByDateRange(CommonSetting.COMPANY, from, to);
         dtmCashIn.setRowCount(0);
@@ -188,9 +188,9 @@ public class CashInRegistryView extends JInternalFrame {
             for (CashInRegistry c : list) {
                 dtmCashIn.addRow(new Object[]{
                     c.getIdCashInRegistry(),
-                    CommonExtension.formatDateTime(c.getTransactionDate()),
+                    CommonExtension.formatDateTimeFromLocalDate(c.getTransactionDate()),
                     CommonExtension.formatEuroCurrency(c.getAmount()),
-                    c.getNote(),                    
+                    c.getNote(),
                     c.getEmployee() != null ? c.getEmployee().getUsername() : ""
                 });
             }

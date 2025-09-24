@@ -79,6 +79,14 @@ public class SalePayment implements Serializable {
         this.dtTransaction = dtTransaction;
     }
 
+    public Long getIdSale() {
+        return sale != null ? sale.getIdSale() : null;
+    }
+
+    public String getPaymentTypeStr() {
+        return paymentType != null ? paymentType.toString() : null;
+    }
+
     // Getters and setters
     public long getIdSalePayment() {
         return idSalePayment;
@@ -167,6 +175,5 @@ public class SalePayment implements Serializable {
     public void setDtTransaction(Date dtTransaction) {
         this.dtTransaction = dtTransaction;
     }
-    
-    
+
 }

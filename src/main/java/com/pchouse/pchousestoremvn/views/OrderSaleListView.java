@@ -233,21 +233,20 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
                 List<SaleProdServ> listSaleProdServ = _saleProdServController.getSaleProdServ(saleModel);
                 List<Deposit> listSaleDeposit = _orderDepositController.getSaleDeposit(saleModel);
                 List<SalePayment> salePayments = _salePaymentController.getSalePayments(saleModel);
-                
 
-                if (saleModel.getStatus() == OrderStatus.PICKED && saleModel.getSaleType()== SaleType.COMMON) {
+                if (saleModel.getStatus() == OrderStatus.PICKED && saleModel.getSaleType() == SaleType.COMMON) {
                     PickedSaleView createdSaleView = new PickedSaleView(saleModel, listSaleProdServ, listSaleDeposit, salePayments);
                     openInternalFrame(createdSaleView, "Sale: " + saleId);
-                } else if (saleModel.getStatus() == OrderStatus.REFUNDED && saleModel.getSaleType()== SaleType.COMMON) {
+                } else if (saleModel.getStatus() == OrderStatus.REFUNDED && saleModel.getSaleType() == SaleType.COMMON) {
                     RefundedSaleView refundSaleView = new RefundedSaleView(saleModel, listSaleProdServ, listSaleDeposit, salePayments);
                     openInternalFrame(refundSaleView, "Refunded Sale: " + saleId);
-                } else if (saleModel.getStatus() == OrderStatus.CREATED && saleModel.getSaleType()== SaleType.REFURB) {
+                } else if (saleModel.getStatus() == OrderStatus.CREATED && saleModel.getSaleType() == SaleType.REFURB) {
                     CreatedRefurbSaleView createdRefurbSaleView = new CreatedRefurbSaleView(saleModel, listRefurbSale, listSaleDeposit, salePayments);
                     openInternalFrame(createdRefurbSaleView, "Created Refurb Sale: " + saleId);
-                } else if (saleModel.getStatus() == OrderStatus.PICKED && saleModel.getSaleType() == SaleType.REFURB){
+                } else if (saleModel.getStatus() == OrderStatus.PICKED && saleModel.getSaleType() == SaleType.REFURB) {
                     PickedRefurbSaleView pickedRefurbSaleView = new PickedRefurbSaleView(saleModel, listRefurbSale, listSaleDeposit, salePayments);
                     openInternalFrame(pickedRefurbSaleView, "Picked Refurb Sale: " + saleId);
-                } else if(saleModel.getStatus() == OrderStatus.REFUNDED && saleModel.getSaleType()== SaleType.REFURB) {
+                } else if (saleModel.getStatus() == OrderStatus.REFUNDED && saleModel.getSaleType() == SaleType.REFURB) {
                     RefundedRefurbSaleView refundedRefurbSaleView = new RefundedRefurbSaleView(saleModel, listRefurbSale, listSaleDeposit, salePayments);
                     openInternalFrame(refundedRefurbSaleView, "Refunded Refurb Sale: ");
                 }
@@ -334,6 +333,10 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
                 return canEdit[columnIndex];
             }
         });
+
+        // Enable sorting for Order List
+        table_view_order_list.setAutoCreateRowSorter(true);
+
         jScrollPane1.setViewportView(table_view_order_list);
         jTabbedPane1.addTab("Service Orders", jScrollPane1);
 
@@ -351,6 +354,10 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
                 return canEdit[columnIndex];
             }
         });
+
+        // Enable sorting for Sale List
+        table_view_sale_list.setAutoCreateRowSorter(true);
+
         jScrollPane2.setViewportView(table_view_sale_list);
         jTabbedPane1.addTab("Sale Orders", jScrollPane2);
 

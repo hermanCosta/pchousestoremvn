@@ -13,6 +13,7 @@ import com.pchouse.pchousestoremvn.models.CashOutRegistry;
 import com.pchouse.pchousestoremvn.models.Employee;
 import com.pchouse.pchousestoremvn.models.SalePayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
+import com.pchouse.pchousestoremvn.util.ReportGenerator;
 import com.pchouse.pchousestoremvn.views.modals.CloseTillSummaryDialog;
 import com.toedter.calendar.JDateChooser;
 import java.awt.BorderLayout;
@@ -20,11 +21,15 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
@@ -61,8 +66,10 @@ public class ClosingTillView extends JInternalFrame {
     private double cachedTotalCard = 0;
     private double cachedTotalCombined = 0;
 
-    private Date todayFromDate;
-    private Date todayToDate;
+    private List<SalePayment> _salePayments;
+    private List<ServiceOrderPayment> _serviceOrderPayments;
+    private List<CashInRegistry> _cashInList;
+    private List<CashOutRegistry> _cashOutList;
 
     public ClosingTillView() {
         this._closingTillController = new ClosingTillController();
@@ -72,11 +79,6 @@ public class ClosingTillView extends JInternalFrame {
         this._cashInRegistryController = new CashInRegistryController();
         this._cashOutRegistryController = new CashOutRegistryController();
 
-        // Load data
-        Date today = new Date();
-        todayFromDate = CommonSetting.getStartOfDay(today);
-        todayToDate = CommonSetting.getEndOfDay(today);
-
         initComponents();
     }
 
@@ -85,62 +87,56 @@ public class ClosingTillView extends JInternalFrame {
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
-        setLayout(new BorderLayout());
         setPreferredSize(new Dimension(1100, 700));
+        setLayout(new BorderLayout());
 
         // === Outer Wrapper Panel with Etched Border ===
-        JPanel wrapper = new JPanel(new BorderLayout(10, 10));
+        JPanel wrapper = new JPanel();
+        wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.X_AXIS));
         wrapper.setBorder(BorderFactory.createEtchedBorder());
 
-        // === Center: Tables ===
+        // === Sale Payments Table ===
         dtmSale = new DefaultTableModel(new Object[]{"Sale No.", "Type", "Cash", "Card", "Date"}, 0);
         tableSalePayments = new JTable(dtmSale);
         JScrollPane scrollSale = new JScrollPane(tableSalePayments);
         scrollSale.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Sale Payments"));
 
+        // === Service Order Payments Table ===
         dtmService = new DefaultTableModel(new Object[]{"Order No.", "Type", "Cash", "Card", "Date"}, 0);
         tableServicePayments = new JTable(dtmService);
         JScrollPane scrollService = new JScrollPane(tableServicePayments);
         scrollService.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Service Order Payments"));
 
-        JPanel tablesPanel = new JPanel(new GridLayout(2, 1, 5, 5));
-        tablesPanel.add(scrollSale);
-        tablesPanel.add(scrollService);
+        // === Left Panel (Sale + Service Tables) ===
+        JPanel leftPanel = new JPanel(new GridLayout(2, 1, 5, 5));
+        leftPanel.add(scrollSale);
+        leftPanel.add(scrollService);
+        leftPanel.setPreferredSize(new Dimension(570, 700)); // <-- Set preferred width for left panel
 
-        wrapper.add(tablesPanel, BorderLayout.CENTER);
-
-        // === Right: Cash In/Out Panel ===
+        // === Cash In Table ===
         dtmCashIn = new DefaultTableModel(new Object[]{"Amount", "Note", "Date"}, 0);
         tableCashIn = new JTable(dtmCashIn);
         JScrollPane scrollCashIn = new JScrollPane(tableCashIn);
         scrollCashIn.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Cash In Entries"));
 
+        // === Cash Out Table ===
         dtmCashOut = new DefaultTableModel(new Object[]{"Amount", "Note", "Date"}, 0);
         tableCashOut = new JTable(dtmCashOut);
         JScrollPane scrollCashOut = new JScrollPane(tableCashOut);
         scrollCashOut.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Cash Out Entries"));
 
+        // === Right Panel (Cash In/Out Tables) ===
         JPanel rightPanel = new JPanel(new GridLayout(2, 1, 5, 5));
-        rightPanel.setPreferredSize(new Dimension(350, 10)); // adjust width as needed
         rightPanel.add(scrollCashIn);
         rightPanel.add(scrollCashOut);
+        rightPanel.setPreferredSize(new Dimension(480, 700)); // <-- Set preferred width for right panel
 
-        wrapper.add(rightPanel, BorderLayout.EAST);
+        // === Add Panels to Wrapper with 6px gap ===
+        wrapper.add(leftPanel);
+        wrapper.add(Box.createRigidArea(new Dimension(6, 0))); // <-- 6px horizontal space
+        wrapper.add(rightPanel);
 
-        // Apply table settings
-        CommonSetting.tableSettings(tableCashIn);
-        CommonSetting.tableSettings(tableCashOut);
-
-        add(wrapper);
-
-        // === Table Settings ===
-        CommonSetting.tableSettings(tableSalePayments);
-        CommonSetting.tableSettings(tableServicePayments);
-
-        resizeTableColumns(tableSalePayments);
-        resizeTableColumns(tableServicePayments);
-
-        // === North: Date Picker ===
+        // === Top Panel (Date + Buttons) ===
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         topPanel.setBorder(BorderFactory.createEtchedBorder());
 
@@ -151,36 +147,47 @@ public class ClosingTillView extends JInternalFrame {
         dateChooser.setDate(new Date());
         topPanel.add(dateChooser);
 
-        // Load Button
-        btnRefresh = new JButton("Load", CommonExtension.loadIcon("/icons/icon_search.png"));
+        btnRefresh = new JButton("Search", CommonExtension.loadIcon("/icons/icon_search.png"));
         btnRefresh.setBackground(new Color(21, 76, 121));
         btnRefresh.setForeground(Color.WHITE);
         topPanel.add(btnRefresh);
 
-        // Print  Button
         btnPrint = new JButton("Print", CommonExtension.loadIcon("/icons/icon_print.png"));
         btnPrint.setBackground(new Color(21, 76, 121));
         btnPrint.setForeground(Color.WHITE);
         topPanel.add(btnPrint);
 
-        // Close Till  Button
         btnCloseTill = new JButton("Close Till", CommonExtension.loadIcon("/icons/icon_till_records.png"));
         btnCloseTill.setBackground(new Color(21, 76, 121));
         btnCloseTill.setForeground(Color.WHITE);
         topPanel.add(btnCloseTill);
 
-        // === Listeners ===        
+        // === Add Everything to Main Frame ===
+        add(topPanel, BorderLayout.NORTH);
+        add(wrapper, BorderLayout.CENTER);
+
+        // === Table Settings ===
+        CommonSetting.tableSettings(tableSalePayments);
+        CommonSetting.tableSettings(tableServicePayments);
+        CommonSetting.tableSettings(tableCashIn);
+        CommonSetting.tableSettings(tableCashOut);
+
+        resizePaymentTableColumns(tableSalePayments);
+        resizePaymentTableColumns(tableServicePayments);
+        resizeCashTableColumns(tableCashIn);
+        resizeCashTableColumns(tableCashOut);
+
+        // === Listeners ===
         btnRefresh.addActionListener(e -> loadPayments());
         btnCloseTill.addActionListener(e -> showSummaryDialog());
+        btnPrint.addActionListener(e -> printDailyClosingTillReport());
 
-        wrapper.add(topPanel, BorderLayout.NORTH);
-
+        // === Load Data ===
         loadPayments();
-        
     }
 
-    private void resizeTableColumns(JTable table) {
-        if (table.getColumnModel().getColumnCount() < 6) {
+    private void resizePaymentTableColumns(JTable table) {
+        if (table.getColumnModel().getColumnCount() < 5) {
             return;
         }
 
@@ -188,7 +195,7 @@ public class ClosingTillView extends JInternalFrame {
         table.getColumnModel().getColumn(0).setPreferredWidth(40);
 
         // Type
-        table.getColumnModel().getColumn(1).setPreferredWidth(80);
+        table.getColumnModel().getColumn(1).setPreferredWidth(60);
 
         // Cash
         table.getColumnModel().getColumn(2).setPreferredWidth(50);
@@ -200,11 +207,29 @@ public class ClosingTillView extends JInternalFrame {
         table.getColumnModel().getColumn(4).setPreferredWidth(120);
     }
 
+    private void resizeCashTableColumns(JTable table) {
+        if (table.getColumnModel().getColumnCount() < 3) {
+            return;
+        }
+
+        // Amount
+        table.getColumnModel().getColumn(0).setPreferredWidth(50);
+
+        // Note
+        table.getColumnModel().getColumn(1).setPreferredWidth(240);
+
+        // Date
+        table.getColumnModel().getColumn(2).setPreferredWidth(120);
+    }
+
     private void loadPayments() {
         Date selectedDate = dateChooser.getDate();
         if (selectedDate == null) {
             return;
         }
+
+        Date from = CommonExtension.getStartOfDay(selectedDate);
+        Date to = CommonExtension.getEndOfDay(selectedDate);
 
         dtmSale.setRowCount(0);
         dtmService.setRowCount(0);
@@ -215,11 +240,12 @@ public class ClosingTillView extends JInternalFrame {
         // ---- Handle Sale Payments ----
         List<SalePayment> salePayments = _salePaymentController.getSalePaymentsByDate(selectedDate);
         if (salePayments != null && !salePayments.isEmpty()) {
+            _salePayments = salePayments;
             // Group by: "saleId|paymentType"
             Map<String, double[]> groupedSales = new HashMap<>();
 
             for (SalePayment sp : salePayments) {
-                String key = sp.getSale().getIdSale() + "|" + sp.getPaymentType().name();
+                String key = sp.getSale().getIdSale() + "|" + sp.getPaymentType().name() + "|" + sp.getDtTransaction();
 
                 double[] totals = groupedSales.getOrDefault(key, new double[2]); // [cash, card]
                 totals[0] += sp.getCashAmount() != null ? sp.getCashAmount() : 0;
@@ -228,11 +254,14 @@ public class ClosingTillView extends JInternalFrame {
                 groupedSales.put(key, totals);
             }
 
-            // Add grouped rows to sale table
+            DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+
             for (Map.Entry<String, double[]> entry : groupedSales.entrySet()) {
                 String[] parts = entry.getKey().split("\\|");
                 String saleId = parts[0];
                 String paymentType = parts[1];
+
+                LocalDateTime dtTransaction = LocalDateTime.parse(parts[2], inputFormat);
                 double[] totals = entry.getValue();
 
                 dtmSale.addRow(new Object[]{
@@ -240,7 +269,7 @@ public class ClosingTillView extends JInternalFrame {
                     paymentType,
                     totals[0], // Cash
                     totals[1], // Card
-                    CommonExtension.formatDateTime(selectedDate)
+                    CommonExtension.formatDateTimeFromLocalDate(dtTransaction)
                 });
 
                 // Add to overall totals
@@ -252,11 +281,12 @@ public class ClosingTillView extends JInternalFrame {
         // ---- Handle Service Order Payments ----
         List<ServiceOrderPayment> serviceOrderPayments = _serviceOrderPaymentController.getServiceOrderPaymentsByDate(selectedDate);
         if (serviceOrderPayments != null && !serviceOrderPayments.isEmpty()) {
+            _serviceOrderPayments = serviceOrderPayments;
             // Group by: "serviceOrderId|paymentType"
             Map<String, double[]> groupedServiceOrders = new HashMap<>();
 
             for (ServiceOrderPayment sop : serviceOrderPayments) {
-                String key = sop.getServiceOrder().getIdServiceOrder() + "|" + sop.getPaymentType().name();
+                String key = sop.getServiceOrder().getIdServiceOrder() + "|" + sop.getPaymentType().name() + "|" + sop.getDtTransaction();
 
                 double[] totals = groupedServiceOrders.getOrDefault(key, new double[2]); // [cash, card]
                 totals[0] += sop.getCashAmount() != null ? sop.getCashAmount() : 0;
@@ -265,11 +295,14 @@ public class ClosingTillView extends JInternalFrame {
                 groupedServiceOrders.put(key, totals);
             }
 
-            // Add grouped rows to service order table
+            DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+
             for (Map.Entry<String, double[]> entry : groupedServiceOrders.entrySet()) {
                 String[] parts = entry.getKey().split("\\|");
                 String serviceOrderId = parts[0];
                 String paymentType = parts[1];
+
+                LocalDateTime dtTransaction = LocalDateTime.parse(parts[2], inputFormat);
                 double[] totals = entry.getValue();
 
                 dtmService.addRow(new Object[]{
@@ -277,13 +310,10 @@ public class ClosingTillView extends JInternalFrame {
                     paymentType,
                     totals[0], // Cash
                     totals[1], // Card
-                    CommonExtension.formatDateTime(selectedDate)
+                    CommonExtension.formatDateTimeFromLocalDate(dtTransaction)
                 });
-
-                // Add to overall totals
-                totalCash += totals[0];
-                totalCard += totals[1];
             }
+
         }
 
         // Clear cash in/out tables
@@ -291,25 +321,29 @@ public class ClosingTillView extends JInternalFrame {
         dtmCashOut.setRowCount(0);
 
         // Load Cash In Entries
-        List<CashInRegistry> cashIns = _cashInRegistryController.getAllCashInByDateRange(CommonSetting.COMPANY, todayFromDate, todayToDate);
+        List<CashInRegistry> cashIns = _cashInRegistryController.getAllCashInByDateRange(CommonSetting.COMPANY, from, to);
         if (cashIns != null) {
+            _cashInList = cashIns;
+
             for (CashInRegistry ci : cashIns) {
                 dtmCashIn.addRow(new Object[]{
                     ci.getAmount(),
                     ci.getNote(),
-                    CommonExtension.formatDateTime(ci.getTransactionDate())
+                    CommonExtension.formatDateTimeFromLocalDate(ci.getTransactionDate())
                 });
             }
         }
 
         // Load Cash Out Entries
-        List<CashOutRegistry> cashOuts = _cashOutRegistryController.getAllCashOutByDateRange(CommonSetting.COMPANY, todayFromDate, todayToDate);
+        List<CashOutRegistry> cashOuts = _cashOutRegistryController.getAllCashOutByDateRange(CommonSetting.COMPANY, from, to);
         if (cashOuts != null) {
+            _cashOutList = cashOuts;
+
             for (CashOutRegistry co : cashOuts) {
                 dtmCashOut.addRow(new Object[]{
                     co.getAmount(),
                     co.getNote(),
-                    CommonExtension.formatDateTime(co.getTransactionDate())
+                    CommonExtension.formatDateTimeFromLocalDate(co.getTransactionDate())
                 });
             }
         }
@@ -365,5 +399,10 @@ public class ClosingTillView extends JInternalFrame {
         });
 
         dialog.setVisible(true);
+    }
+
+    private void printDailyClosingTillReport() {
+        //new ReportGenerator().generateServiceOrderReport(_serviceOrderModel, _listServiceOrderFault, _listServiceOrderProdServ);
+        new ReportGenerator().generateDailyClosingTillReport(_salePayments, _serviceOrderPayments, _cashInList, _cashOutList, title, cachedTotalCash, cachedTotalCash);
     }
 }

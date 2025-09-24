@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="subreport_sale_payments" pageWidth="555" pageHeight="100" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="a8b2e3c4-1f57-4c66-9a0f-3d6d2e8b0d9c">
+	<field name="idSale" class="java.lang.Long"/>
+	<field name="paymentTypeStr" class="java.lang.String"/>
+	<field name="cashAmount" class="java.lang.Double"/>
+	<field name="cardAmount" class="java.lang.Double"/>
+	<field name="dtTransaction" class="java.util.Date"/>
+	<columnHeader>
+		<band height="20">
+			<staticText>
+				<reportElement x="0" y="0" width="80" height="20" uuid="9bc992d3-8b01-4be4-831e-73d0b57bfaa8"/>
+				<text><![CDATA[Sale No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="80" y="0" width="100" height="20" uuid="15da3922-60e9-42f9-bca6-5f571b3c62f4"/>
+				<text><![CDATA[Type]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="180" y="0" width="80" height="20" uuid="83ec1fdf-8b85-436c-861b-517146aec1f6"/>
+				<text><![CDATA[Cash]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="260" y="0" width="80" height="20" uuid="056d9a5e-4ece-40ae-ab61-e6df3a8ce7de"/>
+				<text><![CDATA[Card]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="340" y="0" width="215" height="20" uuid="23f547ee-42a1-45af-8ae1-f7c93acd6340"/>
+				<text><![CDATA[Date]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20">
+			<textField>
+				<reportElement x="0" y="0" width="80" height="20" uuid="546fbc6c-7de5-4b6f-b52a-35fb5726e3eb"/>
+				<textFieldExpression><![CDATA[$F{idSale}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="80" y="0" width="100" height="20" uuid="ac5255fc-053b-4be0-beb5-540f761da4f1"/>
+				<textFieldExpression><![CDATA[$F{paymentTypeStr}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="180" y="0" width="80" height="20" uuid="8326cb90-de93-4246-b6ab-b91a51084128"/>
+				<textFieldExpression><![CDATA["€" + String.format("%.2f", $F{cashAmount})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="260" y="0" width="80" height="20" uuid="18d6b774-5080-4222-abb7-b263b385f18a"/>
+				<textFieldExpression><![CDATA["€" + String.format("%.2f", $F{cardAmount})]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy HH:mm">
+				<reportElement x="340" y="0" width="215" height="20" uuid="8f609712-185e-4df4-9137-c9181dc35708"/>
+				<textFieldExpression><![CDATA[$F{dtTransaction}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

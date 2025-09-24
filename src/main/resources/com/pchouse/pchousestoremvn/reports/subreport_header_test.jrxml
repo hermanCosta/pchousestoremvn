@@ -1,50 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
-              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
-              name="subreport_header"
-              pageWidth="595" pageHeight="70" columnWidth="555"
-              leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0"
-              uuid="9fa2038b-2e0d-4a9c-b31f-1b43e06f5a17">
-
-    <detail>
-        <band height="50">
-            <staticText>
-                <reportElement x="0" y="0" width="400" height="30"/>
-                <text><![CDATA[*** SUBREPORT FUNCIONANDO ***]]></text>
-            </staticText>
-
-            <textField>
-                <reportElement x="320" y="0" width="230" height="14"/>
-                <textElement textAlignment="Right">
-                    <font size="10" isBold="true"/>
-                </textElement>
-                <textFieldExpression><![CDATA[$P{companyName}]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement x="320" y="14" width="230" height="14"/>
-                <textElement textAlignment="Right">
-                    <font size="9"/>
-                </textElement>
-                <textFieldExpression><![CDATA["📍 " + $P{companyAddress}]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement x="320" y="28" width="230" height="14"/>
-                <textElement textAlignment="Right">
-                    <font size="9"/>
-                </textElement>
-                <textFieldExpression><![CDATA["📞 " + $P{companyPhone}]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement x="320" y="42" width="230" height="14"/>
-                <textElement textAlignment="Right">
-                    <font size="9"/>
-                </textElement>
-                <textFieldExpression><![CDATA["✉ " + $P{companyEmail}]]></textFieldExpression>
-            </textField>
-            <line>
-                <reportElement x="0" y="60" width="555" height="1" forecolor="#999999"/>
-            </line>
-        </band>
-    </detail>
+<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="subreport_header" pageWidth="595" pageHeight="70" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="9fa2038b-2e0d-4a9c-b31f-1b43e06f5a17">
+	<detail>
+		<band height="57">
+			<staticText>
+				<reportElement x="0" y="0" width="400" height="30" uuid="c30ac5ce-0783-402f-8eba-05b51382dd4c"/>
+				<text><![CDATA[*** SUBREPORT FUNCIONANDO ***]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="320" y="0" width="230" height="14" uuid="ff2f4468-9adc-4d1f-8775-54a6e8760047"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{companyName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="320" y="14" width="230" height="14" uuid="3be3f0b0-b06c-4d20-91cf-1facf0356cee"/>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["📍 " + $P{companyAddress}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="320" y="28" width="230" height="14" uuid="60624bf0-e59f-476e-9845-0244b8dffb60"/>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["📞 " + $P{companyPhone}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="320" y="42" width="230" height="14" uuid="afac64e0-0807-404f-8bdf-4f57033f3f83"/>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["✉ " + $P{companyEmail}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="56" width="555" height="1" forecolor="#999999" uuid="5dcbef08-7d08-4b76-af5c-23c2b34748e0"/>
+			</line>
+		</band>
+	</detail>
 </jasperReport>

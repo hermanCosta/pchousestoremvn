@@ -3,6 +3,8 @@ package com.pchouse.pchousestoremvn.util;
 import static com.pchouse.pchousestoremvn.enums.PayMethod.CARD;
 import static com.pchouse.pchousestoremvn.enums.PayMethod.CASH;
 import static com.pchouse.pchousestoremvn.enums.PayMethod.COMBINE;
+import com.pchouse.pchousestoremvn.models.CashInRegistry;
+import com.pchouse.pchousestoremvn.models.CashOutRegistry;
 import com.pchouse.pchousestoremvn.models.RefurbSale;
 import com.pchouse.pchousestoremvn.models.Sale;
 import com.pchouse.pchousestoremvn.models.SalePayment;
@@ -189,7 +191,7 @@ public class ReportGenerator {
             JasperPrint jasperPrint = JasperFillManager.fillReport(mainReport, parameters, new JREmptyDataSource());
 
             // View the filled report
-            JasperViewer.viewReport(jasperPrint, false);            
+            JasperViewer.viewReport(jasperPrint, false);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -386,13 +388,85 @@ public class ReportGenerator {
             JasperPrint jasperPrint = JasperFillManager.fillReport(mainReport, parameters, new JREmptyDataSource());
 
             // View the filled report
-            JasperViewer.viewReport(jasperPrint, false);            
+            JasperViewer.viewReport(jasperPrint, false);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
+
+    public void generateDailyClosingTillReport(
+            List<SalePayment> salePayments,
+            List<ServiceOrderPayment> serviceOrderPayments,
+            List<CashInRegistry> cashInList,
+            List<CashOutRegistry> cashOutList,
+            String cashierName,
+            double openCash,
+            double closeCash
+    ) {
+        try {
+            String subreportDir = "/com/pchouse/pchousestoremvn/reports/";
+
+            // Load subreports
+            JasperReport saleSubreport = (JasperReport) JRLoader.loadObject(getClass().getResource(subreportDir + "subreport_sale_payments.jasper"));
+            JasperReport serviceSubreport = (JasperReport) JRLoader.loadObject(getClass().getResource(subreportDir + "subreport_service_payments.jasper"));
+            JasperReport cashInSubreport = (JasperReport) JRLoader.loadObject(getClass().getResource(subreportDir + "subreport_cash_in.jasper"));
+            JasperReport cashOutSubreport = (JasperReport) JRLoader.loadObject(getClass().getResource(subreportDir + "subreport_cash_out.jasper"));
+
+            JasperReport mainReport = (JasperReport) JRLoader.loadObject(getClass().getResource(subreportDir + "TillCloseReport.jasper"));
+
+            // Calculate totals
+            double saleCash = salePayments.stream().mapToDouble(p -> p.getCashAmount() != null ? p.getCashAmount() : 0).sum();
+            double saleCard = salePayments.stream().mapToDouble(p -> p.getCardAmount() != null ? p.getCardAmount() : 0).sum();
+
+            double serviceCash = serviceOrderPayments.stream().mapToDouble(p -> p.getCashAmount() != null ? p.getCashAmount() : 0).sum();
+            double serviceCard = serviceOrderPayments.stream().mapToDouble(p -> p.getCardAmount() != null ? p.getCardAmount() : 0).sum();
+
+            double cashIn = cashInList.stream()
+                    .mapToDouble(c -> c.getAmount())
+                    .sum();
+            double cashOut = cashOutList.stream()
+                    .mapToDouble(c -> c.getAmount())
+                    .sum();
+
+            double totalCash = saleCash + serviceCash + cashIn - cashOut;
+
+            // Parameters
+            Map<String, Object> params = new HashMap<>();
+            params.put("cashier", cashierName);
+            params.put("openCash", openCash);
+            params.put("closeCash", closeCash);
+            params.put("totalCash", totalCash);
+            params.put("saleCash", saleCash);
+            params.put("saleCard", saleCard);
+            params.put("serviceCash", serviceCash);
+            params.put("serviceCard", serviceCard);
+            params.put("cashIn", cashIn);
+            params.put("cashOut", cashOut);
+
+            // Subreports
+            params.put("subreport_sale_payments", saleSubreport);
+            params.put("subreport_service_payments", serviceSubreport);
+            params.put("subreport_cash_in", cashInSubreport);
+            params.put("subreport_cash_out", cashOutSubreport);
+
+            // Data sources
+            params.put("saleDataSource", new JRBeanCollectionDataSource(salePayments));
+            params.put("serviceDataSource", new JRBeanCollectionDataSource(serviceOrderPayments));
+            params.put("cashInDataSource", new JRBeanCollectionDataSource(cashInList));
+            params.put("cashOutDataSource", new JRBeanCollectionDataSource(cashOutList));
+
+            // Fill and display
+            JasperPrint jasperPrint = JasperFillManager.fillReport(mainReport, params, new JREmptyDataSource());
+            JasperViewer.viewReport(jasperPrint, false);
+
+            System.out.println("Daily Cash Report generated successfully.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void generateServiceOrderReportTest() {
         try {
             Map<String, Object> params = new HashMap<>();

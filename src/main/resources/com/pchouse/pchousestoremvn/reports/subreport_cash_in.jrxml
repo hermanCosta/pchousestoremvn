@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="subreport_cash_inout" pageWidth="555" pageHeight="100" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="c4e7a2d1-893b-4b94-92e6-0c3d42f0b2b3">
+	<field name="amount" class="java.lang.Double"/>
+	<field name="note" class="java.lang.String"/>
+	<field name="date" class="java.util.Date"/>
+	<columnHeader>
+		<band height="20">
+			<staticText>
+				<reportElement x="80" y="0" width="80" height="20" uuid="554b61ac-baef-4436-a59b-61fca44a7af5"/>
+				<text><![CDATA[Amount]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="160" y="0" width="215" height="20" uuid="44ef34e7-849d-4836-be77-9e234113d521"/>
+				<text><![CDATA[Note]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="375" y="0" width="180" height="20" uuid="d5b259be-b282-4989-acd3-d5772d0c7c00"/>
+				<text><![CDATA[Date]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20">
+			<textField>
+				<reportElement x="80" y="0" width="80" height="20" uuid="0fe2dd3d-5dcf-4e46-9563-e2e1a879cb53"/>
+				<textFieldExpression><![CDATA["€" + String.format("%.2f", $F{amount})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="160" y="0" width="215" height="20" uuid="ffd754f5-5c94-49c4-85ae-79b5e68d8150"/>
+				<textFieldExpression><![CDATA[$F{note}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy HH:mm">
+				<reportElement x="375" y="0" width="180" height="20" uuid="be66efb3-1de8-4ebb-a03e-41d191034e63"/>
+				<textFieldExpression><![CDATA[$F{date}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

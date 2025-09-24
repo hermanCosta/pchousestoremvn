@@ -40,8 +40,8 @@ public class CashOutRegistryView extends JInternalFrame {
 
         // Load data
         Date today = new Date();
-        todayFromDate = CommonSetting.getStartOfDay(today);
-        todayToDate = CommonSetting.getEndOfDay(today);
+        todayFromDate = CommonExtension.getStartOfDay(today);
+        todayToDate = CommonExtension.getEndOfDay(today);
         loadCashOutTable(todayFromDate, todayToDate);
     }
 
@@ -178,8 +178,8 @@ public class CashOutRegistryView extends JInternalFrame {
         }
 
         // Normalize to start/end of day
-        from = CommonSetting.getStartOfDay(from);
-        to = CommonSetting.getEndOfDay(to);
+        from = CommonExtension.getStartOfDay(from);
+        to = CommonExtension.getEndOfDay(to);
 
         List<CashOutRegistry> list = cashOutController.getAllCashOutByDateRange(CommonSetting.COMPANY, from, to);
         dtmCashOut.setRowCount(0);
@@ -188,7 +188,7 @@ public class CashOutRegistryView extends JInternalFrame {
             for (CashOutRegistry c : list) {
                 dtmCashOut.addRow(new Object[]{
                     c.getIdCashOutRegistry(),
-                    CommonExtension.formatDateTime(c.getTransactionDate()),
+                    CommonExtension.formatDateTimeFromLocalDate(c.getTransactionDate()),
                     CommonExtension.formatEuroCurrency(c.getAmount()),
                     c.getNote(),
                     c.getEmployee() != null ? c.getEmployee().getUsername() : ""
