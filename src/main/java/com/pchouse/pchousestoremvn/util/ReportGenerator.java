@@ -1,5 +1,7 @@
 package com.pchouse.pchousestoremvn.util;
 
+import com.pchouse.pchousestoremvn.common.CommonExtension;
+import com.pchouse.pchousestoremvn.common.CommonSetting;
 import static com.pchouse.pchousestoremvn.enums.PayMethod.CARD;
 import static com.pchouse.pchousestoremvn.enums.PayMethod.CASH;
 import static com.pchouse.pchousestoremvn.enums.PayMethod.COMBINE;
@@ -17,6 +19,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Date;
 
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
@@ -406,6 +409,12 @@ public class ReportGenerator {
     ) {
         try {
             String subreportDir = "/com/pchouse/pchousestoremvn/reports/";
+            String headerSubreportPath = "/com/pchouse/pchousestoremvn/reports/subreport_header.jasper";
+
+            // Load the header subreport JasperReport object
+            JasperReport headerSubreport = (JasperReport) JRLoader.loadObject(
+                    getClass().getResource(headerSubreportPath)
+            );
 
             // Load subreports
             JasperReport saleSubreport = (JasperReport) JRLoader.loadObject(getClass().getResource(subreportDir + "subreport_sale_payments.jasper"));
@@ -433,6 +442,24 @@ public class ReportGenerator {
 
             // Parameters
             Map<String, Object> params = new HashMap<>();
+
+            // Company info (shared with header subreport)
+            params.put("companyName", CommonSetting.COMPANY.getName());
+            params.put("companyAddress", CommonSetting.COMPANY.getAddress());
+            params.put("companyPhone", CommonSetting.COMPANY.getContactOne());
+            params.put("companyEmail", CommonSetting.COMPANY.getEmail());
+
+            // Logo InputStream
+            InputStream logoStream = getClass().getResourceAsStream("/icons/icon_logo_header_lg.png");
+            if (logoStream == null) {
+                System.err.println("Logo not found!");
+            }
+            params.put("companyLogo", logoStream);
+
+            // Pass the compiled header subreport to main report
+            params.put("subreport_header", headerSubreport);
+
+            params.put("closedDate", CommonExtension.formatDateTime(new Date()));
             params.put("cashier", cashierName);
             params.put("openCash", openCash);
             params.put("closeCash", closeCash);

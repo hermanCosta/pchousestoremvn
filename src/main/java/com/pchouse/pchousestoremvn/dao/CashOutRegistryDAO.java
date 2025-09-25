@@ -22,7 +22,7 @@ public class CashOutRegistryDAO {
 
         try {
             TypedQuery<CashOutRegistry> query = em.createQuery(
-                    "SELECT c FROM CashOutRegistry c WHERE c.company = :company ORDER BY c.transactionDate DESC",
+                    "SELECT c FROM CashOutRegistry c WHERE c.company = :company ORDER BY c.dtTransaction DESC",
                     CashOutRegistry.class
             );
             query.setParameter("company", company);
@@ -67,7 +67,7 @@ public class CashOutRegistryDAO {
             LocalDateTime toDateTime = to.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
             TypedQuery<CashOutRegistry> query = em.createQuery(
-                    "SELECT c FROM CashOutRegistry c WHERE c.company = :company AND c.transactionDate BETWEEN :from AND :to ORDER BY c.transactionDate ASC",
+                    "SELECT c FROM CashOutRegistry c WHERE c.company = :company AND c.dtTransaction BETWEEN :from AND :to ORDER BY c.dtTransaction ASC",
                     CashOutRegistry.class
             );
             query.setParameter("company", currentCompany);

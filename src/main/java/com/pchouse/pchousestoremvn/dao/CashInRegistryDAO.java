@@ -22,7 +22,7 @@ public class CashInRegistryDAO {
 
         try {
             TypedQuery<CashInRegistry> query = em.createQuery(
-                    "SELECT c FROM CashInRegistry c WHERE c.company = :company ORDER BY c.transactionDate DESC",
+                    "SELECT c FROM CashInRegistry c WHERE c.company = :company ORDER BY c.dtTransaction DESC",
                     CashInRegistry.class
             );
             query.setParameter("company", company);
@@ -67,7 +67,7 @@ public class CashInRegistryDAO {
             LocalDateTime toDateTime = to.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
             TypedQuery<CashInRegistry> query = em.createQuery(
-                    "SELECT c FROM CashInRegistry c WHERE c.company = :company AND c.transactionDate BETWEEN :from AND :to ORDER BY c.transactionDate ASC",
+                    "SELECT c FROM CashInRegistry c WHERE c.company = :company AND c.dtTransaction BETWEEN :from AND :to ORDER BY c.dtTransaction ASC",
                     CashInRegistry.class
             );
             query.setParameter("company", currentCompany);

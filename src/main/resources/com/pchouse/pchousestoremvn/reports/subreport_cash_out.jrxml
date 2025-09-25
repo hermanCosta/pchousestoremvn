@@ -3,7 +3,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="subreport_cash_inout" pageWidth="555" pageHeight="100" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="9f2b3e74-5f3a-4904-81fd-9f4bc65239d1">
 	<field name="amount" class="java.lang.Double"/>
 	<field name="note" class="java.lang.String"/>
-	<field name="date" class="java.util.Date"/>
+	<field name="dtTransaction" class="java.time.LocalDateTime"/>
 	<columnHeader>
 		<band height="20">
 			<staticText>
@@ -32,7 +32,7 @@
 			</textField>
 			<textField pattern="dd/MM/yyyy HH:mm">
 				<reportElement x="375" y="0" width="180" height="20" uuid="26e36464-720c-452a-8e6f-c25ded02a046"/>
-				<textFieldExpression><![CDATA[$F{date}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{dtTransaction}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

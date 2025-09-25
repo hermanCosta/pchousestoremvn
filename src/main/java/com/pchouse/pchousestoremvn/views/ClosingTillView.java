@@ -329,7 +329,7 @@ public class ClosingTillView extends JInternalFrame {
                 dtmCashIn.addRow(new Object[]{
                     ci.getAmount(),
                     ci.getNote(),
-                    CommonExtension.formatDateTimeFromLocalDate(ci.getTransactionDate())
+                    CommonExtension.formatDateTimeFromLocalDate(ci.getDtTransaction())
                 });
             }
         }
@@ -343,7 +343,7 @@ public class ClosingTillView extends JInternalFrame {
                 dtmCashOut.addRow(new Object[]{
                     co.getAmount(),
                     co.getNote(),
-                    CommonExtension.formatDateTimeFromLocalDate(co.getTransactionDate())
+                    CommonExtension.formatDateTimeFromLocalDate(co.getDtTransaction())
                 });
             }
         }

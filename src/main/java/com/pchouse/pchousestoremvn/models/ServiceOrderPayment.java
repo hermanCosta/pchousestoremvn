@@ -80,6 +80,14 @@ public class ServiceOrderPayment implements Serializable {
         this.dtTransaction = dtTransaction;
     }
 
+    public Long getIdServiceOrder(){
+        return serviceOrder != null ? serviceOrder.getIdServiceOrder() : null;
+    }
+    
+    public String getPaymentTypeStr(){
+        return paymentType != null ? paymentType.toString() : null;
+    }
+    
     // Getters and setters
     public long getIdServiceOrderPayment() {
         return idServiceOrderPayment;

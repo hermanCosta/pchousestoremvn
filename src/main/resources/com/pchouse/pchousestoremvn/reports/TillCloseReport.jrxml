@@ -11,14 +11,14 @@
 	<parameter name="companyEmail" class="java.lang.String"/>
 	<parameter name="companyAddress" class="java.lang.String"/>
 	<parameter name="companyLogo" class="java.io.InputStream"/>
-	<parameter name="closedDate" class="java.util.Date"/>
+	<parameter name="closedDate" class="java.lang.String"/>
 	<parameter name="saleDataSource" class="net.sf.jasperreports.engine.JRDataSource"/>
 	<parameter name="serviceDataSource" class="net.sf.jasperreports.engine.JRDataSource"/>
 	<parameter name="cashInDataSource" class="net.sf.jasperreports.engine.JRDataSource"/>
 	<parameter name="cashOutDataSource" class="net.sf.jasperreports.engine.JRDataSource"/>
 	<pageHeader>
 		<band height="110">
-			<subreport isUsingCache="true">
+			<subreport isUsingCache="true" runToBottom="false">
 				<reportElement x="0" y="0" width="555" height="65" uuid="eb618718-3ab7-4449-9063-e968891d39ea"/>
 				<subreportParameter name="companyName">
 					<subreportParameterExpression><![CDATA[$P{companyName}]]></subreportParameterExpression>

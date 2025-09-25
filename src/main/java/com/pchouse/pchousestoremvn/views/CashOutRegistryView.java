@@ -188,7 +188,7 @@ public class CashOutRegistryView extends JInternalFrame {
             for (CashOutRegistry c : list) {
                 dtmCashOut.addRow(new Object[]{
                     c.getIdCashOutRegistry(),
-                    CommonExtension.formatDateTimeFromLocalDate(c.getTransactionDate()),
+                    CommonExtension.formatDateTimeFromLocalDate(c.getDtTransaction()),
                     CommonExtension.formatEuroCurrency(c.getAmount()),
                     c.getNote(),
                     c.getEmployee() != null ? c.getEmployee().getUsername() : ""
@@ -230,7 +230,7 @@ public class CashOutRegistryView extends JInternalFrame {
         CashOutRegistry take = new CashOutRegistry();
         take.setAmount(amount);
         take.setNote(note.toUpperCase());
-        take.setTransactionDate(LocalDateTime.now());
+        take.setDtTransaction(LocalDateTime.now());
         take.setEmployee(emp);
         take.setCompany(CommonSetting.COMPANY);
 

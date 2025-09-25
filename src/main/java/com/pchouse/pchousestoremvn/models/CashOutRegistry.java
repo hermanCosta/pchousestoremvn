@@ -28,18 +28,18 @@ public class CashOutRegistry implements Serializable {
     private Company company;
 
     @Column(name = "DT_TRANSACTION", nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime transactionDate;
+    private LocalDateTime dtTransaction;
 
     public CashOutRegistry() {
         // Default constructor
     }
 
-    public CashOutRegistry(double amount, String note, Employee employee, Company company, LocalDateTime transactionDate) {
+    public CashOutRegistry(double amount, String note, Employee employee, Company company, LocalDateTime dtTransaction) {
         this.amount = amount;
         this.note = note;
         this.employee = employee;
         this.company = company;
-        this.transactionDate = transactionDate;
+        this.dtTransaction = dtTransaction;
     }
 
     public long getIdCashOutRegistry() {
@@ -82,12 +82,12 @@ public class CashOutRegistry implements Serializable {
         this.company = company;
     }
 
-    public LocalDateTime getTransactionDate() {
-        return transactionDate;
+    public LocalDateTime getDtTransaction() {
+        return dtTransaction;
     }
 
-    public void setTransactionDate(LocalDateTime transactionDate) {
-        this.transactionDate = transactionDate;
+    public void setDtTransaction(LocalDateTime dtTransaction) {
+        this.dtTransaction = dtTransaction;
     }
 
     @Override
@@ -97,7 +97,7 @@ public class CashOutRegistry implements Serializable {
                 + ", amount=" + amount
                 + ", note='" + note + '\''
                 + ", employee=" + (employee != null ? employee.getIdEmployee() : null)
-                + ", transactionDate=" + transactionDate
+                + ", transactionDate=" + dtTransaction
                 + '}';
     }
 

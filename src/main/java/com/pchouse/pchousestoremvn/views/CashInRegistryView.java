@@ -188,7 +188,7 @@ public class CashInRegistryView extends JInternalFrame {
             for (CashInRegistry c : list) {
                 dtmCashIn.addRow(new Object[]{
                     c.getIdCashInRegistry(),
-                    CommonExtension.formatDateTimeFromLocalDate(c.getTransactionDate()),
+                    CommonExtension.formatDateTimeFromLocalDate(c.getDtTransaction()),
                     CommonExtension.formatEuroCurrency(c.getAmount()),
                     c.getNote(),
                     c.getEmployee() != null ? c.getEmployee().getUsername() : ""
@@ -230,7 +230,7 @@ public class CashInRegistryView extends JInternalFrame {
         CashInRegistry entry = new CashInRegistry();
         entry.setAmount(amount);
         entry.setNote(note.toUpperCase());
-        entry.setTransactionDate(LocalDateTime.now());
+        entry.setDtTransaction(LocalDateTime.now());
         entry.setEmployee(emp);
         entry.setCompany(CommonSetting.COMPANY);
 
