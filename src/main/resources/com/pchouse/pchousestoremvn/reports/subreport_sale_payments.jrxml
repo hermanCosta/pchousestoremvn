@@ -34,7 +34,7 @@
 		<band height="20">
 			<textField>
 				<reportElement x="0" y="0" width="80" height="20" uuid="546fbc6c-7de5-4b6f-b52a-35fb5726e3eb"/>
-				<textFieldExpression><![CDATA[$F{idSale}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[String.format("%06d", $F{idSale})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="80" y="0" width="100" height="20" uuid="ac5255fc-053b-4be0-beb5-540f761da4f1"/>
@@ -42,11 +42,11 @@
 			</textField>
 			<textField>
 				<reportElement x="180" y="0" width="80" height="20" uuid="8326cb90-de93-4246-b6ab-b91a51084128"/>
-				<textFieldExpression><![CDATA["€" + String.format("%.2f", $F{cashAmount})]]></textFieldExpression>
+				<textFieldExpression><![CDATA["€ " + String.format("%.2f", $F{cashAmount})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="260" y="0" width="80" height="20" uuid="18d6b774-5080-4222-abb7-b263b385f18a"/>
-				<textFieldExpression><![CDATA["€" + String.format("%.2f", $F{cardAmount})]]></textFieldExpression>
+				<textFieldExpression><![CDATA["€ " + String.format("%.2f", $F{cardAmount})]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy HH:mm">
 				<reportElement x="340" y="0" width="215" height="20" uuid="8f609712-185e-4df4-9137-c9181dc35708"/>

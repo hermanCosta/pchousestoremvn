@@ -67,9 +67,7 @@ public class CreatedOrderView extends javax.swing.JInternalFrame {
     private final DefaultTableModel _dtmProdServ;
     private final DefaultTableModel _dtmFault;
     private final DefaultListModel _defaultListModelProdServ;
-    private final DefaultListModel _defaultListModelFault;
-
-    Frame _parentFrame = JOptionPane.getFrameForComponent(this);
+    private final DefaultListModel _defaultListModelFault;   
 
     public CreatedOrderView(ServiceOrder orderModel, List<ServiceOrderFault> listOrderFault, List<ServiceOrderProdServ> listOrderProdServ, List<Deposit> listOrderDeposit) {
         initComponents();

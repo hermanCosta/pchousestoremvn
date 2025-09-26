@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ReportGenerator {
 
@@ -407,16 +408,36 @@ public class ReportGenerator {
             double openCash,
             double closeCash
     ) {
+        double totalGrossSale = salePayments.stream()
+                .mapToDouble(SalePayment::getAmountDue)
+                .sum();
+
+        double totalGrossService = serviceOrderPayments.stream()
+                .mapToDouble(ServiceOrderPayment::getAmountDue)
+                .sum();
+
+        // Assuming payment types are strings like "CASH", "CARD", etc.
+        double totalCash = Stream.concat(
+                salePayments.stream().filter(p -> "CASH".equalsIgnoreCase(p.getPaymentType().toString())),
+                serviceOrderPayments.stream().filter(p -> "CASH".equalsIgnoreCase(p.getPaymentType().toString()))
+        ).mapToDouble(p -> ((SalePayment) p).getAmountDue()).sum();
+
+        double totalCard = Stream.concat(
+                salePayments.stream().filter(p -> "CARD".equalsIgnoreCase(p.getPaymentType().toString())),
+                serviceOrderPayments.stream().filter(p -> "CARD".equalsIgnoreCase(p.getPaymentType().toString()))
+        ).mapToDouble(p -> ((SalePayment) p).getAmountDue()).sum();
+
+        // If there's a "REFUND" type or flag
+        double totalRefunds = Stream.concat(
+                salePayments.stream().filter(p -> "REFUND".equalsIgnoreCase(p.getPaymentType().toString())),
+                serviceOrderPayments.stream().filter(p -> "REFUND".equalsIgnoreCase(p.getPaymentType().toString()))
+        ).mapToDouble(p -> ((SalePayment) p).getAmountDue()).sum();
+
         try {
             String subreportDir = "/com/pchouse/pchousestoremvn/reports/";
-            String headerSubreportPath = "/com/pchouse/pchousestoremvn/reports/subreport_header.jasper";
-
-            // Load the header subreport JasperReport object
-            JasperReport headerSubreport = (JasperReport) JRLoader.loadObject(
-                    getClass().getResource(headerSubreportPath)
-            );
 
             // Load subreports
+            JasperReport headerSubreport = (JasperReport) JRLoader.loadObject(getClass().getResource(subreportDir + "subreport_header.jasper"));
             JasperReport saleSubreport = (JasperReport) JRLoader.loadObject(getClass().getResource(subreportDir + "subreport_sale_payments.jasper"));
             JasperReport serviceSubreport = (JasperReport) JRLoader.loadObject(getClass().getResource(subreportDir + "subreport_service_payments.jasper"));
             JasperReport cashInSubreport = (JasperReport) JRLoader.loadObject(getClass().getResource(subreportDir + "subreport_cash_in.jasper"));
@@ -425,21 +446,20 @@ public class ReportGenerator {
             JasperReport mainReport = (JasperReport) JRLoader.loadObject(getClass().getResource(subreportDir + "TillCloseReport.jasper"));
 
             // Calculate totals
-            double saleCash = salePayments.stream().mapToDouble(p -> p.getCashAmount() != null ? p.getCashAmount() : 0).sum();
-            double saleCard = salePayments.stream().mapToDouble(p -> p.getCardAmount() != null ? p.getCardAmount() : 0).sum();
-
-            double serviceCash = serviceOrderPayments.stream().mapToDouble(p -> p.getCashAmount() != null ? p.getCashAmount() : 0).sum();
-            double serviceCard = serviceOrderPayments.stream().mapToDouble(p -> p.getCardAmount() != null ? p.getCardAmount() : 0).sum();
-
-            double cashIn = cashInList.stream()
-                    .mapToDouble(c -> c.getAmount())
-                    .sum();
-            double cashOut = cashOutList.stream()
-                    .mapToDouble(c -> c.getAmount())
-                    .sum();
-
-            double totalCash = saleCash + serviceCash + cashIn - cashOut;
-
+//            double saleCash = salePayments.stream().mapToDouble(p -> p.getCashAmount() != null ? p.getCashAmount() : 0).sum();
+//            double saleCard = salePayments.stream().mapToDouble(p -> p.getCardAmount() != null ? p.getCardAmount() : 0).sum();
+//
+//            double serviceCash = serviceOrderPayments.stream().mapToDouble(p -> p.getCashAmount() != null ? p.getCashAmount() : 0).sum();
+//            double serviceCard = serviceOrderPayments.stream().mapToDouble(p -> p.getCardAmount() != null ? p.getCardAmount() : 0).sum();
+//
+//            double cashIn = cashInList.stream()
+//                    .mapToDouble(c -> c.getAmount())
+//                    .sum();
+//            double cashOut = cashOutList.stream()
+//                    .mapToDouble(c -> c.getAmount())
+//                    .sum();
+//
+//            double totalCash = saleCash + serviceCash + cashIn - cashOut;
             // Parameters
             Map<String, Object> params = new HashMap<>();
 
@@ -457,21 +477,25 @@ public class ReportGenerator {
             params.put("companyLogo", logoStream);
 
             // Pass the compiled header subreport to main report
-            params.put("subreport_header", headerSubreport);
-
             params.put("closedDate", CommonExtension.formatDateTime(new Date()));
             params.put("cashier", cashierName);
             params.put("openCash", openCash);
             params.put("closeCash", closeCash);
             params.put("totalCash", totalCash);
-            params.put("saleCash", saleCash);
-            params.put("saleCard", saleCard);
-            params.put("serviceCash", serviceCash);
-            params.put("serviceCard", serviceCard);
-            params.put("cashIn", cashIn);
-            params.put("cashOut", cashOut);
+//            params.put("saleCash", totalsaleCash);
+//            params.put("saleCard", saleCard);
+//            params.put("serviceCash", serviceCash);
+//            params.put("serviceCard", serviceCard);
+//            params.put("cashIn", cashIn);
+//            params.put("cashOut", cashOut);
+            params.put("totalGrossSale", totalGrossSale);
+            params.put("totalGrossService", totalGrossService);
+            params.put("totalCash", totalCash);
+            params.put("totalCard", totalCard);
+            params.put("totalRefunds", totalRefunds);
 
             // Subreports
+            params.put("subreport_header", headerSubreport);
             params.put("subreport_sale_payments", saleSubreport);
             params.put("subreport_service_payments", serviceSubreport);
             params.put("subreport_cash_in", cashInSubreport);

@@ -16,6 +16,11 @@
 	<parameter name="serviceDataSource" class="net.sf.jasperreports.engine.JRDataSource"/>
 	<parameter name="cashInDataSource" class="net.sf.jasperreports.engine.JRDataSource"/>
 	<parameter name="cashOutDataSource" class="net.sf.jasperreports.engine.JRDataSource"/>
+	<parameter name="totalGrossSale" class="java.lang.Double"/>
+	<parameter name="totalGrossService" class="java.lang.Double"/>
+	<parameter name="totalCash" class="java.lang.Double"/>
+	<parameter name="totalCard" class="java.lang.Double"/>
+	<parameter name="totalRefunds" class="java.lang.Double"/>
 	<pageHeader>
 		<band height="110">
 			<subreport isUsingCache="true" runToBottom="false">
@@ -43,14 +48,21 @@
 				<textElement textAlignment="Center">
 					<font size="16" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["TILL CLOSURE SUMMARY"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["TILL CLOSURE OF THE DAY"]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
 	<detail>
 		<band height="690">
+			<staticText>
+				<reportElement x="0" y="0" width="40" height="20" uuid="f58b6ed7-7821-41c8-99f4-dbef11d02449"/>
+				<textElement>
+					<font size="10" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Date:]]></text>
+			</staticText>
 			<textField pattern="dd/MM/yyyy HH:mm">
-				<reportElement x="0" y="0" width="200" height="20" uuid="f58b6ed7-7821-41c8-99f4-dbef11d02449"/>
+				<reportElement x="40" y="0" width="160" height="20" uuid="f58b6ed7-7821-41c8-99f4-dbef11d02450"/>
 				<textElement>
 					<font size="10" isItalic="true"/>
 				</textElement>
@@ -114,4 +126,43 @@
 			</subreport>
 		</band>
 	</detail>
+	<summary>
+		<band height="120">
+			<staticText>
+				<reportElement x="0" y="0" width="555" height="20" uuid="bccc8570-a68c-44c6-976c-b15a60515426"/>
+				<textElement>
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Till Summary Totals]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="25" width="250" height="20" uuid="18e03109-d889-4fb8-89f0-fd6114a09e55"/>
+				<textElement>
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Total Gross Sale + Service: " + ($P{totalGrossSale} + $P{totalGrossService})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="45" width="250" height="20" uuid="67375845-5fc8-4ef5-985c-15fd362de256"/>
+				<textElement>
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Cash Total: " + $P{totalCash}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="65" width="250" height="20" uuid="99ffba9a-58b7-4f5d-86f5-a8b996e63d3b"/>
+				<textElement>
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Card Total: " + $P{totalCard}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="85" width="250" height="20" uuid="e2b1cc3f-5abb-43ea-9f38-2ffcc5e28552"/>
+				<textElement>
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Refunds Total: " + $P{totalRefunds}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
 </jasperReport>

@@ -7,11 +7,11 @@
 	<columnHeader>
 		<band height="20">
 			<staticText>
-				<reportElement x="80" y="0" width="80" height="20" uuid="5b009c63-faa4-4a11-8d7c-ade70099fd55"/>
+				<reportElement x="0" y="0" width="80" height="20" uuid="5b009c63-faa4-4a11-8d7c-ade70099fd55"/>
 				<text><![CDATA[Amount]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="160" y="0" width="215" height="20" uuid="10f94282-2366-4202-828c-42077a5e4350"/>
+				<reportElement x="80" y="0" width="215" height="20" uuid="10f94282-2366-4202-828c-42077a5e4350"/>
 				<text><![CDATA[Note]]></text>
 			</staticText>
 			<staticText>
@@ -23,16 +23,16 @@
 	<detail>
 		<band height="20">
 			<textField>
-				<reportElement x="80" y="0" width="80" height="20" uuid="72505ff8-c8b0-433e-bacc-c4a6e237d4f8"/>
-				<textFieldExpression><![CDATA["€" + String.format("%.2f", $F{amount})]]></textFieldExpression>
+				<reportElement x="0" y="0" width="80" height="20" uuid="72505ff8-c8b0-433e-bacc-c4a6e237d4f8"/>
+				<textFieldExpression><![CDATA["€ " + String.format("%.2f", $F{amount})]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="160" y="0" width="215" height="20" uuid="5d1c0a90-35ed-4ea8-9761-7f52fe7b1069"/>
+				<reportElement x="80" y="0" width="215" height="20" uuid="5d1c0a90-35ed-4ea8-9761-7f52fe7b1069"/>
 				<textFieldExpression><![CDATA[$F{note}]]></textFieldExpression>
 			</textField>
-			<textField pattern="dd/MM/yyyy HH:mm">
-				<reportElement x="375" y="0" width="180" height="20" uuid="26e36464-720c-452a-8e6f-c25ded02a046"/>
-				<textFieldExpression><![CDATA[$F{dtTransaction}]]></textFieldExpression>
+			<textField>
+				<reportElement x="375" y="0" width="180" height="20" uuid="be66efb3-1de8-4ebb-a03e-41d191034e63"/>
+				<textFieldExpression><![CDATA[$F{dtTransaction}.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
