@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="subreport_sale_payments" pageWidth="555" pageHeight="100" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="a8b2e3c4-1f57-4c66-9a0f-3d6d2e8b0d9c">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="subreport_sale_payments" pageWidth="555" pageHeight="100" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="a8b2e3c4-1f57-4c66-9a0f-3d6d2e8b0d9c">
 	<field name="idSale" class="java.lang.Long"/>
 	<field name="paymentTypeStr" class="java.lang.String"/>
 	<field name="cashAmount" class="java.lang.Double"/>
@@ -54,4 +54,12 @@
 			</textField>
 		</band>
 	</detail>
+	<noData>
+		<band height="20">
+			<staticText>
+				<reportElement x="0" y="0" width="555" height="20" uuid="2aa194a5-ada1-4a55-a0aa-a88376211f39"/>
+				<text><![CDATA[No data]]></text>
+			</staticText>
+		</band>
+	</noData>
 </jasperReport>

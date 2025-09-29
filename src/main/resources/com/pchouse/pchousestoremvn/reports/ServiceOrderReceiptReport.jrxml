@@ -53,7 +53,7 @@
 		</band>
 	</pageHeader>
 	<detail>
-		<band height="500" splitType="Stretch">
+		<band height="480" splitType="Stretch">
 			<staticText>
 				<reportElement x="0" y="20" width="555" height="20" uuid="cefb24c4-ecdd-46ff-9e1f-b3ac5ea83a0e"/>
 				<textElement>

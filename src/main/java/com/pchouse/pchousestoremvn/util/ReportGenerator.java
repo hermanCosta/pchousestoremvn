@@ -1,10 +1,11 @@
 package com.pchouse.pchousestoremvn.util;
 
-import com.pchouse.pchousestoremvn.common.CommonExtension;
 import com.pchouse.pchousestoremvn.common.CommonSetting;
+import com.pchouse.pchousestoremvn.enums.PayMethod;
 import static com.pchouse.pchousestoremvn.enums.PayMethod.CARD;
 import static com.pchouse.pchousestoremvn.enums.PayMethod.CASH;
 import static com.pchouse.pchousestoremvn.enums.PayMethod.COMBINE;
+import com.pchouse.pchousestoremvn.enums.PaymentType;
 import com.pchouse.pchousestoremvn.models.CashInRegistry;
 import com.pchouse.pchousestoremvn.models.CashOutRegistry;
 import com.pchouse.pchousestoremvn.models.RefurbSale;
@@ -15,11 +16,8 @@ import com.pchouse.pchousestoremvn.models.ServiceOrder;
 import com.pchouse.pchousestoremvn.models.ServiceOrderFault;
 import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrderProdServ;
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.net.URL;
-import java.util.Date;
 
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
@@ -408,6 +406,7 @@ public class ReportGenerator {
             double openCash,
             double closeCash
     ) {
+        
         double totalGrossSale = salePayments.stream()
                 .mapToDouble(SalePayment::getAmountDue)
                 .sum();
@@ -416,22 +415,55 @@ public class ReportGenerator {
                 .mapToDouble(ServiceOrderPayment::getAmountDue)
                 .sum();
 
-        // Assuming payment types are strings like "CASH", "CARD", etc.
-        double totalCash = Stream.concat(
-                salePayments.stream().filter(p -> "CASH".equalsIgnoreCase(p.getPaymentType().toString())),
-                serviceOrderPayments.stream().filter(p -> "CASH".equalsIgnoreCase(p.getPaymentType().toString()))
-        ).mapToDouble(p -> ((SalePayment) p).getAmountDue()).sum();
+        double totalSaleCash = salePayments.stream()
+                .filter(p -> p.getPayMethod() == PayMethod.CASH)
+                .mapToDouble(SalePayment::getAmountDue)
+                .sum();
 
-        double totalCard = Stream.concat(
-                salePayments.stream().filter(p -> "CARD".equalsIgnoreCase(p.getPaymentType().toString())),
-                serviceOrderPayments.stream().filter(p -> "CARD".equalsIgnoreCase(p.getPaymentType().toString()))
-        ).mapToDouble(p -> ((SalePayment) p).getAmountDue()).sum();
+        double totalServiceCash = serviceOrderPayments.stream()
+                .filter(p -> p.getPayMethod() == PayMethod.CASH)
+                .mapToDouble(ServiceOrderPayment::getAmountDue)
+                .sum();
 
-        // If there's a "REFUND" type or flag
-        double totalRefunds = Stream.concat(
-                salePayments.stream().filter(p -> "REFUND".equalsIgnoreCase(p.getPaymentType().toString())),
-                serviceOrderPayments.stream().filter(p -> "REFUND".equalsIgnoreCase(p.getPaymentType().toString()))
-        ).mapToDouble(p -> ((SalePayment) p).getAmountDue()).sum();
+        double totalSaleCard = salePayments.stream()
+                .filter(p -> p.getPayMethod() == PayMethod.CARD)
+                .mapToDouble(SalePayment::getAmountDue)
+                .sum();
+
+        double totalServiceCard = serviceOrderPayments.stream()
+                .filter(p -> p.getPayMethod() == PayMethod.CARD)
+                .mapToDouble(ServiceOrderPayment::getAmountDue)
+                .sum();
+
+        double totalSaleRefund = salePayments.stream()
+                .filter(p -> p.getPaymentType() == PaymentType.REFUND)
+                .mapToDouble(SalePayment::getAmountDue)
+                .sum();
+
+        double totalServiceRefund = serviceOrderPayments.stream()
+                .filter(p -> p.getPaymentType() == PaymentType.REFUND)
+                .mapToDouble(ServiceOrderPayment::getAmountDue)
+                .sum();
+
+        double totalSaleRefundCash = salePayments.stream()
+                .filter(p -> p.getPaymentType() == PaymentType.REFUND && p.getPayMethod() == PayMethod.CASH)
+                .mapToDouble(SalePayment::getAmountDue)
+                .sum();
+
+        double totalSaleRefundCard = salePayments.stream()
+                .filter(p -> p.getPaymentType() == PaymentType.REFUND && p.getPayMethod() == PayMethod.CARD)
+                .mapToDouble(SalePayment::getAmountDue)
+                .sum();
+
+        double totalServiceRefundCash = serviceOrderPayments.stream()
+                .filter(p -> p.getPaymentType() == PaymentType.REFUND && p.getPayMethod() == PayMethod.CASH)
+                .mapToDouble(ServiceOrderPayment::getAmountDue)
+                .sum();
+
+        double totalServiceRefundCard = serviceOrderPayments.stream()
+                .filter(p -> p.getPaymentType() == PaymentType.REFUND && p.getPayMethod() == PayMethod.CARD)
+                .mapToDouble(ServiceOrderPayment::getAmountDue)
+                .sum();
 
         try {
             String subreportDir = "/com/pchouse/pchousestoremvn/reports/";
@@ -445,54 +477,32 @@ public class ReportGenerator {
 
             JasperReport mainReport = (JasperReport) JRLoader.loadObject(getClass().getResource(subreportDir + "TillCloseReport.jasper"));
 
-            // Calculate totals
-//            double saleCash = salePayments.stream().mapToDouble(p -> p.getCashAmount() != null ? p.getCashAmount() : 0).sum();
-//            double saleCard = salePayments.stream().mapToDouble(p -> p.getCardAmount() != null ? p.getCardAmount() : 0).sum();
-//
-//            double serviceCash = serviceOrderPayments.stream().mapToDouble(p -> p.getCashAmount() != null ? p.getCashAmount() : 0).sum();
-//            double serviceCard = serviceOrderPayments.stream().mapToDouble(p -> p.getCardAmount() != null ? p.getCardAmount() : 0).sum();
-//
-//            double cashIn = cashInList.stream()
-//                    .mapToDouble(c -> c.getAmount())
-//                    .sum();
-//            double cashOut = cashOutList.stream()
-//                    .mapToDouble(c -> c.getAmount())
-//                    .sum();
-//
-//            double totalCash = saleCash + serviceCash + cashIn - cashOut;
             // Parameters
             Map<String, Object> params = new HashMap<>();
 
-            // Company info (shared with header subreport)
+            // Company info
             params.put("companyName", CommonSetting.COMPANY.getName());
             params.put("companyAddress", CommonSetting.COMPANY.getAddress());
             params.put("companyPhone", CommonSetting.COMPANY.getContactOne());
             params.put("companyEmail", CommonSetting.COMPANY.getEmail());
 
-            // Logo InputStream
+            // Read logo into byte array so it can be reused on every page
             InputStream logoStream = getClass().getResourceAsStream("/icons/icon_logo_header_lg.png");
-            if (logoStream == null) {
+            if (logoStream != null) {
+                byte[] logoBytes = logoStream.readAllBytes();
+                logoStream.close();
+                params.put("companyLogo", new ByteArrayInputStream(logoBytes));
+            } else {
                 System.err.println("Logo not found!");
             }
-            params.put("companyLogo", logoStream);
 
-            // Pass the compiled header subreport to main report
-            params.put("closedDate", CommonExtension.formatDateTime(new Date()));
-            params.put("cashier", cashierName);
-            params.put("openCash", openCash);
-            params.put("closeCash", closeCash);
-            params.put("totalCash", totalCash);
-//            params.put("saleCash", totalsaleCash);
-//            params.put("saleCard", saleCard);
-//            params.put("serviceCash", serviceCash);
-//            params.put("serviceCard", serviceCard);
-//            params.put("cashIn", cashIn);
-//            params.put("cashOut", cashOut);
-            params.put("totalGrossSale", totalGrossSale);
-            params.put("totalGrossService", totalGrossService);
-            params.put("totalCash", totalCash);
-            params.put("totalCard", totalCard);
-            params.put("totalRefunds", totalRefunds);
+            // Other report parameters            
+            params.put("totalGross", (totalGrossSale + totalGrossService) - (totalSaleRefund + totalServiceRefund));
+            params.put("totalGrossSale", totalGrossSale - totalSaleRefund);
+            params.put("totalGrossService", totalGrossService - totalServiceRefund);
+            params.put("totalCash", (totalSaleCash + totalServiceCash) - (totalSaleRefundCash + totalServiceRefundCash));
+            params.put("totalCard", (totalSaleCard + totalServiceCard) - (totalSaleRefundCard + totalServiceRefundCard));
+            params.put("totalRefunds", (-totalSaleRefund + -totalServiceRefund));// Make it negative
 
             // Subreports
             params.put("subreport_header", headerSubreport);
@@ -507,60 +517,12 @@ public class ReportGenerator {
             params.put("cashInDataSource", new JRBeanCollectionDataSource(cashInList));
             params.put("cashOutDataSource", new JRBeanCollectionDataSource(cashOutList));
 
-            // Fill and display
+            // Fill and display the report
             JasperPrint jasperPrint = JasperFillManager.fillReport(mainReport, params, new JREmptyDataSource());
             JasperViewer.viewReport(jasperPrint, false);
 
-            System.out.println("Daily Cash Report generated successfully.");
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
-    public void generateServiceOrderReportTest() {
-        try {
-            Map<String, Object> params = new HashMap<>();
-
-            // Company Info
-            params.put("companyName", "PCHouse");
-            params.put("companyAddress", "123 Tech Street");
-            params.put("companyPhone", "+1 555-1234");
-            params.put("companyEmail", "info@pchouse.com");
-
-            // Subreport path
-            URL subDirUrl = getClass().getResource("/com/pchouse/pchousestoremvn/reports/");
-            if (subDirUrl == null) {
-                throw new RuntimeException("Subreport directory not found!");
-            }
-
-            File subDirFile = new File(subDirUrl.toURI());
-            String subreportPath = subDirFile.getAbsolutePath() + File.separator;
-
-            File subreportFile = new File(subreportPath + "subreport_header.jasper");
-            System.out.println("Subreport path: " + subreportFile.getAbsolutePath());
-            if (!subreportFile.exists()) {
-                throw new FileNotFoundException("Subreport file not found: " + subreportFile.getAbsolutePath());
-            }
-
-            JasperReport subreport = (JasperReport) JRLoader.loadObject(subreportFile);
-            System.out.println("Subreport loaded: " + subreport.getName());
-            params.put("SUBREPORT_HEADER", subreport);
-
-            // Load and compile main report
-            JasperReport mainReport = (JasperReport) JRLoader.loadObject(
-                    getClass().getResource("/com/pchouse/pchousestoremvn/reports/MainReport.jasper")
-            );
-
-            System.out.println("Preenchendo o relatório...");
-            JasperPrint jasperPrint = JasperFillManager.fillReport(mainReport, params, new JREmptyDataSource(1));
-            System.out.println("Relatório preenchido com " + jasperPrint.getPages().size() + " páginas.");
-
-            JasperViewer.viewReport(jasperPrint, false);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
 }

@@ -8,8 +8,8 @@
 	<parameter name="companyLogo" class="java.io.InputStream"/>
 	<detail>
 		<band height="65">
-			<image scaleImage="RetainShape">
-				<reportElement x="0" y="0" width="120" height="60" uuid="4433f519-724e-40ee-9413-d450459ce226"/>
+			<image scaleImage="RetainShape" isUsingCache="true">
+				<reportElement x="0" y="0" width="140" height="60" uuid="4433f519-724e-40ee-9413-d450459ce226"/>
 				<imageExpression><![CDATA[$P{companyLogo}]]></imageExpression>
 			</image>
 			<textField>
@@ -24,14 +24,7 @@
 				<textElement textAlignment="Right">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA["📞 " + $P{companyPhone}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="320" y="42" width="230" height="10" uuid="9e02fa5a-9507-48f8-9253-67b2821cc2c1"/>
-				<textElement textAlignment="Right">
-					<font size="6"/>
-				</textElement>
-				<textFieldExpression><![CDATA["✉ " + $P{companyEmail}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["📞 " + $P{companyPhone} + " | " + "✉️ " + $P{companyEmail}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="320" y="14" width="230" height="10" uuid="48d2a230-2178-46a9-9de3-06a1f0657864"/>

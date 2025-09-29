@@ -2,6 +2,7 @@ package com.pchouse.pchousestoremvn.views;
 
 import com.pchouse.pchousestoremvn.common.CommonExtension;
 import com.pchouse.pchousestoremvn.common.CommonSetting;
+import com.pchouse.pchousestoremvn.common.CommonStrings;
 import com.pchouse.pchousestoremvn.controllers.CashInRegistryController;
 import com.pchouse.pchousestoremvn.controllers.CashOutRegistryController;
 import com.pchouse.pchousestoremvn.controllers.ClosingTillController;
@@ -258,17 +259,23 @@ public class ClosingTillView extends JInternalFrame {
 
             for (Map.Entry<String, double[]> entry : groupedSales.entrySet()) {
                 String[] parts = entry.getKey().split("\\|");
-                String saleId = parts[0];
+                long saleId = Long.parseLong(parts[0]);
                 String paymentType = parts[1];
 
                 LocalDateTime dtTransaction = LocalDateTime.parse(parts[2], inputFormat);
                 double[] totals = entry.getValue();
 
+                if (paymentType.equalsIgnoreCase("REFUND")) {
+                    for (int i = 0; i < totals.length; i++) {
+                        totals[i] = -totals[i];  // Make each value negative
+                    }
+                }
+
                 dtmSale.addRow(new Object[]{
-                    saleId,
+                    CommonStrings.formatOrderNumber(saleId),
                     paymentType,
-                    totals[0], // Cash
-                    totals[1], // Card
+                    CommonExtension.formatEuroCurrency(totals[0]), // Cash
+                    CommonExtension.formatEuroCurrency(totals[1]), // Card
                     CommonExtension.formatDateTimeFromLocalDate(dtTransaction)
                 });
 
@@ -299,17 +306,23 @@ public class ClosingTillView extends JInternalFrame {
 
             for (Map.Entry<String, double[]> entry : groupedServiceOrders.entrySet()) {
                 String[] parts = entry.getKey().split("\\|");
-                String serviceOrderId = parts[0];
+                long serviceOrderId = Long.parseLong(parts[0]);
                 String paymentType = parts[1];
 
                 LocalDateTime dtTransaction = LocalDateTime.parse(parts[2], inputFormat);
                 double[] totals = entry.getValue();
 
+                if (paymentType.equalsIgnoreCase("REFUND")) {
+                    for (int i = 0; i < totals.length; i++) {
+                        totals[i] = -totals[i];  // Make each value negative
+                    }
+                }
+
                 dtmService.addRow(new Object[]{
-                    serviceOrderId,
+                    CommonStrings.formatOrderNumber(serviceOrderId),
                     paymentType,
-                    totals[0], // Cash
-                    totals[1], // Card
+                    CommonExtension.formatEuroCurrency(totals[0]), // Cash
+                    CommonExtension.formatEuroCurrency(totals[1]), // Card
                     CommonExtension.formatDateTimeFromLocalDate(dtTransaction)
                 });
             }
@@ -327,7 +340,7 @@ public class ClosingTillView extends JInternalFrame {
 
             for (CashInRegistry ci : cashIns) {
                 dtmCashIn.addRow(new Object[]{
-                    ci.getAmount(),
+                    CommonExtension.formatEuroCurrency(ci.getAmount()),
                     ci.getNote(),
                     CommonExtension.formatDateTimeFromLocalDate(ci.getDtTransaction())
                 });
@@ -341,7 +354,7 @@ public class ClosingTillView extends JInternalFrame {
 
             for (CashOutRegistry co : cashOuts) {
                 dtmCashOut.addRow(new Object[]{
-                    co.getAmount(),
+                    CommonExtension.formatEuroCurrency(co.getAmount()),
                     co.getNote(),
                     CommonExtension.formatDateTimeFromLocalDate(co.getDtTransaction())
                 });
