@@ -19,6 +19,7 @@ public class CommonConstant {
     public static final String CONFIRM_PAYMENT_ORDER = "Are you sure you want to PAY this Order?";
     public static final String CONFIRM_REFUND_SALE = "Are you sure you want to REFUND this Sale?";
     public static final String CONFIRM_REFUND_ORDER = "Are you sure you want to REFUND this Order?";
+    public static final String CONFIRM_ORDER_PICKING = "Are you sure you want to PICK UP this Order?";
     
     public static final String SUCCESS_SAVE = "Saved succesfully";
     public static final String SUCCESS_UPDATE = "Updated succesfully";

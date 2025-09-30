@@ -39,7 +39,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
-public class FixedOrderView extends javax.swing.JInternalFrame {
+public class FixedServiceOrderView extends javax.swing.JInternalFrame {
 
     private final ServiceOrderController _serviceOrderController;
     private final EmployeeController _employeeController;
@@ -57,7 +57,7 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
     private List<ServiceOrderProdServ> _listServiceOrderProdServ;
     private List<Deposit> _listOrderDeposit;
 
-    public FixedOrderView(ServiceOrder orderModel, List<ServiceOrderFault> listOrderFault, List<ServiceOrderProdServ> listOrderProdServ, List<Deposit> listOrderDeposit) {
+    public FixedServiceOrderView(ServiceOrder orderModel, List<ServiceOrderFault> listOrderFault, List<ServiceOrderProdServ> listOrderProdServ, List<Deposit> listOrderDeposit) {
         initComponents();
 
         //avoid auto old value by focus loosing
@@ -206,7 +206,7 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
                     }
 
                     if (newStatus == OrderStatus.FIXED) {
-                        FixedOrderView fixedOrderView = new FixedOrderView(
+                        FixedServiceOrderView fixedOrderView = new FixedServiceOrderView(
                                 _serviceOrderModel,
                                 _listServiceOrderFault,
                                 _listServiceOrderProdServ,
@@ -222,7 +222,7 @@ public class FixedOrderView extends javax.swing.JInternalFrame {
                         );
                         CommonSetting.openInternalFrame(notFixedOrderView, "Order Not Fixed: " + _serviceOrderModel.getIdServiceOrder());
                     } else if (newStatus == OrderStatus.IN_PROGRESS) {
-                        CreatedOrderView createdOrderView = new CreatedOrderView(
+                        CreatedServiceOrderView createdOrderView = new CreatedServiceOrderView(
                                 _serviceOrderModel,
                                 _listServiceOrderFault,
                                 _listServiceOrderProdServ,

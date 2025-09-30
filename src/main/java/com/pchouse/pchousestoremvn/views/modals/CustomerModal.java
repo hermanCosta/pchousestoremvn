@@ -6,8 +6,8 @@ import com.pchouse.pchousestoremvn.controllers.ServiceOrderController;
 import com.pchouse.pchousestoremvn.controllers.PersonController;
 import com.pchouse.pchousestoremvn.models.Customer;
 import com.pchouse.pchousestoremvn.models.Person;
-import com.pchouse.pchousestoremvn.views.CreatedOrderView;
-import com.pchouse.pchousestoremvn.views.NewOrderView;
+import com.pchouse.pchousestoremvn.views.CreatedServiceOrderView;
+import com.pchouse.pchousestoremvn.views.NewServiceOrderView;
 import com.pchouse.pchousestoremvn.views.NewRefurbSaleView;
 import com.pchouse.pchousestoremvn.views.NewSaleView;
 import java.awt.Color;
@@ -31,8 +31,8 @@ public class CustomerModal extends javax.swing.JDialog {
     private long hdnCustomerId;
     private long hdnPersonId;
     private Customer _customer;
-    private NewOrderView _newOrderView;
-    private CreatedOrderView _createdOrderView;
+    private NewServiceOrderView _newOrderView;
+    private CreatedServiceOrderView _createdOrderView;
     private NewSaleView _newSaleView;
     private NewRefurbSaleView _newRefurbSaleView;
     public final ServiceOrderController _orderController;
@@ -40,12 +40,12 @@ public class CustomerModal extends javax.swing.JDialog {
     private final CustomerController _customerController;
     private List<Customer> _listCustomer;
 
-    public CustomerModal(NewOrderView newOrderView, Frame parent, boolean modal, Customer customer) {
+    public CustomerModal(NewServiceOrderView newOrderView, Frame parent, boolean modal, Customer customer) {
         this(parent, modal, customer);
         this._newOrderView = newOrderView;
     }
 
-    public CustomerModal(CreatedOrderView createdOrderView, Frame parent, boolean modal, Customer customer) {
+    public CustomerModal(CreatedServiceOrderView createdOrderView, Frame parent, boolean modal, Customer customer) {
         this(parent, modal, customer);
         this._createdOrderView = createdOrderView;
     }

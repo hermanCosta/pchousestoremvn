@@ -162,6 +162,8 @@ public class NotFixedOrderView extends javax.swing.JInternalFrame {
     }
 
     private void updateOrderStatus(OrderStatus newStatus, String confirmMessage, String noteMessage) {
+        Date today = new Date();
+
         int confirm = JOptionPane.showConfirmDialog(
                 this,
                 confirmMessage,
@@ -173,55 +175,90 @@ public class NotFixedOrderView extends javax.swing.JInternalFrame {
             String password = CommonExtension.requestUserPassword();
             Employee employee = _employeeController.getEmployeeByPass(password);
 
-            if (employee != null) {
-                _serviceOrderModel.setStatus(newStatus);
-                _serviceOrderModel.setEmployee(employee);
+            if (employee == null) {
 
-                boolean isOrderUpdated = this._orderController.updateServiceOrderStatus(_serviceOrderModel);
-                if (isOrderUpdated) {
-                    OrderNote orderNote = new OrderNote(
+                JOptionPane.showMessageDialog(this, CommonConstant.NOT_AUTHORIZED, null, JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            _serviceOrderModel.setStatus(newStatus);
+            _serviceOrderModel.setEmployee(employee);
+            _serviceOrderModel.setFinished(today);
+
+            boolean isOrderUpdated = this._orderController.updateServiceOrderStatus(_serviceOrderModel);
+            if (isOrderUpdated) {
+                OrderNote orderNote = new OrderNote(
+                        _serviceOrderModel,
+                        employee,
+                        noteMessage,
+                        today
+                );
+
+                long idOrderNote = _orderNoteController.addOrderNote(orderNote);
+
+                if (idOrderNote == 0) {
+                    JOptionPane.showMessageDialog(this, CommonConstant.ERROR_ADD_NOTE, null, JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (newStatus == OrderStatus.FIXED) {
+                    FixedServiceOrderView fixedOrderView = new FixedServiceOrderView(
                             _serviceOrderModel,
-                            employee,
-                            noteMessage,
-                            new Date()
+                            _listServiceOrderFault,
+                            _listServiceOrderProdServ,
+                            _listOrderDeposit
                     );
+                    CommonSetting.openInternalFrame(fixedOrderView, "Order Fixed: " + _serviceOrderModel.getIdServiceOrder());
+                } else if (newStatus == OrderStatus.NOT_FIXED) {
+                    NotFixedOrderView notFixedOrderView = new NotFixedOrderView(
+                            _serviceOrderModel,
+                            _listServiceOrderFault,
+                            _listServiceOrderProdServ,
+                            _listOrderDeposit
+                    );
+                    CommonSetting.openInternalFrame(notFixedOrderView, "Order Not Fixed: " + _serviceOrderModel.getIdServiceOrder());
+                }
+            }
+        }
+    }
 
-                    long idOrderNote = _orderNoteController.addOrderNote(orderNote);
+    private void pickServiceOrder(String confirmMessage, String noteMessage) {
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                confirmMessage,
+                "Confirm Action",
+                JOptionPane.YES_NO_OPTION
+        );
 
-                    if (idOrderNote > 0) {
-                        JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_UPDATE);
-                    } else {
-                        JOptionPane.showMessageDialog(this, CommonConstant.ERROR_ADD_NOTE, null, JOptionPane.ERROR_MESSAGE);
-                    }
+        if (confirm == JOptionPane.YES_OPTION) {
+            String password = CommonExtension.requestUserPassword();
+            Employee employee = _employeeController.getEmployeeByPass(password);
 
-                    if (newStatus == OrderStatus.FIXED) {
-                        FixedOrderView fixedOrderView = new FixedOrderView(
-                                _serviceOrderModel,
-                                _listServiceOrderFault,
-                                _listServiceOrderProdServ,
-                                _listOrderDeposit
-                        );
-                        CommonSetting.openInternalFrame(fixedOrderView, "Order Fixed: " + _serviceOrderModel.getIdServiceOrder());
-                    } else if (newStatus == OrderStatus.NOT_FIXED) {
-                        NotFixedOrderView notFixedOrderView = new NotFixedOrderView(
-                                _serviceOrderModel,
-                                _listServiceOrderFault,
-                                _listServiceOrderProdServ,
-                                _listOrderDeposit
-                        );
-                        CommonSetting.openInternalFrame(notFixedOrderView, "Order Not Fixed: " + _serviceOrderModel.getIdServiceOrder());
-                    } else if (newStatus == OrderStatus.IN_PROGRESS) {
-                        CreatedOrderView createdOrderView = new CreatedOrderView(
-                                _serviceOrderModel,
-                                _listServiceOrderFault,
-                                _listServiceOrderProdServ,
-                                _listOrderDeposit
-                        );
-                        CommonSetting.openInternalFrame(createdOrderView, "Order In Progress");
-                    }
+            if (employee == null) {
+                JOptionPane.showMessageDialog(this, CommonConstant.NOT_AUTHORIZED, null, JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
+            _serviceOrderModel.setEmployee(employee);
+            _serviceOrderModel.setPicked(new Date());
+
+            boolean isOrderUpdated = this._orderController.updateServiceOrderStatus(_serviceOrderModel);
+            if (isOrderUpdated) {
+                OrderNote orderNote = new OrderNote(
+                        _serviceOrderModel,
+                        employee,
+                        noteMessage,
+                        new Date()
+                );
+
+                long idOrderNote = _orderNoteController.addOrderNote(orderNote);
+
+                if (idOrderNote > 0) {
+                    this.btn_pick_up.setVisible(false);
+                    this.btn_undo_fixed.setVisible(false);
+                    JOptionPane.showMessageDialog(this, CommonConstant.SUCCESS_UPDATE);
                 } else {
-                    JOptionPane.showMessageDialog(this, CommonConstant.ERROR_UPDATE, null, JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, CommonConstant.ERROR_ADD_NOTE, null, JOptionPane.ERROR_MESSAGE);
                 }
             }
         }
@@ -274,6 +311,7 @@ public class NotFixedOrderView extends javax.swing.JInternalFrame {
         btn_notes = new javax.swing.JButton();
         btn_undo_fixed = new javax.swing.JButton();
         btn_deposit = new javax.swing.JButton();
+        btn_pick_up = new javax.swing.JButton();
         scroll_pane_products = new javax.swing.JScrollPane();
         table_view_products = new javax.swing.JTable();
         scroll_pane_faults = new javax.swing.JScrollPane();
@@ -668,6 +706,18 @@ public class NotFixedOrderView extends javax.swing.JInternalFrame {
             }
         });
 
+        btn_pick_up.setBackground(new java.awt.Color(255, 102, 102));
+        btn_pick_up.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+        btn_pick_up.setForeground(new java.awt.Color(255, 255, 255));
+        btn_pick_up.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_not_fix.png"))); // NOI18N
+        btn_pick_up.setText("Pick Up");
+        btn_pick_up.setNextFocusableComponent(txt_first_name);
+        btn_pick_up.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_pick_upActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panel_order_buttonsLayout = new javax.swing.GroupLayout(panel_order_buttons);
         panel_order_buttons.setLayout(panel_order_buttonsLayout);
         panel_order_buttonsLayout.setHorizontalGroup(
@@ -679,6 +729,8 @@ public class NotFixedOrderView extends javax.swing.JInternalFrame {
                 .addComponent(btn_deposit)
                 .addGap(18, 18, 18)
                 .addComponent(btn_undo_fixed)
+                .addGap(18, 18, 18)
+                .addComponent(btn_pick_up)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panel_order_buttonsLayout.setVerticalGroup(
@@ -688,7 +740,8 @@ public class NotFixedOrderView extends javax.swing.JInternalFrame {
                 .addGroup(panel_order_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_notes)
                     .addComponent(btn_undo_fixed)
-                    .addComponent(btn_deposit))
+                    .addComponent(btn_deposit)
+                    .addComponent(btn_pick_up))
                 .addContainerGap())
         );
 
@@ -988,10 +1041,15 @@ public class NotFixedOrderView extends javax.swing.JInternalFrame {
         depositModal.setVisible(true);
     }//GEN-LAST:event_btn_depositActionPerformed
 
+    private void btn_pick_upActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_pick_upActionPerformed
+        pickServiceOrder(CommonConstant.CONFIRM_ORDER_PICKING, CommonConstant.ORDER_PICKED_NOTE);
+    }//GEN-LAST:event_btn_pick_upActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_copy;
     private javax.swing.JButton btn_deposit;
     private javax.swing.JButton btn_notes;
+    private javax.swing.JButton btn_pick_up;
     private javax.swing.JButton btn_undo_fixed;
     private javax.swing.JEditorPane editor_pane_notes;
     private javax.swing.JTextField hdn_txt_customer_id;

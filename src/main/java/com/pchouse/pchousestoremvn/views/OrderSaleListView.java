@@ -192,10 +192,10 @@ public class OrderSaleListView extends javax.swing.JInternalFrame {
                 List<ServiceOrderPayment> listServiceOrderPayment = _serviceOrderPaymentController.getServiceOrderPayments(orderModel);
 
                 if (orderModel.getStatus() == OrderStatus.IN_PROGRESS) {
-                    CreatedOrderView createdOrderView = new CreatedOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
+                    CreatedServiceOrderView createdOrderView = new CreatedServiceOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
                     openInternalFrame(createdOrderView, "Order In Progress: " + orderId);
                 } else if (orderModel.getStatus() == OrderStatus.FIXED) {
-                    FixedOrderView fixedOrderView = new FixedOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
+                    FixedServiceOrderView fixedOrderView = new FixedServiceOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);
                     openInternalFrame(fixedOrderView, "Order Fixed: " + orderId);
                 } else if (orderModel.getStatus() == OrderStatus.NOT_FIXED) {
                     NotFixedOrderView notFixedOrderView = new NotFixedOrderView(orderModel, listOrderFault, listOrderProdServ, listOrderDeposit);

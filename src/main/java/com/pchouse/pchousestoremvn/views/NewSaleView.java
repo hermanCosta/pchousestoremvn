@@ -330,7 +330,7 @@ public class NewSaleView extends javax.swing.JInternalFrame {
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
-        setTitle("New Order");
+        setTitle("New Order Sale");
         setMaximumSize(new java.awt.Dimension(1049, 700));
         setPreferredSize(new java.awt.Dimension(1050, 650));
 
@@ -780,18 +780,6 @@ public class NewSaleView extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_btn_save_saleActionPerformed
 
-    private void txt_depositKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_depositKeyReleased
-        double totalPrice = CommonExtension.formatEuroToDouble(this.lbl_total_amount.getText());
-        if (!this.txt_deposit.getText().trim().isEmpty()) {
-            //totalPrice = Double.parseDouble(this.lbl_total_field.getText());
-            double deposit = CommonExtension.formatEuroToDouble(this.txt_deposit.getText());
-
-            this.lbl_due_amount.setText(CommonExtension.formatEuroCurrency(totalPrice - deposit));
-        } else {
-            this.lbl_due_amount.setText(CommonExtension.formatEuroCurrency(totalPrice));
-        }
-    }//GEN-LAST:event_txt_depositKeyReleased
-
     private void btn_cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelActionPerformed
         int confirmCancelling = JOptionPane.showConfirmDialog(this, CommonConstant.CONFIRM_CANCEL, this.getTitle(),
                 JOptionPane.YES_NO_OPTION);
@@ -800,15 +788,6 @@ public class NewSaleView extends javax.swing.JInternalFrame {
             CommonSetting.MAIN_MENU_DESKTOP_PANE.removeAll();
         }
     }//GEN-LAST:event_btn_cancelActionPerformed
-
-    private void txt_depositKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_depositKeyPressed
-        //Accepts number characters only
-        if (Character.isLetter(evt.getKeyChar())) {
-            this.txt_deposit.setEditable(false);
-        } else {
-            this.txt_deposit.setEditable(true);
-        }
-    }//GEN-LAST:event_txt_depositKeyPressed
 
     private void btn_seacrh_customerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_seacrh_customerActionPerformed
         this.hdnCustomerId = 0;
@@ -895,6 +874,27 @@ public class NewSaleView extends javax.swing.JInternalFrame {
     private void list_prod_serv_searchMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_list_prod_serv_searchMouseClicked
         addProdServToTheTable();
     }//GEN-LAST:event_list_prod_serv_searchMouseClicked
+
+    private void txt_depositKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_depositKeyReleased
+        double totalPrice = CommonExtension.formatEuroToDouble(this.lbl_total_amount.getText());
+        if (!this.txt_deposit.getText().trim().isEmpty()) {
+            //totalPrice = Double.parseDouble(this.lbl_total_field.getText());
+            double deposit = CommonExtension.formatEuroToDouble(this.txt_deposit.getText());
+
+            this.lbl_due_amount.setText(CommonExtension.formatEuroCurrency(totalPrice - deposit));
+        } else {
+            this.lbl_due_amount.setText(CommonExtension.formatEuroCurrency(totalPrice));
+        }
+    }//GEN-LAST:event_txt_depositKeyReleased
+
+    private void txt_depositKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_depositKeyPressed
+        //Accepts number characters only
+        if (Character.isLetter(evt.getKeyChar())) {
+            this.txt_deposit.setEditable(false);
+        } else {
+            this.txt_deposit.setEditable(true);
+        }
+    }//GEN-LAST:event_txt_depositKeyPressed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_cancel;

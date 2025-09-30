@@ -350,7 +350,7 @@ public class MainMenuView extends javax.swing.JFrame {
 
     private void menu_item_new_orderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menu_item_new_orderActionPerformed
         //Customer customer = null;
-        NewOrderView newOrderView = new NewOrderView();
+        NewServiceOrderView newOrderView = new NewServiceOrderView();
         //NewOrderViewTeste newOrderView = new NewOrderViewTeste();
         this.desktop_pane_menu.removeAll();
         this.desktop_pane_menu.add(newOrderView).setVisible(true);

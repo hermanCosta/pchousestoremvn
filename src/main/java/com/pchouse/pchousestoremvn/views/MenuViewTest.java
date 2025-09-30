@@ -240,7 +240,7 @@ public class MenuViewTest extends JFrame {
     }
 
     private void menuItemNewOrderActionPerformed(ActionEvent evt) {
-        openInternalFrame(new NewOrderView());
+        openInternalFrame(new NewServiceOrderView());
     }
 
     private void menuItemNewSaleActionPerformed(ActionEvent evt) {
