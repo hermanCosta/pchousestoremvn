@@ -544,7 +544,7 @@ public class ProductServiceView extends javax.swing.JInternalFrame {
 
             ProductService deleteProdServ = new ProductService();
 
-            deleteProdServ.setIdProductService((Integer) _dtmProdServ.getValueAt(selectedRow, 0));
+            deleteProdServ.setIdProductService((long) _dtmProdServ.getValueAt(selectedRow, 0));
             deleteProdServ.setProdServName(_dtmProdServ.getValueAt(selectedRow, 1).toString());
 
             int confirmDeletion = JOptionPane.showConfirmDialog(this, CommonConstant.CONFIRM_DELETE, this.getTitle(), JOptionPane.YES_NO_OPTION);

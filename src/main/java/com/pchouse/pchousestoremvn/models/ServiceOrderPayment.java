@@ -175,7 +175,5 @@ public class ServiceOrderPayment implements Serializable {
 
     public void setDtTransaction(Date dtTransaction) {
         this.dtTransaction = dtTransaction;
-    }
-    
-    
+    }        
 }

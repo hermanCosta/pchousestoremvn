@@ -241,7 +241,6 @@ public class CustomerView extends javax.swing.JInternalFrame {
         btn_add = new javax.swing.JButton();
         btn_update = new javax.swing.JButton();
         btn_clear_fields = new javax.swing.JButton();
-        btn_delete = new javax.swing.JButton();
 
         setClosable(true);
         setIconifiable(true);
@@ -502,17 +501,6 @@ public class CustomerView extends javax.swing.JInternalFrame {
             }
         });
 
-        btn_delete.setBackground(new java.awt.Color(21, 76, 121));
-        btn_delete.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        btn_delete.setForeground(new java.awt.Color(255, 255, 255));
-        btn_delete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_cancel.png"))); // NOI18N
-        btn_delete.setText("Delete");
-        btn_delete.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_deleteActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout panel_customer_buttonsLayout = new javax.swing.GroupLayout(panel_customer_buttons);
         panel_customer_buttons.setLayout(panel_customer_buttonsLayout);
         panel_customer_buttonsLayout.setHorizontalGroup(
@@ -522,8 +510,6 @@ public class CustomerView extends javax.swing.JInternalFrame {
                 .addComponent(btn_add)
                 .addGap(18, 18, 18)
                 .addComponent(btn_update)
-                .addGap(18, 18, 18)
-                .addComponent(btn_delete)
                 .addGap(18, 18, 18)
                 .addComponent(btn_clear_fields)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -535,7 +521,6 @@ public class CustomerView extends javax.swing.JInternalFrame {
                 .addGroup(panel_customer_buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_add, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btn_update, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btn_delete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btn_clear_fields, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(15, 15, 15))
         );
@@ -618,30 +603,6 @@ public class CustomerView extends javax.swing.JInternalFrame {
         clearFields();
         loadCustomerListTable();
     }//GEN-LAST:event_btn_clear_fieldsActionPerformed
-
-    private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
-        int selectedRow = this.table_view_customers.getSelectedRow();
-
-        if (selectedRow >= 0) {
-
-            Customer deleteCustomer = new Customer();
-
-            deleteCustomer.setIdCustomer((long) this._dtmCustomer.getValueAt(selectedRow, 0));
-
-            int confirmDeletion = JOptionPane.showConfirmDialog(this, CommonConstant.CONFIRM_DELETE, this.getTitle(), JOptionPane.YES_NO_OPTION);
-
-            if (confirmDeletion == 0) {
-                boolean isDeleted = _customerController.deleteCustomer(deleteCustomer.getIdCustomer());
-
-                if (isDeleted) {
-                    clearFields();
-                    loadCustomerListTable();
-                } else {
-                    JOptionPane.showMessageDialog(this, CommonConstant.ERROR_DELETE, this.getTitle(), JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        }
-    }//GEN-LAST:event_btn_deleteActionPerformed
 
     private void txt_search_customerKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_search_customerKeyReleased
         searchCustomer();
@@ -726,7 +687,6 @@ public class CustomerView extends javax.swing.JInternalFrame {
     private javax.swing.JButton btn_add;
     private javax.swing.JButton btn_clear_fields;
     private javax.swing.JButton btn_copy;
-    private javax.swing.JButton btn_delete;
     private javax.swing.JButton btn_international_number;
     private javax.swing.JButton btn_update;
     private javax.swing.JTextField hdn_txt_customer_id;

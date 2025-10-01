@@ -20,7 +20,7 @@ public class Fault implements Serializable {
     private long idFault;
 
     @NotNull
-    @Size(max = 255)  // Descrição pode ter até 255 caracteres
+    @Size(max = 255) 
     @Column(name = "DESCRIPTION", nullable = false)
     private String description;
 
@@ -51,11 +51,4 @@ public class Fault implements Serializable {
     public String toString() {
         return description;
     }
-//    @Override
-//    public String toString() {
-//        return "Fault{" +
-//                "idFault=" + idFault +
-//                ", description='" + description + '\'' +
-//                '}';
-//    }
 }

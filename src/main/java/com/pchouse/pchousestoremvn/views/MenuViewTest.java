@@ -5,6 +5,8 @@ import com.pchouse.pchousestoremvn.models.Company;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -102,88 +104,103 @@ public class MenuViewTest extends JFrame {
         menuItemNewSale.setAccelerator(KeyStroke.getKeyStroke("F2"));
         menuItemNewSale.addActionListener(this::menuItemNewSaleActionPerformed);
         menuCreate.add(menuItemNewSale);
-        
+
         JMenuItem menuItemNewRefurbSale = new JMenuItem("New Refurb Sale");
-        menuItemNewRefurbSale.setAccelerator(KeyStroke.getKeyStroke("F2"));
+        menuItemNewRefurbSale.setAccelerator(KeyStroke.getKeyStroke("F3"));
         menuItemNewRefurbSale.addActionListener(this::menuItemNewRefurbSaleActionPerformed);
         menuCreate.add(menuItemNewRefurbSale);
 
         // --- MANAGE ---
         JMenu menuManage = new JMenu("Manage");
         JMenuItem menuItemCustomer = new JMenuItem("Customers");
-        menuItemCustomer.setAccelerator(KeyStroke.getKeyStroke("F3"));
+        menuItemCustomer.setAccelerator(KeyStroke.getKeyStroke("F4"));
         menuItemCustomer.addActionListener(this::menuItemCustomerActionPerformed);
         menuManage.add(menuItemCustomer);
 
         JMenuItem menuItemUsers = new JMenuItem("Users");
-        menuItemUsers.setAccelerator(KeyStroke.getKeyStroke("F4"));
+        menuItemUsers.setAccelerator(KeyStroke.getKeyStroke("F5"));
         menuItemUsers.addActionListener(this::menuItemUsersActionPerformed);
         menuManage.add(menuItemUsers);
 
         JMenuItem menuItemProducts = new JMenuItem("Products");
-        menuItemProducts.setAccelerator(KeyStroke.getKeyStroke("F5"));
+        menuItemProducts.setAccelerator(KeyStroke.getKeyStroke("F6"));
         menuItemProducts.addActionListener(this::menuItemProductsActionPerformed);
         menuManage.add(menuItemProducts);
 
         JMenuItem menuItemFault = new JMenuItem("Faults");
-        menuItemFault.setAccelerator(KeyStroke.getKeyStroke("F6"));
+        menuItemFault.setAccelerator(KeyStroke.getKeyStroke("F7"));
         menuItemFault.addActionListener(this::menuItemFaultActionPerformed);
         menuManage.add(menuItemFault);
 
         // --- REFURBS ---
+        // --- REFURBS ---
         JMenu menuRefurbs = new JMenu("Refurbs");
+        menuRefurbs.setMnemonic(KeyEvent.VK_R); // Alt+R opens Refurbs menu
+
         JMenuItem menuItemRefurbs = new JMenuItem("All Refurbs");
+        menuItemRefurbs.setMnemonic(KeyEvent.VK_A);
+        menuItemRefurbs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.ALT_DOWN_MASK)); // Alt+R
         menuItemRefurbs.addActionListener(this::menuItemRefurbsActionPerformed);
         menuRefurbs.add(menuItemRefurbs);
 
         JMenuItem menuItemComputer = new JMenuItem("Computer");
+        menuItemComputer.setMnemonic(KeyEvent.VK_C);
+        menuItemComputer.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_DOWN_MASK)); // Alt+C
         menuItemComputer.addActionListener(this::menuItemComputerActionPerformed);
         menuRefurbs.add(menuItemComputer);
 
         JMenuItem menuItemMonitor = new JMenuItem("Monitor");
+        menuItemMonitor.setMnemonic(KeyEvent.VK_M);
+        menuItemMonitor.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.ALT_DOWN_MASK)); // Alt+M
         menuItemMonitor.addActionListener(this::menuItemMonitorActionPerformed);
         menuRefurbs.add(menuItemMonitor);
 
         JMenuItem menuItemTelevision = new JMenuItem("Television");
+        menuItemTelevision.setMnemonic(KeyEvent.VK_T);
+        menuItemTelevision.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.ALT_DOWN_MASK)); // Alt+T
         menuItemTelevision.addActionListener(this::menuItemTelevisionActionPerformed);
         menuRefurbs.add(menuItemTelevision);
 
         JMenuItem menuItemConsole = new JMenuItem("Console");
+        menuItemConsole.setMnemonic(KeyEvent.VK_O); // Use O to avoid conflict with C
+        menuItemConsole.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.ALT_DOWN_MASK)); // Alt+O
         menuItemConsole.addActionListener(this::menuItemConsoleActionPerformed);
         menuRefurbs.add(menuItemConsole);
 
         JMenuItem menuItemCustom = new JMenuItem("Custom");
+        menuItemCustom.setMnemonic(KeyEvent.VK_U); // Use U for "cUstom"
+        menuItemCustom.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, InputEvent.ALT_DOWN_MASK)); // Alt+U
         menuItemCustom.addActionListener(this::menuItemCustomActionPerformed);
         menuRefurbs.add(menuItemCustom);
 
         // --- CONSULT ---
         JMenu menuConsult = new JMenu("Consult");
         JMenuItem menuItemOrders = new JMenuItem("Orders");
-        menuItemOrders.setAccelerator(KeyStroke.getKeyStroke("F7"));
+        menuItemOrders.setAccelerator(KeyStroke.getKeyStroke("F8"));
         menuItemOrders.addActionListener(this::menuItemOrdersActionPerformed);
         menuConsult.add(menuItemOrders);
 
         JMenuItem menuItemSales = new JMenuItem("Sales");
-        menuItemSales.setAccelerator(KeyStroke.getKeyStroke("F8"));
+        menuItemSales.setAccelerator(KeyStroke.getKeyStroke("F9"));
         menuItemSales.addActionListener(this::menuItemSalesActionPerformed);
         menuConsult.add(menuItemSales);
 
         // --- REPORT ---
         JMenu menuReport = new JMenu("Report");
         JMenuItem menuItemCloseTill = new JMenuItem("Close Till");
-        menuItemCloseTill.setAccelerator(KeyStroke.getKeyStroke("F9"));
+        menuItemCloseTill.setAccelerator(KeyStroke.getKeyStroke("F10"));
         menuItemCloseTill.addActionListener(this::menuItemCloseTillActionPerformed);
         menuReport.add(menuItemCloseTill);
 
         // --- CASH ---
         JMenu menuCash = new JMenu("Cash");
         JMenuItem menuItemCashIn = new JMenuItem("Cash In");
-        menuItemCashIn.setAccelerator(KeyStroke.getKeyStroke("F10"));
+        menuItemCashIn.setAccelerator(KeyStroke.getKeyStroke("F11"));
         menuItemCashIn.addActionListener(this::menuItemCashInActionPerformed);
         menuCash.add(menuItemCashIn);
 
         JMenuItem menuItemCashOut = new JMenuItem("Cash Out");
-        menuItemCashOut.setAccelerator(KeyStroke.getKeyStroke("F11"));
+        menuItemCashOut.setAccelerator(KeyStroke.getKeyStroke("F12"));
         menuItemCashOut.addActionListener(this::menuItemCashOutActionPerformed);
         menuCash.add(menuItemCashOut);
 
@@ -198,13 +215,13 @@ public class MenuViewTest extends JFrame {
         setJMenuBar(menuBar);
 
         if (isDevMode()) {
-            JButton btnReloadUI = new JButton("Reload UI");
+            JButton btnReloadUI = new JButton("Reload All");
             btnReloadUI.setAlignmentX(Component.CENTER_ALIGNMENT);
             btnReloadUI.setFocusable(false);
-            btnReloadUI.setBackground(new Color(200, 80, 80));
+            btnReloadUI.setBackground(new Color(153,153,153));
             btnReloadUI.setForeground(Color.WHITE);
             btnReloadUI.setFont(new Font("SansSerif", Font.BOLD, 14));
-            btnReloadUI.setMaximumSize(new Dimension(150, 35));
+            btnReloadUI.setMaximumSize(new Dimension(150, 30));
             btnReloadUI.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
             btnReloadUI.addActionListener(e -> {
@@ -250,7 +267,7 @@ public class MenuViewTest extends JFrame {
     private void menuItemNewRefurbSaleActionPerformed(ActionEvent e) {
         openInternalFrame(new NewRefurbSaleView());
     }
-        
+
     private void menuItemCustomerActionPerformed(ActionEvent evt) {
         openInternalFrame(new CustomerView());
     }

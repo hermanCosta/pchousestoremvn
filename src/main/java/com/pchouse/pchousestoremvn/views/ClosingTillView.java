@@ -158,10 +158,10 @@ public class ClosingTillView extends JInternalFrame {
         btnPrint.setForeground(Color.WHITE);
         topPanel.add(btnPrint);
 
-        btnCloseTill = new JButton("Close Till", CommonExtension.loadIcon("/icons/icon_till_records.png"));
-        btnCloseTill.setBackground(new Color(21, 76, 121));
-        btnCloseTill.setForeground(Color.WHITE);
-        topPanel.add(btnCloseTill);
+//        btnCloseTill = new JButton("Close Till", CommonExtension.loadIcon("/icons/icon_till_records.png"));
+//        btnCloseTill.setBackground(new Color(21, 76, 121));
+//        btnCloseTill.setForeground(Color.WHITE);
+//        topPanel.add(btnCloseTill);
 
         // === Add Everything to Main Frame ===
         add(topPanel, BorderLayout.NORTH);

@@ -1,6 +1,7 @@
 package com.pchouse.pchousestoremvn.views;
 
 import com.pchouse.pchousestoremvn.common.CommonConstant;
+import com.pchouse.pchousestoremvn.common.CommonExtension;
 import com.pchouse.pchousestoremvn.controllers.CompanyController;
 import com.pchouse.pchousestoremvn.models.Company;
 
@@ -57,10 +58,7 @@ public class LoginView extends JFrame {
         panel.setBackground(new Color(21, 76, 121));
 
         JLabel lblUserIcon = createIconLabel("/icons/icon-customer.png");
-        JLabel lblPassIcon = createIconLabel("/icons/icon_password.png");
-
-        setupTextField(txtUsername, "FREDERICKST");
-        setupTextField(txtPassword, "fredst");
+        JLabel lblPassIcon = createIconLabel("/icons/icon_password.png");        
 
         configureSignInButton();
 
@@ -141,7 +139,7 @@ public class LoginView extends JFrame {
         }
 
         CompanyController controller = new CompanyController();
-        Company company = controller.getCompany(username.toUpperCase(), password);
+        Company company = controller.getCompany(username.toUpperCase(), CommonExtension.encryptPassword(txtPassword));
 
         if (company != null) {
             new MenuViewTest(company).setVisible(true);

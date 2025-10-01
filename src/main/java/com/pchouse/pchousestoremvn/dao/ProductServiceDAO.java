@@ -1,5 +1,6 @@
 package com.pchouse.pchousestoremvn.dao;
 
+import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.models.Company;
 import com.pchouse.pchousestoremvn.models.ProductService;
 import com.pchouse.pchousestoremvn.util.JPAUtil;
@@ -100,9 +101,10 @@ public class ProductServiceDAO {
                             "LOWER(ps.prodServName) LIKE LOWER(:pSearch) " +
                             "OR CAST(ps.price AS string) LIKE :pSearch " +
                             "OR LOWER(ps.note) LIKE LOWER(:pSearch) " +
-                            "ORDER BY ps.prodServName",
+                            "AND ps.company = :pCompany ORDER BY ps.prodServName",
                     ProductService.class);
             query.setParameter("pSearch", "%" + pSearch + "%");
+            query.setParameter("pCompany", CommonSetting.COMPANY);
             products = query.getResultList();
         } finally {
             em.close();

@@ -29,7 +29,7 @@ public class Company implements Serializable {
     @Column(name = "CONTACT_TWO")
     private String contactTwo;
 
-    @Column(name = "EMAIL", unique = true, nullable = true) // Alterado para permitir null
+    @Column(name = "EMAIL", unique = true, nullable = true)
     private String email;
 
     @Column(name = "PASSWORD", nullable = false)

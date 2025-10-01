@@ -725,7 +725,7 @@ public class EmployeeView extends javax.swing.JInternalFrame {
 
         if (selectedRow >= 0) {
             Employee deleteEmployee = new Employee();
-            deleteEmployee.setIdEmployee((Integer) this._dtmEmployee.getValueAt(selectedRow, 0));
+            deleteEmployee.setIdEmployee((long) this._dtmEmployee.getValueAt(selectedRow, 0));
 
             int confirmDeletion = JOptionPane.showConfirmDialog(this, CommonConstant.CONFIRM_DELETE, this.getTitle(), JOptionPane.YES_NO_OPTION);
 

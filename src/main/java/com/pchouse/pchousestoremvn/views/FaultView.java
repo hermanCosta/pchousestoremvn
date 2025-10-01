@@ -404,7 +404,7 @@ public class FaultView extends javax.swing.JInternalFrame {
 
             Fault deleteFault = new Fault();
 
-            deleteFault.setIdFault((Integer) _dtmFault.getValueAt(selectedRow, 0));
+            deleteFault.setIdFault((long) _dtmFault.getValueAt(selectedRow, 0));
             deleteFault.setDescription(_dtmFault.getValueAt(selectedRow, 1).toString());
 
             int confirmDeletion = JOptionPane.showConfirmDialog(this, CommonConstant.CONFIRM_DELETE, this.getTitle(), JOptionPane.YES_NO_OPTION);

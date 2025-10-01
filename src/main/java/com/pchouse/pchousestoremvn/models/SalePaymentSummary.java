@@ -8,7 +8,7 @@ public class SalePaymentSummary {
 
     private SalePayment salePayment;
     private String paymentType;
-    private LocalDate date; // Or java.util.Date if you're not using Java 8+
+    private LocalDate date;
     private double totalAmountDue;
     private double totalAmountPaid;
     private double totalCash;
