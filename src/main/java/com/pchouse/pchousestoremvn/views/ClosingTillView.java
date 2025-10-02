@@ -162,7 +162,6 @@ public class ClosingTillView extends JInternalFrame {
 //        btnCloseTill.setBackground(new Color(21, 76, 121));
 //        btnCloseTill.setForeground(Color.WHITE);
 //        topPanel.add(btnCloseTill);
-
         // === Add Everything to Main Frame ===
         add(topPanel, BorderLayout.NORTH);
         add(wrapper, BorderLayout.CENTER);
@@ -180,7 +179,7 @@ public class ClosingTillView extends JInternalFrame {
 
         // === Listeners ===
         btnRefresh.addActionListener(e -> loadPayments());
-        btnCloseTill.addActionListener(e -> showSummaryDialog());
+        //btnCloseTill.addActionListener(e -> showSummaryDialog());
         btnPrint.addActionListener(e -> printDailyClosingTillReport());
 
         // === Load Data ===
@@ -249,7 +248,7 @@ public class ClosingTillView extends JInternalFrame {
                 String key = sp.getSale().getIdSale() + "|" + sp.getPaymentType().name() + "|" + sp.getDtTransaction();
 
                 double[] totals = groupedSales.getOrDefault(key, new double[2]); // [cash, card]
-                totals[0] += sp.getCashAmount() != null ? sp.getCashAmount() : 0;
+                totals[0] += sp.getCashAmount() != null ? sp.getCashAmount() - sp.getChangeAmount() : 0;
                 totals[1] += sp.getCardAmount() != null ? sp.getCardAmount() : 0;
 
                 groupedSales.put(key, totals);
@@ -296,7 +295,7 @@ public class ClosingTillView extends JInternalFrame {
                 String key = sop.getServiceOrder().getIdServiceOrder() + "|" + sop.getPaymentType().name() + "|" + sop.getDtTransaction();
 
                 double[] totals = groupedServiceOrders.getOrDefault(key, new double[2]); // [cash, card]
-                totals[0] += sop.getCashAmount() != null ? sop.getCashAmount() : 0;
+                totals[0] += sop.getCashAmount() != null ? sop.getCashAmount() - sop.getChangeAmount() : 0;
                 totals[1] += sop.getCardAmount() != null ? sop.getCardAmount() : 0;
 
                 groupedServiceOrders.put(key, totals);

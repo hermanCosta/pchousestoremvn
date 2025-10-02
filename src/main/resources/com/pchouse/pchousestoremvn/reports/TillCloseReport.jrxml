@@ -16,7 +16,7 @@
 	<parameter name="serviceDataSource" class="net.sf.jasperreports.engine.JRDataSource"/>
 	<parameter name="cashInDataSource" class="net.sf.jasperreports.engine.JRDataSource"/>
 	<parameter name="cashOutDataSource" class="net.sf.jasperreports.engine.JRDataSource"/>
-	<parameter name="totalGross" class=	"java.lang.Double"/>
+	<parameter name="totalGross" class="java.lang.Double"/>
 	<parameter name="totalGrossSale" class="java.lang.Double"/>
 	<parameter name="totalGrossService" class="java.lang.Double"/>
 	<parameter name="totalCash" class="java.lang.Double"/>
@@ -118,7 +118,7 @@
 				</textElement>
 				<text><![CDATA[Till Summary Totals]]></text>
 			</staticText>
-						<textField>
+			<textField>
 				<reportElement positionType="Float" x="0" y="230" width="250" height="20" uuid="8d072da7-2298-4610-bdd3-a383c39eedd5"/>
 				<textElement>
 					<font size="11"/>
@@ -160,6 +160,9 @@
 				</textElement>
 				<textFieldExpression><![CDATA["Refunds Total: € " + String.format("%.2f",$P{totalRefunds})]]></textFieldExpression>
 			</textField>
+			<line>
+				<reportElement x="0" y="210" width="555" height="1" forecolor="#999999" uuid="35bd2655-840d-4421-afa5-f32c5b465a18"/>
+			</line>
 		</band>
 	</detail>
 	<pageFooter>

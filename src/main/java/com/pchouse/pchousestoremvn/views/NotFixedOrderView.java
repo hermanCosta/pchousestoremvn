@@ -217,6 +217,14 @@ public class NotFixedOrderView extends javax.swing.JInternalFrame {
                             _listOrderDeposit
                     );
                     CommonSetting.openInternalFrame(notFixedOrderView, "Order Not Fixed: " + _serviceOrderModel.getIdServiceOrder());
+                } else if (newStatus == OrderStatus.IN_PROGRESS) {
+                    CreatedServiceOrderView createdOrderView = new CreatedServiceOrderView(
+                            _serviceOrderModel,
+                            _listServiceOrderFault,
+                            _listServiceOrderProdServ,
+                            _listOrderDeposit
+                    );
+                    CommonSetting.openInternalFrame(createdOrderView, "Created Order View: " + _serviceOrderModel.getIdServiceOrder());
                 }
             }
         }

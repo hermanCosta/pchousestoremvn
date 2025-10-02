@@ -228,7 +228,7 @@ public class FixedServiceOrderView extends javax.swing.JInternalFrame {
                                 _listServiceOrderProdServ,
                                 _listOrderDeposit
                         );
-                        CommonSetting.openInternalFrame(createdOrderView, "Order In Progress");
+                        CommonSetting.openInternalFrame(createdOrderView, "Created Order View: " + _serviceOrderModel.getIdServiceOrder());
                     }
 
                 } else {

@@ -1,5 +1,6 @@
 package com.pchouse.pchousestoremvn.util;
 
+import com.pchouse.pchousestoremvn.common.CommonExtension;
 import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.enums.PayMethod;
 import static com.pchouse.pchousestoremvn.enums.PayMethod.CARD;
@@ -8,6 +9,7 @@ import static com.pchouse.pchousestoremvn.enums.PayMethod.COMBINE;
 import com.pchouse.pchousestoremvn.enums.PaymentType;
 import com.pchouse.pchousestoremvn.models.CashInRegistry;
 import com.pchouse.pchousestoremvn.models.CashOutRegistry;
+import com.pchouse.pchousestoremvn.models.PaymentSummary;
 import com.pchouse.pchousestoremvn.models.RefurbSale;
 import com.pchouse.pchousestoremvn.models.Sale;
 import com.pchouse.pchousestoremvn.models.SalePayment;
@@ -18,6 +20,10 @@ import com.pchouse.pchousestoremvn.models.ServiceOrderPayment;
 import com.pchouse.pchousestoremvn.models.ServiceOrderProdServ;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
@@ -28,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ReportGenerator {
 
@@ -406,87 +411,161 @@ public class ReportGenerator {
             double openCash,
             double closeCash
     ) {
-        
+        // Check if all lists are null or empty
+        boolean noDataToPrint = (salePayments == null || salePayments.isEmpty())
+                && (serviceOrderPayments == null || serviceOrderPayments.isEmpty())
+                && (cashInList == null || cashInList.isEmpty())
+                && (cashOutList == null || cashOutList.isEmpty());
+        if (noDataToPrint) {
+            System.out.println("No data to generate report. Skipping report generation.");
+            return;
+        }
+        // Initialize null lists to empty lists to avoid NullPointerExceptions
+        if (salePayments == null) {
+            salePayments = Collections.emptyList();
+        }
+        if (serviceOrderPayments == null) {
+            serviceOrderPayments = Collections.emptyList();
+        }
+        if (cashInList == null) {
+            cashInList = Collections.emptyList();
+        }
+        if (cashOutList == null) {
+            cashOutList = Collections.emptyList();
+        }
+        List<PaymentSummary> saleSummaries = new ArrayList<>();
+        List<PaymentSummary> serviceSummaries = new ArrayList<>();
+        DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+
+        // --- Group Sale Payments ---
+        Map<String, double[]> groupedSales = new HashMap<>();
+        for (SalePayment sp : salePayments) {
+            String key = sp.getSale().getIdSale() + "|" + sp.getPaymentType().name() + "|" + sp.getDtTransaction();
+            double[] totals = groupedSales.getOrDefault(key, new double[2]);
+            totals[0] += sp.getCashAmount() != null ? sp.getCashAmount() - sp.getChangeAmount() : 0;
+            totals[1] += sp.getCardAmount() != null ? sp.getCardAmount() : 0;
+            groupedSales.put(key, totals);
+        }
+        for (Map.Entry<String, double[]> entry : groupedSales.entrySet()) {
+            String[] parts = entry.getKey().split("\\|");
+            long orderNumber = Long.parseLong(parts[0]);
+            String paymentType = parts[1];
+            LocalDateTime dtTransaction = LocalDateTime.parse(parts[2], inputFormat);
+            double[] totals = entry.getValue();
+            if (paymentType.equalsIgnoreCase("REFUND")) {
+                totals[0] = -totals[0];
+                totals[1] = -totals[1];
+            }
+            saleSummaries.add(new PaymentSummary(
+                    orderNumber,
+                    paymentType,
+                    totals[0],
+                    totals[1],
+                    CommonExtension.formatDateTimeFromLocalDate(dtTransaction)
+            ));
+        }
+
+        // --- Group Service Order Payments ---
+        Map<String, double[]> groupedServices = new HashMap<>();
+        for (ServiceOrderPayment sop : serviceOrderPayments) {
+            String key = sop.getServiceOrder().getIdServiceOrder() + "|" + sop.getPaymentType().name() + "|" + sop.getDtTransaction();
+            double[] totals = groupedServices.getOrDefault(key, new double[2]);
+            totals[0] += sop.getCashAmount() != null ? sop.getCashAmount() - sop.getChangeAmount() : 0;
+            totals[1] += sop.getCardAmount() != null ? sop.getCardAmount() : 0;
+            groupedServices.put(key, totals);
+        }
+        for (Map.Entry<String, double[]> entry : groupedServices.entrySet()) {
+            String[] parts = entry.getKey().split("\\|");
+            long orderNumber = Long.parseLong(parts[0]);
+            String paymentType = parts[1];
+            LocalDateTime dtTransaction = LocalDateTime.parse(parts[2], inputFormat);
+            double[] totals = entry.getValue();
+            if (paymentType.equalsIgnoreCase("REFUND")) {
+                totals[0] = -totals[0];
+                totals[1] = -totals[1];
+            }
+            serviceSummaries.add(new PaymentSummary(
+                    orderNumber,
+                    paymentType,
+                    totals[0],
+                    totals[1],
+                    CommonExtension.formatDateTimeFromLocalDate(dtTransaction)
+            ));
+        }
+
+        // --- Totals Calculation (FIXED) ---
         double totalGrossSale = salePayments.stream()
                 .mapToDouble(SalePayment::getAmountDue)
                 .sum();
-
         double totalGrossService = serviceOrderPayments.stream()
                 .mapToDouble(ServiceOrderPayment::getAmountDue)
                 .sum();
 
+        // Cash: subtract change and refunds
         double totalSaleCash = salePayments.stream()
                 .filter(p -> p.getPayMethod() == PayMethod.CASH)
-                .mapToDouble(SalePayment::getAmountDue)
+                .mapToDouble(p -> p.getCashAmount() != null ? p.getCashAmount() - p.getChangeAmount() : 0)
                 .sum();
-
         double totalServiceCash = serviceOrderPayments.stream()
                 .filter(p -> p.getPayMethod() == PayMethod.CASH)
-                .mapToDouble(ServiceOrderPayment::getAmountDue)
+                .mapToDouble(p -> p.getCashAmount() != null ? p.getCashAmount() - p.getChangeAmount() : 0)
                 .sum();
 
+        // Card: no change, just refunds
         double totalSaleCard = salePayments.stream()
                 .filter(p -> p.getPayMethod() == PayMethod.CARD)
-                .mapToDouble(SalePayment::getAmountDue)
+                .mapToDouble(p -> p.getCardAmount() != null ? p.getCardAmount() : 0)
                 .sum();
-
         double totalServiceCard = serviceOrderPayments.stream()
                 .filter(p -> p.getPayMethod() == PayMethod.CARD)
-                .mapToDouble(ServiceOrderPayment::getAmountDue)
+                .mapToDouble(p -> p.getCardAmount() != null ? p.getCardAmount() : 0)
                 .sum();
 
-        double totalSaleRefund = salePayments.stream()
-                .filter(p -> p.getPaymentType() == PaymentType.REFUND)
-                .mapToDouble(SalePayment::getAmountDue)
-                .sum();
-
-        double totalServiceRefund = serviceOrderPayments.stream()
-                .filter(p -> p.getPaymentType() == PaymentType.REFUND)
-                .mapToDouble(ServiceOrderPayment::getAmountDue)
-                .sum();
-
+        // Refunds: both cash and card
         double totalSaleRefundCash = salePayments.stream()
                 .filter(p -> p.getPaymentType() == PaymentType.REFUND && p.getPayMethod() == PayMethod.CASH)
-                .mapToDouble(SalePayment::getAmountDue)
+                .mapToDouble(p -> p.getCashAmount() != null ? p.getCashAmount() - p.getChangeAmount() : 0)
                 .sum();
-
         double totalSaleRefundCard = salePayments.stream()
                 .filter(p -> p.getPaymentType() == PaymentType.REFUND && p.getPayMethod() == PayMethod.CARD)
-                .mapToDouble(SalePayment::getAmountDue)
+                .mapToDouble(p -> p.getCardAmount() != null ? p.getCardAmount() : 0)
                 .sum();
-
         double totalServiceRefundCash = serviceOrderPayments.stream()
                 .filter(p -> p.getPaymentType() == PaymentType.REFUND && p.getPayMethod() == PayMethod.CASH)
-                .mapToDouble(ServiceOrderPayment::getAmountDue)
+                .mapToDouble(p -> p.getCashAmount() != null ? p.getCashAmount() - p.getChangeAmount() : 0)
                 .sum();
-
         double totalServiceRefundCard = serviceOrderPayments.stream()
                 .filter(p -> p.getPaymentType() == PaymentType.REFUND && p.getPayMethod() == PayMethod.CARD)
-                .mapToDouble(ServiceOrderPayment::getAmountDue)
+                .mapToDouble(p -> p.getCardAmount() != null ? p.getCardAmount() : 0)
                 .sum();
+
+        // Total refunds (cash + card)
+        double totalSaleRefund = totalSaleRefundCash + totalSaleRefundCard;
+        double totalServiceRefund = totalServiceRefundCash + totalServiceRefundCard;
+
+        // Net totals (after refunds)
+        double netTotalCash = (totalSaleCash + totalServiceCash) - (totalSaleRefundCash + totalServiceRefundCash);
+        double netTotalCard = (totalSaleCard + totalServiceCard) - (totalSaleRefundCard + totalServiceRefundCard);
+        double netTotalGross = (totalGrossSale + totalGrossService) - (totalSaleRefund + totalServiceRefund);
 
         try {
             String subreportDir = "/com/pchouse/pchousestoremvn/reports/";
-
             // Load subreports
             JasperReport headerSubreport = (JasperReport) JRLoader.loadObject(getClass().getResource(subreportDir + "subreport_header.jasper"));
             JasperReport saleSubreport = (JasperReport) JRLoader.loadObject(getClass().getResource(subreportDir + "subreport_sale_payments.jasper"));
             JasperReport serviceSubreport = (JasperReport) JRLoader.loadObject(getClass().getResource(subreportDir + "subreport_service_payments.jasper"));
             JasperReport cashInSubreport = (JasperReport) JRLoader.loadObject(getClass().getResource(subreportDir + "subreport_cash_in.jasper"));
             JasperReport cashOutSubreport = (JasperReport) JRLoader.loadObject(getClass().getResource(subreportDir + "subreport_cash_out.jasper"));
-
             JasperReport mainReport = (JasperReport) JRLoader.loadObject(getClass().getResource(subreportDir + "TillCloseReport.jasper"));
 
             // Parameters
             Map<String, Object> params = new HashMap<>();
-
             // Company info
             params.put("companyName", CommonSetting.COMPANY.getName());
             params.put("companyAddress", CommonSetting.COMPANY.getAddress());
             params.put("companyPhone", CommonSetting.COMPANY.getContactOne());
             params.put("companyEmail", CommonSetting.COMPANY.getEmail());
-
-            // Read logo into byte array so it can be reused on every page
+            // Logo
             InputStream logoStream = getClass().getResourceAsStream("/icons/icon_logo_header_lg.png");
             if (logoStream != null) {
                 byte[] logoBytes = logoStream.readAllBytes();
@@ -495,14 +574,16 @@ public class ReportGenerator {
             } else {
                 System.err.println("Logo not found!");
             }
-
-            // Other report parameters            
-            params.put("totalGross", (totalGrossSale + totalGrossService) - (totalSaleRefund + totalServiceRefund));
+            // Other report parameters
+            params.put("totalGross", netTotalGross);
             params.put("totalGrossSale", totalGrossSale - totalSaleRefund);
             params.put("totalGrossService", totalGrossService - totalServiceRefund);
-            params.put("totalCash", (totalSaleCash + totalServiceCash) - (totalSaleRefundCash + totalServiceRefundCash));
-            params.put("totalCard", (totalSaleCard + totalServiceCard) - (totalSaleRefundCard + totalServiceRefundCard));
-            params.put("totalRefunds", (-totalSaleRefund + -totalServiceRefund));// Make it negative
+            params.put("totalCash", netTotalCash);
+            params.put("totalCard", netTotalCard);
+            params.put("totalRefunds", -(totalSaleRefund + totalServiceRefund));
+            params.put("openCash", openCash);
+            params.put("closeCash", closeCash);
+            params.put("cashierName", cashierName);
 
             // Subreports
             params.put("subreport_header", headerSubreport);
@@ -512,15 +593,14 @@ public class ReportGenerator {
             params.put("subreport_cash_out", cashOutSubreport);
 
             // Data sources
-            params.put("saleDataSource", new JRBeanCollectionDataSource(salePayments));
-            params.put("serviceDataSource", new JRBeanCollectionDataSource(serviceOrderPayments));
+            params.put("saleDataSource", new JRBeanCollectionDataSource(saleSummaries));
+            params.put("serviceDataSource", new JRBeanCollectionDataSource(serviceSummaries));
             params.put("cashInDataSource", new JRBeanCollectionDataSource(cashInList));
             params.put("cashOutDataSource", new JRBeanCollectionDataSource(cashOutList));
 
             // Fill and display the report
             JasperPrint jasperPrint = JasperFillManager.fillReport(mainReport, params, new JREmptyDataSource());
             JasperViewer.viewReport(jasperPrint, false);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
