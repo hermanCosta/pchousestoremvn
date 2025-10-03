@@ -1,7 +1,6 @@
 package com.pchouse.pchousestoremvn.dao;
 
 import com.pchouse.pchousestoremvn.exception.BusinessException;
-import com.pchouse.pchousestoremvn.models.Company;
 import com.pchouse.pchousestoremvn.models.Customer;
 import com.pchouse.pchousestoremvn.models.Person;
 import com.pchouse.pchousestoremvn.util.JPAUtil;
@@ -12,13 +11,12 @@ import java.util.List;
 
 public class CustomerDAO {
 
-    public List<Customer> getAllCustomerDAO(Company company) {
+    public List<Customer> getAllCustomerDAO() {
         EntityManager em = JPAUtil.getEntityManager();
         List<Customer> customers = null;
         try {
             TypedQuery<Customer> query = em.createQuery(
-                    "SELECT c FROM Customer c WHERE c.company = :company ORDER BY c.person ASC", Customer.class);
-            query.setParameter("company", company);
+                    "SELECT c FROM Customer c ORDER BY c.person ASC", Customer.class);
             customers = query.setMaxResults(14).getResultList();
         } catch (Exception e) {
             e.printStackTrace();
@@ -35,7 +33,7 @@ public class CustomerDAO {
             em.getTransaction().begin();
 
             Person person = customer.getPerson();
-            
+
             if (person.getIdPerson() == 0) {
                 em.persist(person);
                 em.flush();

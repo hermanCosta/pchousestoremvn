@@ -1,6 +1,7 @@
 package com.pchouse.pchousestoremvn.views;
 
 import com.pchouse.pchousestoremvn.common.CommonConstant;
+import com.pchouse.pchousestoremvn.common.CommonExtension;
 import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.controllers.CustomerController;
 import com.pchouse.pchousestoremvn.controllers.PersonController;
@@ -35,17 +36,17 @@ public class CustomerView extends javax.swing.JInternalFrame {
         //avoid auto old value by focus loosing
         this.txt_contact.setFocusLostBehavior(JFormattedTextField.PERSIST);
 
+        CommonExtension.checkEmailFormat(this.txt_email);
         CommonSetting.tableSettings(this.table_view_customers);
 
         this._customerController = new CustomerController();
         this._dtmCustomer = (DefaultTableModel) this.table_view_customers.getModel();
-
-        //checkEmailFormat();
+        
         loadCustomerListTable();
     }
 
     private void loadCustomerListTable() {
-        this._listCustomer = this._customerController.getAllCustomers(CommonSetting.COMPANY);
+        this._listCustomer = this._customerController.getAllCustomers();
 
         this._dtmCustomer.setRowCount(0);
 
@@ -162,40 +163,7 @@ public class CustomerView extends javax.swing.JInternalFrame {
         this.txt_email.setText("");
         this.txt_search_customer.setText("");
         this.txt_first_name.requestFocus();
-    }
-
-    private final void checkEmailFormat() {
-        this.txt_email.setInputVerifier(new InputVerifier() {
-
-            Border originalBorder;
-            String emailFormat = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-            String email = txt_email.getText();
-
-            @Override
-            public boolean verify(JComponent input) {
-                JTextField comp = (JTextField) input;
-
-                return comp.getText().matches(emailFormat) | comp.getText().trim().isEmpty();
-            }
-
-            @Override
-            public boolean shouldYieldFocus(JComponent input) {
-                boolean isValid = verify(input);
-
-                if (!isValid) {
-                    originalBorder = originalBorder == null ? input.getBorder() : originalBorder;
-
-                    input.setBorder(new LineBorder(Color.RED));
-                } else {
-                    if (originalBorder != null) {
-                        input.setBorder(originalBorder);
-                        originalBorder = null;
-                    }
-                }
-                return isValid;
-            }
-        });
-    }
+    }   
 
     private String formatContactNo(String pNumber) {
         String format = "";

@@ -24,7 +24,7 @@
 				<textElement textAlignment="Right">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA["📞 " + $P{companyPhone} + " | " + "✉️ " + $P{companyEmail}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["📞 " + $P{companyPhone} + " - " + "✉️ " + $P{companyEmail}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="320" y="14" width="230" height="10" uuid="48d2a230-2178-46a9-9de3-06a1f0657864"/>

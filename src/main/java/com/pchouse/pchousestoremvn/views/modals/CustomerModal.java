@@ -1,5 +1,6 @@
 package com.pchouse.pchousestoremvn.views.modals;
 
+import com.pchouse.pchousestoremvn.common.CommonExtension;
 import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.controllers.CustomerController;
 import com.pchouse.pchousestoremvn.controllers.ServiceOrderController;
@@ -10,18 +11,12 @@ import com.pchouse.pchousestoremvn.views.CreatedServiceOrderView;
 import com.pchouse.pchousestoremvn.views.NewServiceOrderView;
 import com.pchouse.pchousestoremvn.views.NewRefurbSaleView;
 import com.pchouse.pchousestoremvn.views.NewSaleView;
-import java.awt.Color;
 import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.util.List;
-import javax.swing.InputVerifier;
-import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.MaskFormatter;
@@ -49,7 +44,7 @@ public class CustomerModal extends javax.swing.JDialog {
         this(parent, modal, customer);
         this._createdOrderView = createdOrderView;
     }
-    
+
     public CustomerModal(NewSaleView newSaleView, Frame parent, boolean modal, Customer customer) {
         this(parent, modal, customer);
         this._newSaleView = newSaleView;
@@ -65,6 +60,7 @@ public class CustomerModal extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
 
+        CommonExtension.checkEmailFormat(this.txt_email);
         CommonSetting.tableSettings(this.table_view_customers);
         this._orderController = new ServiceOrderController();
         this._customerController = new CustomerController();
@@ -91,7 +87,7 @@ public class CustomerModal extends javax.swing.JDialog {
             );
 
         } else {
-            this._listCustomer = this._customerController.getAllCustomers(CommonSetting.COMPANY);
+            this._listCustomer = this._customerController.getAllCustomers();
 
             if (this._listCustomer != null) {
                 this._listCustomer.forEach((custItem) -> {
@@ -208,39 +204,6 @@ public class CustomerModal extends javax.swing.JDialog {
         this.txt_email.setText("");
         this.txt_search_customer.setText("");
         this.txt_first_name.requestFocus();
-    }
-
-    private final void checkEmailFormat() {
-        this.txt_email.setInputVerifier(new InputVerifier() {
-
-            Border originalBorder;
-            String emailFormat = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-            String email = txt_email.getText();
-
-            @Override
-            public boolean verify(JComponent input) {
-                JTextField comp = (JTextField) input;
-
-                return comp.getText().matches(emailFormat) | comp.getText().trim().isEmpty();
-            }
-
-            @Override
-            public boolean shouldYieldFocus(JComponent input) {
-                boolean isValid = verify(input);
-
-                if (!isValid) {
-                    originalBorder = originalBorder == null ? input.getBorder() : originalBorder;
-
-                    input.setBorder(new LineBorder(Color.RED));
-                } else {
-                    if (originalBorder != null) {
-                        input.setBorder(originalBorder);
-                        originalBorder = null;
-                    }
-                }
-                return isValid;
-            }
-        });
     }
 
     private String formatContactNo(String pNumber) {
@@ -650,7 +613,7 @@ public class CustomerModal extends javax.swing.JDialog {
                 _createdOrderView.setCustomerFields(useCustomer);
             } else if (_newSaleView != null) {
                 _newSaleView.setCustomerFields(useCustomer);
-            } else if(_newRefurbSaleView != null){
+            } else if (_newRefurbSaleView != null) {
                 _newRefurbSaleView.setCustomerFields(useCustomer);
             }
 
