@@ -118,7 +118,7 @@ public class PaymentModal extends javax.swing.JDialog {
     }
 
     private void loadOrderPaymentFields(String amount) {
-        this.lbl_amount_value.setText(CommonExtension.formatEuroCurrency(Double.parseDouble(amount)));
+        this.lbl_amount_to_pay_value.setText(CommonExtension.formatEuroCurrency(Double.parseDouble(amount)));
         this.txt_card_amount.setText("");
         this.lbl_change_amount.setText("");
     }
@@ -271,8 +271,8 @@ public class PaymentModal extends javax.swing.JDialog {
         }
     }
 
-    private void calculatePaidRemainingTotal(){
-     double amountToPay = CommonExtension.formatEuroToDouble(this.lbl_amount_value.getText());
+    private void calculatePaidRemainingTotal() {
+        double amountToPay = CommonExtension.formatEuroToDouble(this.lbl_amount_to_pay_value.getText());
         boolean clearField = false;
 
         double cash = CommonExtension.parseTextFieldToDouble(this.txt_card_amount);
@@ -281,23 +281,23 @@ public class PaymentModal extends javax.swing.JDialog {
 
         this.lbl_total_paid_amount.setText(CommonExtension.formatEuroCurrency(total));
         this.lbl_remaining_amount.setText(CommonExtension.formatEuroCurrency(amountToPay - total));
-        
+
         if (total > amountToPay) {
             clearField = true;
-        } 
+        }
 
         if (clearField) {
             this.lbl_remaining_amount.setText("");
-        }   
+        }
     }
-    
+
     private void calculateChangeAndTotal() {
-        double amountToPay = CommonExtension.formatEuroToDouble(this.lbl_amount_value.getText());
+        double amountToPay = CommonExtension.formatEuroToDouble(this.lbl_amount_to_pay_value.getText());
         boolean clearField = false;
 
         double cash = CommonExtension.parseTextFieldToDouble(this.txt_card_amount);
         double card = CommonExtension.parseTextFieldToDouble(this.txt_cash_amount);
-        double total = card + cash;        
+        double total = card + cash;
 
         if (total > amountToPay) {
             this.lbl_change_amount.setText(CommonExtension.formatEuroCurrency(total - amountToPay));
@@ -333,7 +333,7 @@ public class PaymentModal extends javax.swing.JDialog {
         lbl_pay_method = new javax.swing.JLabel();
         combo_box_pay_method = new javax.swing.JComboBox<PayMethod>();
         lbl_amount = new javax.swing.JLabel();
-        lbl_amount_value = new javax.swing.JLabel();
+        lbl_amount_to_pay_value = new javax.swing.JLabel();
         lbl_card_payment = new javax.swing.JLabel();
         txt_card_amount = new javax.swing.JTextField();
         panel_payment_buttons = new javax.swing.JPanel();
@@ -415,9 +415,9 @@ public class PaymentModal extends javax.swing.JDialog {
         lbl_amount.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         lbl_amount.setText("Amount to pay");
 
-        lbl_amount_value.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
-        lbl_amount_value.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lbl_amount_value.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        lbl_amount_to_pay_value.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        lbl_amount_to_pay_value.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lbl_amount_to_pay_value.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
 
         lbl_card_payment.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         lbl_card_payment.setText("Card Payment:");
@@ -503,7 +503,7 @@ public class PaymentModal extends javax.swing.JDialog {
                         .addComponent(lbl_pay_method)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(combo_box_pay_method, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(lbl_amount_value, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lbl_amount_to_pay_value, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(panel_notesLayout.createSequentialGroup()
                         .addComponent(lbl_card_payment)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -523,7 +523,7 @@ public class PaymentModal extends javax.swing.JDialog {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lbl_amount)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lbl_amount_value, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lbl_amount_to_pay_value, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(panel_notesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(combo_box_pay_method, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -569,13 +569,35 @@ public class PaymentModal extends javax.swing.JDialog {
             return; // early exit if confirm failed
         }
 
+        PayMethod selectedMethod = (PayMethod) combo_box_pay_method.getSelectedItem();
+
+        // Validate if method is CARD and amounts don't match
+        if (selectedMethod == PayMethod.CARD) {
+            try {
+                double total = CommonExtension.formatEuroToDouble(_amountToPay);
+                double cardAmount = Double.parseDouble(txt_card_amount.getText().trim());
+
+                if (Double.compare(total, cardAmount) != 0) {
+                    JOptionPane.showMessageDialog(this,
+                            "Card payment must match the total amount. No change is allowed.",
+                            "Payment Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Invalid number format in total or card amount.",
+                        "Input Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+
+        // Proceed with payment handling
         if (!_serviceOrderPayments.isEmpty()) {
-            // Save list of service order payments
-            // For example: pass this list back to caller
             this._serviceOrderPayments = new ArrayList<>(_serviceOrderPayments);
             this.dispose();
         } else if (!_salePayments.isEmpty()) {
-            // Save list of sale payments
             this._salePayments = new ArrayList<>(_salePayments);
             this.dispose();
         } else {
@@ -602,7 +624,7 @@ public class PaymentModal extends javax.swing.JDialog {
     private javax.swing.JButton btn_pay;
     private javax.swing.JComboBox<PayMethod> combo_box_pay_method;
     private javax.swing.JLabel lbl_amount;
-    private javax.swing.JLabel lbl_amount_value;
+    private javax.swing.JLabel lbl_amount_to_pay_value;
     private javax.swing.JLabel lbl_card_payment;
     private javax.swing.JLabel lbl_cash_payment;
     private javax.swing.JLabel lbl_change;

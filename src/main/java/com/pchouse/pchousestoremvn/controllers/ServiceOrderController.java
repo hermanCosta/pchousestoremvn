@@ -26,7 +26,7 @@ public class ServiceOrderController {
             return -1;
         }
     }
-    
+
 // Get order details by ID
     public ServiceOrder getServiceOrderById(long pIdOrder) {
         try {
@@ -99,6 +99,16 @@ public class ServiceOrderController {
         } catch (BusinessException e) {
             e.printStackTrace();
             throw new BusinessException("Error updating order: " + e.getMessage());
+        }
+    }
+
+    public boolean transferServiceOrderController(ServiceOrder pOrderModel, OrderNote orderNote) throws BusinessException {
+        try {
+            return ORDER_DAO.transferServiceOrderDAO(pOrderModel, orderNote);        
+
+         } catch (BusinessException e) {
+            e.printStackTrace();
+            throw new BusinessException("Error transfering order: " + e.getMessage());
         }
     }
 }

@@ -13,13 +13,14 @@ public class CommonConstant {
     public static final String WARN_EXIST_ITEM = "This item already exist";
     public static final String WARN_ADD_ITEM = "Please, add at least one item: ";
     public static final String CONFIRM_ADD_ITEM = "Do you want to add a new item in the database?";
-    public static final String CONFIRM_ORDER_FIXED = "Are you sure you want to mark this Service Order as FIXED?";
-    public static final String CONFIRM_ORDER_NOT_FIXED = "Are you sure you want to mark this Service Order as NOT FIXED?";
-    public static final String CONFIRM_ORDER_IN_PROGRESS = "Are you sure you want to mark this Service Order as IN PROGRESS?";
-    public static final String CONFIRM_PAYMENT_ORDER = "Are you sure you want to PAY this Order?";
-    public static final String CONFIRM_REFUND_SALE = "Are you sure you want to REFUND this Sale?";
-    public static final String CONFIRM_REFUND_ORDER = "Are you sure you want to REFUND this Order?";
-    public static final String CONFIRM_ORDER_PICKING = "Are you sure you want to PICK UP this Order?";
+    public static final String CONFIRM_ORDER_FIXED = "Do you really want to mark this Service Order as FIXED?";
+    public static final String CONFIRM_ORDER_NOT_FIXED = "Do you really want to mark this Service Order as NOT FIXED?";
+    public static final String CONFIRM_ORDER_IN_PROGRESS = "Do you really want to mark this Service Order as IN PROGRESS?";
+    public static final String CONFIRM_PAYMENT_ORDER = "Do you really want to PAY this Order?";
+    public static final String CONFIRM_REFUND_SALE = "Do you really want to REFUND this Sale?";
+    public static final String CONFIRM_REFUND_ORDER = "Do you really want to REFUND this Order?";
+    public static final String CONFIRM_ORDER_PICKING = "Do you really want to PICK UP this Order?";
+    public static final String CONFIRM_TRANSFERING_ORDER = "Do you really want to transfer this order to another shop?";
     
     public static final String SUCCESS_SAVE = "Saved succesfully";
     public static final String SUCCESS_UPDATE = "Updated succesfully";
@@ -42,11 +43,13 @@ public class CommonConstant {
     public static final String ORDER_PICKED_NOTE = "ORDER PICKED";
     public static final String ORDER_BACKED_IN_PROGRESS_NOTE = "ORDER BACKED TO IN PROGRESS";
     public static final String ORDER_REFUND_NOTE = "ORDER REFUNDED";
+    public static final String ORDER_TRANSFER_NOTE = "ORDER TRANSFERED FROM";
+    
 
     public static final String SALE_CREATED_NOTE = "SALE CREATED";
     public static final String SALE_PICKED_NOTE = "SALE PICKED";
     public static final String SALE_REFUND_NOTE = "SALE REFUNDED";
-    public static final String CONFIRM_PAYMENT_SALE = "Are you sure you want to PAY this Sale?";
+    public static final String CONFIRM_PAYMENT_SALE = "Do you really want to PAY this Sale?";
 
     public static final String REFURB_SALE_CREATED_NOTE = "REFURB SALE CREATED";
     public static final String REFURB_SALE_PICKED_NOTE = "REFURB SALE PICKED";
@@ -55,7 +58,7 @@ public class CommonConstant {
     public static final String WARN_EMPTY_FIELDS = "Please, check empty fields";
     public static final String WARN_EXIST_PERSON = "There is another person associated to this contact numer";
     public static final String WARN_EMPTY_CUSTOM_FIELDS = "Please, enter title and value for custom fields ";
-    public static final String WARN_CUSTOMER_MATCHING = "Customer details are not the same from selected, please check";
+    public static final String WARN_CUSTOMER_MATCHING = "Customer details are not the same from selected, please check";    
 
     public static final String CONFIRM_CANCEL = "Do you really want to cancel?";
     public static final String CONFIRM_DELETE = "Do you really want to delete?";

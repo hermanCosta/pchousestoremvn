@@ -167,77 +167,193 @@ public class NewServiceOrderView extends javax.swing.JInternalFrame {
         Employee employee;
         boolean isNewCustomer = true;
 
-        if (this.txt_first_name.getText().trim().isEmpty() || this.txt_last_name.getText().trim().isEmpty()
-                || this.txt_contact.getText().trim().isEmpty() || this.txt_brand.getText().trim().isEmpty()
-                || this.txt_model.getText().trim().isEmpty() || this.txt_serial_number.getText().trim().isEmpty()
-                || this.table_view_prod_serv.getRowCount() == 0 || this.table_view_faults.getRowCount() == 0) {
-            JOptionPane.showMessageDialog(this, CommonConstant.WARN_EMPTY_FIELDS, this.getTitle(), JOptionPane.WARNING_MESSAGE);
+        try {
+            if (this.txt_first_name.getText().trim().isEmpty()
+                    || this.txt_last_name.getText().trim().isEmpty()
+                    || this.txt_contact.getText().trim().isEmpty()
+                    || this.txt_brand.getText().trim().isEmpty()
+                    || this.txt_model.getText().trim().isEmpty()
+                    || this.txt_serial_number.getText().trim().isEmpty()
+                    || this.table_view_prod_serv.getRowCount() == 0
+                    || this.table_view_faults.getRowCount() == 0) {
 
-            return getOrderDetails;
-        } else {
+                JOptionPane.showMessageDialog(
+                        this,
+                        CommonConstant.WARN_EMPTY_FIELDS,
+                        this.getTitle(),
+                        JOptionPane.WARNING_MESSAGE
+                );
+                return null;
+            }
+
             password = CommonExtension.requestUserPassword();
             employee = _employeeController.getEmployeeByPass(password);
-            if (employee != null) {
-                long idCustomer = hdnCustomerId;
 
-                if (idCustomer > 0) {
+            if (employee == null) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        CommonConstant.NOT_AUTHORIZED,
+                        this.getTitle(),
+                        JOptionPane.ERROR_MESSAGE
+                );
+                return null;
+            }
+
+            long idCustomer = hdnCustomerId;
+
+            // === EXISTING CUSTOMER ===
+            if (idCustomer > 0) {
+                try {
                     isNewCustomer = false;
                     customer = this._customerController.getCustomerById(idCustomer);
+
                     if (!customer.getPerson().getFirstName().equals(this.txt_first_name.getText())
                             || !customer.getPerson().getLastName().equals(this.txt_last_name.getText())
-                            || !CommonExtension.formatContactNo(customer.getPerson().getContactNo()).equals(CommonExtension.formatContactNo(this.txt_contact.getText()))
+                            || !CommonExtension.formatContactNo(customer.getPerson().getContactNo())
+                                    .equals(CommonExtension.formatContactNo(this.txt_contact.getText()))
                             || !customer.getPerson().getEmail().equals(this.txt_email.getText())) {
 
-                        JOptionPane.showMessageDialog(this, CommonConstant.WARN_CUSTOMER_MATCHING, this.getTitle(), JOptionPane.WARNING_MESSAGE);
-                        CustomerModal customerModal = new CustomerModal(this, new MainMenuView(CommonSetting.COMPANY), true, customer);
+                        JOptionPane.showMessageDialog(
+                                this,
+                                CommonConstant.WARN_CUSTOMER_MATCHING,
+                                this.getTitle(),
+                                JOptionPane.WARNING_MESSAGE
+                        );
+
+                        CustomerModal customerModal = new CustomerModal(
+                                this,
+                                new MenuViewTest(CommonSetting.COMPANY),
+                                true,
+                                customer
+                        );
                         customerModal.setVisible(true);
                         this.hdnCustomerId = 0;
-                        return getOrderDetails;
+                        return null;
                     }
-                }
 
-                if (isNewCustomer) {
-                    Customer checkCustomer = _customerController.searchCustomerByContactNo(this.txt_contact.getText().replace("(", "").replace(")", "").replace("-", "").replace(" ", ""));
+                } catch (BusinessException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Business error while fetching customer: " + ex.getMessage(),
+                            this.getTitle(),
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                    return null;
+                }
+            }
+
+            // === NEW CUSTOMER ===
+            if (isNewCustomer) {
+                try {
+                    Customer checkCustomer = _customerController.searchCustomerByContactNo(
+                            this.txt_contact.getText()
+                                    .replace("(", "")
+                                    .replace(")", "")
+                                    .replace("-", "")
+                                    .replace(" ", "")
+                    );
 
                     if (checkCustomer != null) {
-                        JOptionPane.showMessageDialog(this, CommonConstant.WARN_EXIST_PERSON, this.getTitle(), JOptionPane.WARNING_MESSAGE);
+                        JOptionPane.showMessageDialog(
+                                this,
+                                CommonConstant.WARN_EXIST_PERSON,
+                                this.getTitle(),
+                                JOptionPane.WARNING_MESSAGE
+                        );
 
-                        CustomerModal customerModal = new CustomerModal(this, _parentFrame, true, checkCustomer);
+                        CustomerModal customerModal = new CustomerModal(
+                                this,
+                                _parentFrame,
+                                true,
+                                checkCustomer
+                        );
                         customerModal.setLocationRelativeTo(this);
                         customerModal.setVisible(true);
-
-                        return getOrderDetails;
+                        return null;
                     } else {
-
                         Person person = new Person(
                                 this.txt_first_name.getText().toUpperCase(),
                                 this.txt_last_name.getText().toUpperCase(),
-                                this.txt_contact.getText().replace("(", "").replace(")", "").replace("-", "").replace(" ", ""),
-                                this.txt_email.getText().toLowerCase());
+                                this.txt_contact.getText()
+                                        .replace("(", "")
+                                        .replace(")", "")
+                                        .replace("-", "")
+                                        .replace(" ", ""),
+                                this.txt_email.getText().toLowerCase()
+                        );
 
                         customer = new Customer(person, CommonSetting.COMPANY);
                     }
+
+                } catch (BusinessException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Business error while checking customer: " + ex.getMessage(),
+                            this.getTitle(),
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                    return null;
                 }
-
-                Device device = new Device(this.txt_brand.getText().toUpperCase(),
-                        this.txt_model.getText().toUpperCase(),
-                        this.txt_serial_number.getText().toUpperCase());
-
-                getOrderDetails = new ServiceOrder(
-                        customer,
-                        device,
-                        employee,
-                        CommonSetting.COMPANY,
-                        CommonExtension.formatEuroToDouble(this.lbl_total_amount.getText()),
-                        CommonExtension.formatEuroToDouble(this.lbl_due_amount.getText()),
-                        OrderStatus.IN_PROGRESS, new Date(), null, null, (int) this.spn_bad_sectors.getValue(), this.editor_pane_notes.getText());
-
-            } else {
-                JOptionPane.showMessageDialog(this, CommonConstant.NOT_AUTHORIZED, null, JOptionPane.ERROR_MESSAGE);
             }
+
+            // === DEVICE AND SERVICE ORDER CREATION ===
+            Device device = new Device(
+                    this.txt_brand.getText().toUpperCase(),
+                    this.txt_model.getText().toUpperCase(),
+                    this.txt_serial_number.getText().toUpperCase()
+            );
+
+            getOrderDetails = new ServiceOrder(
+                    customer,
+                    device,
+                    employee,
+                    CommonSetting.COMPANY,
+                    CommonExtension.formatEuroToDouble(this.lbl_total_amount.getText()),
+                    CommonExtension.formatEuroToDouble(this.lbl_due_amount.getText()),
+                    OrderStatus.IN_PROGRESS,
+                    new Date(),
+                    null,
+                    null,
+                    (int) this.spn_bad_sectors.getValue(),
+                    this.editor_pane_notes.getText()
+            );
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Unexpected error while building service order: " + e.getMessage(),
+                    this.getTitle(),
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
 
         return getOrderDetails;
+    }
+
+    private List<ServiceOrderFault> getOrderFault(ServiceOrder order) {
+        List<ServiceOrderFault> listOrderFault = new ArrayList<>();
+
+        if (this.table_view_faults.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, CommonConstant.WARN_ADD_ITEM + "fault", this.getTitle(), JOptionPane.WARNING_MESSAGE);
+
+            return listOrderFault;
+        } else {
+            for (int i = 0; i < _dtmFault.getRowCount(); i++) {
+                Fault faultItem = new Fault();
+                ServiceOrderFault orderFaultItem = new ServiceOrderFault();
+
+                faultItem = _faultController.getItemFault(Integer.parseInt(_dtmFault.getValueAt(i, 0).toString()));
+
+                orderFaultItem.setServiceOrder(order);
+                orderFaultItem.setFault(faultItem);
+
+                listOrderFault.add(orderFaultItem);
+            }
+        }
+        return listOrderFault;
     }
 
     private List<ServiceOrderProdServ> getOrderProdServ(ServiceOrder order) {
@@ -265,29 +381,6 @@ public class NewServiceOrderView extends javax.swing.JInternalFrame {
 
         }
         return listOrderProdServ;
-    }
-
-    private List<ServiceOrderFault> getOrderFault(ServiceOrder order) {
-        List<ServiceOrderFault> listOrderFault = new ArrayList<>();
-
-        if (this.table_view_faults.getRowCount() == 0) {
-            JOptionPane.showMessageDialog(this, CommonConstant.WARN_ADD_ITEM + "fault", this.getTitle(), JOptionPane.WARNING_MESSAGE);
-
-            return listOrderFault;
-        } else {
-            for (int i = 0; i < _dtmFault.getRowCount(); i++) {
-                Fault faultItem = new Fault();
-                ServiceOrderFault orderFaultItem = new ServiceOrderFault();
-
-                faultItem = _faultController.getItemFault(Integer.parseInt(_dtmFault.getValueAt(i, 0).toString()));
-
-                orderFaultItem.setServiceOrder(order);
-                orderFaultItem.setFault(faultItem);
-
-                listOrderFault.add(orderFaultItem);
-            }
-        }
-        return listOrderFault;
     }
 
     private void addFaultToTheTable() {
@@ -345,7 +438,7 @@ public class NewServiceOrderView extends javax.swing.JInternalFrame {
                     CommonExtension.formatToPriceField(prodServ.getPrice() * CommonConstant.DEFAULT_QTY)
                 });
             }
- 
+
             this._defaultListModelProdServ.removeAllElements();
             this.txt_search_prod_serv.setText("");
             this.txt_search_prod_serv.requestFocus();
@@ -1189,7 +1282,7 @@ public class NewServiceOrderView extends javax.swing.JInternalFrame {
 
     private void btn_seacrh_customerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_seacrh_customerActionPerformed
         this.hdnCustomerId = 0;
-        CustomerModal customerModal = new CustomerModal(this, new MainMenuView(CommonSetting.COMPANY), true, null);
+        CustomerModal customerModal = new CustomerModal(this, new MenuViewTest(CommonSetting.COMPANY), true, null);
         customerModal.setVisible(true);
     }//GEN-LAST:event_btn_seacrh_customerActionPerformed
 

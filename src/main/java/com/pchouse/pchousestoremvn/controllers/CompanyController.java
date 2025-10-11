@@ -9,11 +9,21 @@ public class CompanyController {
 
     // Retrieve all companies
     public List<Company> getAllCompanies() {
-        return companyDAO.getAllCompaniesDAO();
+        try {
+            return companyDAO.getAllCompaniesDAO();
+        } catch (Exception e) {
+            System.err.println("Error retrieving all companies: " + e.getMessage());
+            return null;
+        }
     }
 
     // Retrieve a specific company by name and password
     public Company getCompany(String name, String password) {
-        return companyDAO.getCompanyDAO(name, password);
+        try {
+            return companyDAO.getCompanyDAO(name, password);
+        } catch (Exception e) {
+            System.err.println("Error retrieving company: " + e.getMessage());
+            return null;
+        }
     }
 }

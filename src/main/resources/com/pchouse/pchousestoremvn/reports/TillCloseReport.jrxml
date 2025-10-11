@@ -160,9 +160,6 @@
 				</textElement>
 				<textFieldExpression><![CDATA["Refunds Total: € " + String.format("%.2f",$P{totalRefunds})]]></textFieldExpression>
 			</textField>
-			<line>
-				<reportElement x="0" y="210" width="555" height="1" forecolor="#999999" uuid="35bd2655-840d-4421-afa5-f32c5b465a18"/>
-			</line>
 		</band>
 	</detail>
 	<pageFooter>

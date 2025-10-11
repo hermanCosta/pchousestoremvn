@@ -33,62 +33,105 @@ public class MenuViewTest extends JFrame {
 
     private void initComponents() {
         desktopPane = new JDesktopPane();
+
+        // === SIDE PANEL CONFIG ===
         sidePanel = new JPanel();
         sidePanel.setPreferredSize(new Dimension(220, 0));
         sidePanel.setBackground(Color.LIGHT_GRAY);
-        sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
+        sidePanel.setLayout(new BorderLayout());
 
-        // Topo: Shop Name com ícone
-        JLabel lblShopNameTitle = new JLabel("Shop Name");
-        lblShopNameTitle.setForeground(Color.WHITE);
-        lblShopNameTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-        lblShopNameTitle.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        sidePanel.add(lblShopNameTitle);
+        // === TOP SECTION (Timestamp) ===
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setBackground(Color.LIGHT_GRAY);
+        topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        lblShopName = new JLabel(_company.getName());
-        lblShopName.setForeground(Color.WHITE);
-        lblShopName.setFont(new Font("Arial", Font.BOLD, 16));
-        lblShopName.setAlignmentX(Component.CENTER_ALIGNMENT);
-        lblShopName.setBorder(BorderFactory.createEmptyBorder(5, 10, 15, 10));
-        sidePanel.add(lblShopName);
-
-        // Painel para o logo
-        JPanel logoPanel = new JPanel();
-        logoPanel.setBackground(Color.LIGHT_GRAY);
-        logoPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        logoPanel.setLayout(new BorderLayout());
-
-        JLabel lblLogo = new JLabel();
-        lblLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_logo_header_md.png")));
-        logoPanel.add(lblLogo, BorderLayout.CENTER);
-        sidePanel.add(logoPanel);
-
-        // Informações da loja
-        JLabel lblShopAddress = new JLabel();
-        lblShopAddress.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_address.png")));
-        lblShopAddress.setText(_company.getAddress());
-        lblShopAddress.setForeground(Color.WHITE);
-        lblShopAddress.setAlignmentX(Component.CENTER_ALIGNMENT);
-        lblShopAddress.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        sidePanel.add(lblShopAddress);
-
-        JLabel lblShopTel = new JLabel();
-        lblShopTel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_phone_number.png")));
-        lblShopTel.setText(_company.getContactOne());
-        lblShopTel.setForeground(Color.WHITE);
-        lblShopTel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        lblShopTel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        sidePanel.add(lblShopTel);
-
-        // Rodapé: Timestamp
+        // --- Timestamp (TOP LEFT) ---
         lblTimeStamp = new JLabel(getFormattedTimestamp());
+        lblTimeStamp.setIcon(new ImageIcon(getClass().getResource("/icons/icon_date_sm_black.png")));
         lblTimeStamp.setForeground(Color.WHITE);
         lblTimeStamp.setFont(new Font("Arial", Font.PLAIN, 12));
-        lblTimeStamp.setAlignmentX(Component.CENTER_ALIGNMENT);
-        lblTimeStamp.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        sidePanel.add(lblTimeStamp);
+        topPanel.add(lblTimeStamp, BorderLayout.WEST);
 
-        // Adicionar o sidePanel ao desktopPane ou onde for necessário
+        sidePanel.add(topPanel, BorderLayout.NORTH);
+
+        // === CENTER SECTION (Logged in + Company Name + LOGO) ===
+        JPanel centerPanel = new JPanel();
+        centerPanel.setBackground(Color.LIGHT_GRAY);
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+        centerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // --- "Logged in" title ---
+        JLabel lblShopNameTitle = new JLabel("Logged in");
+        lblShopNameTitle.setForeground(Color.WHITE);
+        lblShopNameTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lblShopNameTitle.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+        centerPanel.add(lblShopNameTitle);
+
+        // --- Company Name ---
+        lblShopName = new JLabel(_company.getName());
+        lblShopName.setForeground(Color.WHITE);
+        lblShopName.setFont(new Font("SansSerif", Font.BOLD, 20));
+        lblShopName.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lblShopName.setBorder(BorderFactory.createEmptyBorder(5, 0, 15, 0));
+        centerPanel.add(lblShopName);
+
+        // --- Logo ---
+        JLabel lblLogo = new JLabel(new ImageIcon(getClass().getResource("/icons/icon_logo_header_md.png")));
+        lblLogo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        centerPanel.add(lblLogo);
+
+        sidePanel.add(centerPanel, BorderLayout.CENTER);
+
+        // === BOTTOM SECTION (Address, Phone, Reload Button) ===
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+        bottomPanel.setBackground(Color.LIGHT_GRAY);
+        bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // --- LEFT SIDE (Address + Phone) ---
+        JPanel leftInfoPanel = new JPanel();
+        leftInfoPanel.setLayout(new BoxLayout(leftInfoPanel, BoxLayout.Y_AXIS));
+        leftInfoPanel.setOpaque(false);
+        //leftInfoPanel.setBorder(BorderFactory.createEtchedBorder());
+
+        // --- Address ---
+        JLabel lblShopAddress = new JLabel("<html>" + _company.getAddress() + "</html>");
+        lblShopAddress.setIcon(new ImageIcon(getClass().getResource("/icons/icon_address.png")));
+        lblShopAddress.setForeground(Color.WHITE);
+        lblShopAddress.setAlignmentX(Component.LEFT_ALIGNMENT);
+        leftInfoPanel.add(lblShopAddress);
+
+        // --- Phone ---
+        JLabel lblShopTel = new JLabel(_company.getContactOne());
+        lblShopTel.setIcon(new ImageIcon(getClass().getResource("/icons/icon_phone_number.png")));
+        lblShopTel.setForeground(Color.WHITE);
+        lblShopTel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        leftInfoPanel.add(lblShopTel);
+
+        // Add leftInfoPanel to the NORTH region of bottomPanel
+        bottomPanel.add(leftInfoPanel, BorderLayout.NORTH);
+
+        // --- CENTER (Reload Button) ---
+        JButton btnReloadUI = new JButton("Reload UI");
+        btnReloadUI.setBackground(new Color(100, 100, 100));
+        btnReloadUI.setForeground(Color.WHITE);
+        btnReloadUI.setFont(new Font("SansSerif", Font.BOLD, 14));
+        btnReloadUI.setPreferredSize(new Dimension(150, 25));
+        btnReloadUI.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+        btnReloadUI.setFocusable(false);
+        btnReloadUI.addActionListener(e -> {
+            this.dispose();
+            reloadMenuView();
+        });
+
+        // Center the button horizontally and place it at the bottom
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        buttonPanel.setOpaque(false);
+        buttonPanel.add(btnReloadUI);
+        bottomPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        sidePanel.add(bottomPanel, BorderLayout.SOUTH);
+
+        // === ADD SIDE PANEL TO DESKTOP ===
         desktopPane.add(sidePanel);
 
         JMenuBar menuBar = new JMenuBar();
@@ -132,8 +175,7 @@ public class MenuViewTest extends JFrame {
         menuItemFault.addActionListener(this::menuItemFaultActionPerformed);
         menuManage.add(menuItemFault);
 
-        // --- REFURBS ---
-        // --- REFURBS ---
+        // --- REFURBS ---       
         JMenu menuRefurbs = new JMenu("Refurbs");
         menuRefurbs.setMnemonic(KeyEvent.VK_R); // Alt+R opens Refurbs menu
 
@@ -214,25 +256,6 @@ public class MenuViewTest extends JFrame {
 
         setJMenuBar(menuBar);
 
-        if (isDevMode()) {
-            JButton btnReloadUI = new JButton("Reload All");
-            btnReloadUI.setAlignmentX(Component.CENTER_ALIGNMENT);
-            btnReloadUI.setFocusable(false);
-            btnReloadUI.setBackground(new Color(153,153,153));
-            btnReloadUI.setForeground(Color.WHITE);
-            btnReloadUI.setFont(new Font("SansSerif", Font.BOLD, 14));
-            btnReloadUI.setMaximumSize(new Dimension(150, 30));
-            btnReloadUI.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-            btnReloadUI.addActionListener(e -> {
-                this.dispose();
-                reloadMenuView();
-            });
-
-            sidePanel.add(Box.createVerticalStrut(30));
-            sidePanel.add(btnReloadUI);
-        }
-
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(desktopPane, BorderLayout.CENTER);
         getContentPane().add(sidePanel, BorderLayout.EAST);
@@ -243,89 +266,76 @@ public class MenuViewTest extends JFrame {
         return formatter.format(LocalDateTime.now());
     }
 
-    private void openInternalFrame(JInternalFrame frame) {
-        desktopPane.removeAll();
-        desktopPane.add(frame);
-        frame.setVisible(true);
-        frame.setSize(desktopPane.getSize());
-        frame.setLocation(0, 0);
-        try {
-            frame.setMaximum(true);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     private void menuItemNewOrderActionPerformed(ActionEvent evt) {
-        openInternalFrame(new NewServiceOrderView());
+        CommonSetting.openInternalFrame(new NewServiceOrderView(), "");
     }
 
     private void menuItemNewSaleActionPerformed(ActionEvent evt) {
-        openInternalFrame(new NewSaleView());
+        CommonSetting.openInternalFrame(new NewSaleView(), "");
     }
 
     private void menuItemNewRefurbSaleActionPerformed(ActionEvent e) {
-        openInternalFrame(new NewRefurbSaleView());
+        CommonSetting.openInternalFrame(new NewRefurbSaleView(), "");
     }
 
     private void menuItemCustomerActionPerformed(ActionEvent evt) {
-        openInternalFrame(new CustomerView());
+        CommonSetting.openInternalFrame(new CustomerView(), "");
     }
 
     private void menuItemUsersActionPerformed(ActionEvent evt) {
-        openInternalFrame(new EmployeeView());
+        CommonSetting.openInternalFrame(new EmployeeView(), "");
     }
 
     private void menuItemProductsActionPerformed(ActionEvent evt) {
-        openInternalFrame(new ProductServiceView());
+        CommonSetting.openInternalFrame(new ProductServiceView(), "");
     }
 
     private void menuItemRefurbsActionPerformed(ActionEvent evt) {
-        openInternalFrame(new RefurbView());
+        CommonSetting.openInternalFrame(new RefurbView(), "");
     }
 
     private void menuItemComputerActionPerformed(ActionEvent evt) {
-        openInternalFrame(new RefurbComputerView());
+        CommonSetting.openInternalFrame(new RefurbComputerView(), "");
     }
 
     private void menuItemMonitorActionPerformed(ActionEvent evt) {
-        openInternalFrame(new RefurbMonitorView());
+        CommonSetting.openInternalFrame(new RefurbMonitorView(), "");
     }
 
     private void menuItemTelevisionActionPerformed(ActionEvent evt) {
-        openInternalFrame(new RefurbTelevisionView());
+        CommonSetting.openInternalFrame(new RefurbTelevisionView(), "");
     }
 
     private void menuItemConsoleActionPerformed(ActionEvent evt) {
-        openInternalFrame(new RefurbConsoleView());
+        CommonSetting.openInternalFrame(new RefurbConsoleView(), "");
     }
 
     private void menuItemCustomActionPerformed(ActionEvent evt) {
-        openInternalFrame(new RefurbCustomView());
+        CommonSetting.openInternalFrame(new RefurbCustomView(), "");
     }
 
     private void menuItemFaultActionPerformed(ActionEvent evt) {
-        openInternalFrame(new FaultView());
+        CommonSetting.openInternalFrame(new FaultView(), "");
     }
 
     private void menuItemOrdersActionPerformed(ActionEvent evt) {
-        openInternalFrame(new OrderSaleListView(OrderSaleListView.TAB_ORDER));
+        CommonSetting.openInternalFrame(new OrderSaleListView(OrderSaleListView.TAB_ORDER), "");
     }
 
     private void menuItemSalesActionPerformed(ActionEvent evt) {
-        openInternalFrame(new OrderSaleListView(OrderSaleListView.TAB_SALE));
+        CommonSetting.openInternalFrame(new OrderSaleListView(OrderSaleListView.TAB_SALE), "");
     }
 
     private void menuItemCloseTillActionPerformed(ActionEvent evt) {
-        openInternalFrame(new ClosingTillView());
+        CommonSetting.openInternalFrame(new ClosingTillView(), "");
     }
 
     private void menuItemCashInActionPerformed(ActionEvent evt) {
-        openInternalFrame(new CashInRegistryView());
+        CommonSetting.openInternalFrame(new CashInRegistryView(), "");
     }
 
     private void menuItemCashOutActionPerformed(ActionEvent evt) {
-        openInternalFrame(new CashOutRegistryView());
+        CommonSetting.openInternalFrame(new CashOutRegistryView(), "");
     }
 
     private boolean isDevMode() {

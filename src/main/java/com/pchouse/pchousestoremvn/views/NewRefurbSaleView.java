@@ -157,39 +157,101 @@ public class NewRefurbSaleView extends javax.swing.JInternalFrame {
     }
 
     private Customer resolveCustomer() {
-        long idCustomer = hdnCustomerId;
-        String firstName = txt_first_name.getText().trim();
-        String lastName = txt_last_name.getText().trim();
-        String contact = CommonExtension.normalizePhone(txt_contact.getText());
-        String email = txt_email.getText().trim();
+        try {
+            long idCustomer = hdnCustomerId;
+            String firstName = txt_first_name.getText().trim();
+            String lastName = txt_last_name.getText().trim();
+            String contact = CommonExtension.normalizePhone(txt_contact.getText());
+            String email = txt_email.getText().trim();
 
-        if (idCustomer > 0) {
-            Customer existingCustomer = _customerController.getCustomerById(idCustomer);
-            if (!dataMatches(existingCustomer, firstName, lastName, contact, email)) {
-                JOptionPane.showMessageDialog(this, CommonConstant.WARN_CUSTOMER_MATCHING, this.getTitle(), JOptionPane.WARNING_MESSAGE);
-                CustomerModal customerModal = new CustomerModal(this, new MainMenuView(CommonSetting.COMPANY), true, existingCustomer);
-                customerModal.setVisible(true);
-                this.hdnCustomerId = 0;
-                return null;
-            }
-            return existingCustomer;
-        } else {
-            Customer foundCustomer = _customerController.searchCustomerByContactNo(contact);
-            if (foundCustomer != null) {
-                JOptionPane.showMessageDialog(this, CommonConstant.WARN_EXIST_PERSON, this.getTitle(), JOptionPane.WARNING_MESSAGE);
-                CustomerModal customerModal = new CustomerModal(this, _parentFrame, true, foundCustomer);
-                customerModal.setLocationRelativeTo(this);
-                customerModal.setVisible(true);
-                return null;
+            if (idCustomer > 0) {
+                try {
+                    Customer existingCustomer = _customerController.getCustomerById(idCustomer);
+
+                    if (!dataMatches(existingCustomer, firstName, lastName, contact, email)) {
+                        JOptionPane.showMessageDialog(
+                                this,
+                                CommonConstant.WARN_CUSTOMER_MATCHING,
+                                this.getTitle(),
+                                JOptionPane.WARNING_MESSAGE
+                        );
+
+                        CustomerModal customerModal = new CustomerModal(
+                                this,
+                                new MenuViewTest(CommonSetting.COMPANY),
+                                true,
+                                existingCustomer
+                        );
+                        customerModal.setVisible(true);
+                        this.hdnCustomerId = 0;
+                        return null;
+                    }
+
+                    return existingCustomer;
+
+                } catch (BusinessException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Business error while fetching existing customer: " + ex.getMessage(),
+                            this.getTitle(),
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                    return null;
+                }
+
             } else {
-                Person newPerson = new Person(
-                        firstName.toUpperCase(),
-                        lastName.toUpperCase(),
-                        contact,
-                        email.toLowerCase()
-                );
-                return new Customer(newPerson, CommonSetting.COMPANY);
+                try {
+                    Customer foundCustomer = _customerController.searchCustomerByContactNo(contact);
+
+                    if (foundCustomer != null) {
+                        JOptionPane.showMessageDialog(
+                                this,
+                                CommonConstant.WARN_EXIST_PERSON,
+                                this.getTitle(),
+                                JOptionPane.WARNING_MESSAGE
+                        );
+
+                        CustomerModal customerModal = new CustomerModal(
+                                this,
+                                _parentFrame,
+                                true,
+                                foundCustomer
+                        );
+                        customerModal.setLocationRelativeTo(this);
+                        customerModal.setVisible(true);
+                        return null;
+                    } else {
+                        Person newPerson = new Person(
+                                firstName.toUpperCase(),
+                                lastName.toUpperCase(),
+                                contact,
+                                email.toLowerCase()
+                        );
+                        return new Customer(newPerson, CommonSetting.COMPANY);
+                    }
+
+                } catch (BusinessException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Business error while searching customer: " + ex.getMessage(),
+                            this.getTitle(),
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                    return null;
+                }
             }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Unexpected error while resolving customer: " + e.getMessage(),
+                    this.getTitle(),
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return null;
         }
     }
 
@@ -839,7 +901,7 @@ public class NewRefurbSaleView extends javax.swing.JInternalFrame {
 
     private void btn_seacrh_customerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_seacrh_customerActionPerformed
         this.hdnCustomerId = 0;
-        CustomerModal customerModal = new CustomerModal(this, new MainMenuView(CommonSetting.COMPANY), true, null);
+        CustomerModal customerModal = new CustomerModal(this, new MenuViewTest(CommonSetting.COMPANY), true, null);
         customerModal.setVisible(true);
     }//GEN-LAST:event_btn_seacrh_customerActionPerformed
 

@@ -125,7 +125,10 @@ public class CommonSetting {
     }
 
     public static void openInternalFrame(JInternalFrame frame, String title) {
-        frame.setTitle(title);
+        if (!title.isEmpty()) {
+            frame.setTitle(title);
+        }        
+        
         frame.setClosable(true);
         frame.setIconifiable(true);
         frame.setMaximizable(true);

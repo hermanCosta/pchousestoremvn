@@ -65,7 +65,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="combo_box_pay_method" max="32767" attributes="0"/>
                       </Group>
-                      <Component id="lbl_amount_value" alignment="0" max="32767" attributes="0"/>
+                      <Component id="lbl_amount_to_pay_value" alignment="0" max="32767" attributes="0"/>
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="lbl_card_payment" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
@@ -91,7 +91,7 @@
                   <EmptySpace max="32767" attributes="0"/>
                   <Component id="lbl_amount" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="lbl_amount_value" min="-2" pref="35" max="-2" attributes="0"/>
+                  <Component id="lbl_amount_to_pay_value" min="-2" pref="35" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="1" attributes="0">
                       <Component id="combo_box_pay_method" min="-2" max="-2" attributes="0"/>
@@ -254,7 +254,7 @@
             <Property name="text" type="java.lang.String" value="Amount to pay"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JLabel" name="lbl_amount_value">
+        <Component class="javax.swing.JLabel" name="lbl_amount_to_pay_value">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Dialog" size="18" style="1"/>

@@ -1,27 +1,23 @@
 package com.pchouse.pchousestoremvn.views.modals;
 
+import com.pchouse.pchousestoremvn.common.CommonExtension;
 import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.controllers.CustomerController;
 import com.pchouse.pchousestoremvn.controllers.ServiceOrderController;
 import com.pchouse.pchousestoremvn.controllers.PersonController;
+import com.pchouse.pchousestoremvn.exception.BusinessException;
 import com.pchouse.pchousestoremvn.models.Customer;
 import com.pchouse.pchousestoremvn.models.Person;
 import com.pchouse.pchousestoremvn.views.CreatedServiceOrderView;
 import com.pchouse.pchousestoremvn.views.NewServiceOrderView;
 import com.pchouse.pchousestoremvn.views.NewRefurbSaleView;
 import com.pchouse.pchousestoremvn.views.NewSaleView;
-import java.awt.Color;
 import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.util.List;
-import javax.swing.InputVerifier;
-import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.MaskFormatter;
@@ -49,7 +45,7 @@ public class CustomerModal extends javax.swing.JDialog {
         this(parent, modal, customer);
         this._createdOrderView = createdOrderView;
     }
-    
+
     public CustomerModal(NewSaleView newSaleView, Frame parent, boolean modal, Customer customer) {
         this(parent, modal, customer);
         this._newSaleView = newSaleView;
@@ -65,6 +61,7 @@ public class CustomerModal extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
 
+        CommonExtension.checkEmailFormat(this.txt_email);
         CommonSetting.tableSettings(this.table_view_customers);
         this._orderController = new ServiceOrderController();
         this._customerController = new CustomerController();
@@ -76,65 +73,90 @@ public class CustomerModal extends javax.swing.JDialog {
     }
 
     private void loadCustomerListTable() {
-        this._dtmCustomer.setRowCount(0);
+        try {
+            this._dtmCustomer.setRowCount(0);
 
-        if (_customer != null) {
-            this._dtmCustomer.addRow(
-                    new Object[]{
-                        _customer.getIdCustomer(),
-                        _customer.getPerson().getFirstName(),
-                        _customer.getPerson().getLastName(),
-                        formatContactNo(_customer.getPerson().getContactNo()),
-                        _customer.getPerson().getEmail(),
-                        _customer.getPerson().getIdPerson()
-                    }
-            );
+            if (_customer != null) {
+                this._dtmCustomer.addRow(
+                        new Object[]{
+                            _customer.getIdCustomer(),
+                            _customer.getPerson().getFirstName(),
+                            _customer.getPerson().getLastName(),
+                            formatContactNo(_customer.getPerson().getContactNo()),
+                            _customer.getPerson().getEmail(),
+                            _customer.getPerson().getIdPerson()
+                        }
+                );
+            } else {
+                this._listCustomer = this._customerController.getAllCustomers();
 
-        } else {
-            this._listCustomer = this._customerController.getAllCustomers(CommonSetting.COMPANY);
-
-            if (this._listCustomer != null) {
-                this._listCustomer.forEach((custItem) -> {
-                    this._dtmCustomer.addRow(
-                            new Object[]{
-                                custItem.getIdCustomer(),
-                                custItem.getPerson().getFirstName(),
-                                custItem.getPerson().getLastName(),
-                                formatContactNo(custItem.getPerson().getContactNo()),
-                                custItem.getPerson().getEmail(),
-                                custItem.getPerson().getIdPerson()
-                            }
-                    );
-                });
+                if (this._listCustomer != null) {
+                    this._listCustomer.forEach((custItem) -> {
+                        this._dtmCustomer.addRow(
+                                new Object[]{
+                                    custItem.getIdCustomer(),
+                                    custItem.getPerson().getFirstName(),
+                                    custItem.getPerson().getLastName(),
+                                    formatContactNo(custItem.getPerson().getContactNo()),
+                                    custItem.getPerson().getEmail(),
+                                    custItem.getPerson().getIdPerson()
+                                }
+                        );
+                    });
+                }
             }
+        } catch (BusinessException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error loading customers: " + e.getMessage(),
+                    this.getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Unexpected error loading customers: " + e.getMessage(),
+                    this.getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
 
     private Customer getCustomerFields() {
         Customer getCustomer = null;
+        try {
+            if (this.txt_first_name.getText().trim().isEmpty()
+                    || this.txt_last_name.getText().trim().isEmpty()
+                    || this.txt_contact.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Please, check Empty fields",
+                        "New Customer",
+                        JOptionPane.ERROR_MESSAGE);
+                return getCustomer;
+            } else {
+                Person person = new Person(
+                        this.txt_first_name.getText().toUpperCase(),
+                        this.txt_last_name.getText().toUpperCase(),
+                        this.txt_contact.getText().replace("(", "")
+                                .replace(")", "")
+                                .replace("-", "")
+                                .replace(" ", ""),
+                        this.txt_email.getText().toLowerCase());
 
-        if (this.txt_first_name.getText().trim().isEmpty() || this.txt_last_name.getText().trim().isEmpty()
-                || this.txt_contact.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please, check Empty fields", "New Costumer", JOptionPane.ERROR_MESSAGE);
+                person.setIdPerson(hdnPersonId);
 
-            return getCustomer;
-        } else {
+                getCustomer = new Customer(person, CommonSetting.COMPANY);
+                long idCustomer = hdnCustomerId;
+                getCustomer.setIdCustomer(idCustomer);
 
-            Person person = new Person(
-                    this.txt_first_name.getText().toUpperCase(),
-                    this.txt_last_name.getText().toUpperCase(),
-                    this.txt_contact.getText().replace("(", "").replace(")", "").replace("-", "").replace(" ", ""),
-                    this.txt_email.getText().toLowerCase());
-
-            person.setIdPerson(hdnPersonId);
-
-            getCustomer = new Customer(person, CommonSetting.COMPANY);
-
-            long idCustomer = hdnCustomerId;
-            getCustomer.setIdCustomer(idCustomer);
-
-            return getCustomer;
+                return getCustomer;
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Unexpected error creating customer: " + e.getMessage(),
+                    this.getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
+        return getCustomer;
     }
 
     private void setCustomerFields(Customer pCustomer) {
@@ -148,54 +170,84 @@ public class CustomerModal extends javax.swing.JDialog {
     }
 
     private void searchCustomer() {
-        PersonController personController = new PersonController();
-        Customer searchCustomer = null;
+        try {
+            PersonController personController = new PersonController();
+            Customer searchCustomer = null;
 
-        if (!this.txt_search_customer.getText().trim().isEmpty()) {
-            List<Person> _listPerson = personController.searchPerson(this.txt_search_customer.getText());
+            if (!this.txt_search_customer.getText().trim().isEmpty()) {
+                List<Person> _listPerson = personController.searchPerson(this.txt_search_customer.getText());
 
-            if (_listPerson != null) {
-                _dtmCustomer.setRowCount(0);
+                if (_listPerson != null) {
+                    _dtmCustomer.setRowCount(0);
 
-                for (Person person : _listPerson) {
-                    searchCustomer = _customerController.getCustomer(person);
+                    for (Person person : _listPerson) {
+                        searchCustomer = _customerController.getCustomer(person);
 
-                    if (searchCustomer != null) {
-                        _dtmCustomer.addRow(
-                                new Object[]{
-                                    searchCustomer.getIdCustomer(),
-                                    searchCustomer.getPerson().getFirstName(),
-                                    searchCustomer.getPerson().getLastName(),
-                                    formatContactNo(searchCustomer.getPerson().getContactNo()),
-                                    searchCustomer.getPerson().getEmail(),
-                                    searchCustomer.getPerson().getIdPerson()
-                                }
-                        );
+                        if (searchCustomer != null) {
+                            _dtmCustomer.addRow(
+                                    new Object[]{
+                                        searchCustomer.getIdCustomer(),
+                                        searchCustomer.getPerson().getFirstName(),
+                                        searchCustomer.getPerson().getLastName(),
+                                        formatContactNo(searchCustomer.getPerson().getContactNo()),
+                                        searchCustomer.getPerson().getEmail(),
+                                        searchCustomer.getPerson().getIdPerson()
+                                    }
+                            );
+                        }
                     }
                 }
+            } else {
+                loadCustomerListTable();
             }
-        } else {
-            loadCustomerListTable();
+
+        } catch (BusinessException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error searching customers: " + e.getMessage(),
+                    this.getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Unexpected error searching customers: " + e.getMessage(),
+                    this.getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
 
     private void getItemCustomer(long idCustomer) {
-        if (idCustomer != 0) {
-            Customer customerItem = _customerController.getCustomerById(idCustomer);
+        try {
+            if (idCustomer != 0) {
+                Customer customerItem = _customerController.getCustomerById(idCustomer);
 
-            this._dtmCustomer.setRowCount(0);
-            _dtmCustomer.addRow(
-                    new Object[]{
-                        customerItem.getIdCustomer(),
-                        customerItem.getPerson().getFirstName(),
-                        customerItem.getPerson().getLastName(),
-                        formatContactNo(customerItem.getPerson().getContactNo()),
-                        customerItem.getPerson().getEmail(),
-                        customerItem.getPerson().getIdPerson()
-                    }
-            );
-        } else {
-            loadCustomerListTable();
+                this._dtmCustomer.setRowCount(0);
+                _dtmCustomer.addRow(
+                        new Object[]{
+                            customerItem.getIdCustomer(),
+                            customerItem.getPerson().getFirstName(),
+                            customerItem.getPerson().getLastName(),
+                            formatContactNo(customerItem.getPerson().getContactNo()),
+                            customerItem.getPerson().getEmail(),
+                            customerItem.getPerson().getIdPerson()
+                        }
+                );
+            } else {
+                loadCustomerListTable();
+            }
+
+        } catch (BusinessException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error loading customer: " + e.getMessage(),
+                    this.getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Unexpected error loading customer: " + e.getMessage(),
+                    this.getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
 
@@ -208,39 +260,6 @@ public class CustomerModal extends javax.swing.JDialog {
         this.txt_email.setText("");
         this.txt_search_customer.setText("");
         this.txt_first_name.requestFocus();
-    }
-
-    private final void checkEmailFormat() {
-        this.txt_email.setInputVerifier(new InputVerifier() {
-
-            Border originalBorder;
-            String emailFormat = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-            String email = txt_email.getText();
-
-            @Override
-            public boolean verify(JComponent input) {
-                JTextField comp = (JTextField) input;
-
-                return comp.getText().matches(emailFormat) | comp.getText().trim().isEmpty();
-            }
-
-            @Override
-            public boolean shouldYieldFocus(JComponent input) {
-                boolean isValid = verify(input);
-
-                if (!isValid) {
-                    originalBorder = originalBorder == null ? input.getBorder() : originalBorder;
-
-                    input.setBorder(new LineBorder(Color.RED));
-                } else {
-                    if (originalBorder != null) {
-                        input.setBorder(originalBorder);
-                        originalBorder = null;
-                    }
-                }
-                return isValid;
-            }
-        });
     }
 
     private String formatContactNo(String pNumber) {
@@ -650,7 +669,7 @@ public class CustomerModal extends javax.swing.JDialog {
                 _createdOrderView.setCustomerFields(useCustomer);
             } else if (_newSaleView != null) {
                 _newSaleView.setCustomerFields(useCustomer);
-            } else if(_newRefurbSaleView != null){
+            } else if (_newRefurbSaleView != null) {
                 _newRefurbSaleView.setCustomerFields(useCustomer);
             }
 
@@ -659,23 +678,31 @@ public class CustomerModal extends javax.swing.JDialog {
     }//GEN-LAST:event_btn_selectActionPerformed
 
     private void btn_updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_updateActionPerformed
-        Customer updateCustomer = this.getCustomerFields();
-        if (updateCustomer != null) {
-            if (updateCustomer.getIdCustomer() > 0) {
-                int confirmEditing = JOptionPane.showConfirmDialog(this, "Confirm Editing " + updateCustomer.getPerson().getFirstName() + " ?",
-                        "Edit Customer", JOptionPane.YES_NO_OPTION);
-
-                if (confirmEditing == 0) {
-                    boolean isUpdated = this._customerController.updateCustomer(updateCustomer);
-                    if (isUpdated) {
-
-                        getItemCustomer(updateCustomer.getIdCustomer());
-
-                    } else {
-                        JOptionPane.showMessageDialog(this, updateCustomer.getPerson().getFirstName() + "could not be updated!", null, JOptionPane.ERROR_MESSAGE);
+        try {
+            Customer updateCustomer = this.getCustomerFields();
+            if (updateCustomer != null) {
+                if (updateCustomer.getIdCustomer() > 0) {
+                    int confirmEditing = JOptionPane.showConfirmDialog(this,
+                            "Confirm Editing " + updateCustomer.getPerson().getFirstName() + " ?",
+                            "Edit Customer", JOptionPane.YES_NO_OPTION);
+                    if (confirmEditing == 0) {
+                        boolean isUpdated = this._customerController.updateCustomer(updateCustomer);
+                        if (isUpdated) {
+                            getItemCustomer(updateCustomer.getIdCustomer());
+                            cleanFields();
+                        } else {
+                            JOptionPane.showMessageDialog(this,
+                                    updateCustomer.getPerson().getFirstName() + " could not be updated!",
+                                    null, JOptionPane.ERROR_MESSAGE);
+                        }
                     }
                 }
             }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    "An error occurred while updating the customer: " + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace(); // For debugging purposes
         }
     }//GEN-LAST:event_btn_updateActionPerformed
 

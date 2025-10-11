@@ -35,7 +35,8 @@ public class Company implements Serializable {
     @Column(name = "PASSWORD", nullable = false)
     private String password;
 
-    public Company() {}
+    public Company() {
+    }
 
     public Company(long idCompany, String name, String address, String contactOne, String contactTwo, String email, String password) {
         this.idCompany = idCompany;
@@ -106,14 +107,6 @@ public class Company implements Serializable {
 
     @Override
     public String toString() {
-        return "Company{" +
-                "idCompany=" + idCompany +
-                ", name='" + name + '\'' +
-                ", address='" + address + '\'' +
-                ", contactOne='" + contactOne + '\'' +
-                ", contactTwo='" + contactTwo + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                '}';
+        return name;
     }
 }

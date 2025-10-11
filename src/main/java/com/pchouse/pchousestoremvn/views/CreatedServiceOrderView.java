@@ -4,6 +4,7 @@ import com.pchouse.pchousestoremvn.common.CommonConstant;
 import com.pchouse.pchousestoremvn.common.CommonExtension;
 import com.pchouse.pchousestoremvn.common.CommonSetting;
 import com.pchouse.pchousestoremvn.common.CommonStrings;
+import com.pchouse.pchousestoremvn.controllers.CompanyController;
 import com.pchouse.pchousestoremvn.controllers.CustomerController;
 import com.pchouse.pchousestoremvn.controllers.DeviceController;
 import com.pchouse.pchousestoremvn.controllers.EmployeeController;
@@ -31,8 +32,8 @@ import com.pchouse.pchousestoremvn.views.modals.CustomerModal;
 import com.pchouse.pchousestoremvn.views.modals.DepositModal;
 import com.pchouse.pchousestoremvn.views.modals.NoteModal;
 import com.pchouse.pchousestoremvn.views.modals.PaymentModal;
+import com.pchouse.pchousestoremvn.views.modals.TransferingOrderModal;
 import java.awt.EventQueue;
-import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
@@ -64,10 +65,11 @@ public class CreatedServiceOrderView extends javax.swing.JInternalFrame {
     private final EmployeeController _employeeController;
     private final OrderNoteController _orderNoteController;
     private final DeviceController _deviceController;
+    private final CompanyController _companyController;
     private final DefaultTableModel _dtmProdServ;
     private final DefaultTableModel _dtmFault;
     private final DefaultListModel _defaultListModelProdServ;
-    private final DefaultListModel _defaultListModelFault;   
+    private final DefaultListModel _defaultListModelFault;
 
     public CreatedServiceOrderView(ServiceOrder orderModel, List<ServiceOrderFault> listOrderFault, List<ServiceOrderProdServ> listOrderProdServ, List<Deposit> listOrderDeposit) {
         initComponents();
@@ -87,13 +89,13 @@ public class CreatedServiceOrderView extends javax.swing.JInternalFrame {
         this._employeeController = new EmployeeController();
         this._orderNoteController = new OrderNoteController();
         this._deviceController = new DeviceController();
+        this._companyController = new CompanyController();
         this._dtmProdServ = (DefaultTableModel) this.table_view_products.getModel();
         this._dtmFault = (DefaultTableModel) this.table_view_faults.getModel();
         this._defaultListModelProdServ = new DefaultListModel();
         this._defaultListModelFault = new DefaultListModel();
         this.list_prod_serv_search.setModel(_defaultListModelProdServ);
         this.list_fault_search.setModel(_defaultListModelFault);
-
         this._serviceOrderModel = orderModel;
         this._listServiceOrderFault = listOrderFault;
         this._listServiceOrderProdServ = listOrderProdServ;
@@ -237,42 +239,110 @@ public class CreatedServiceOrderView extends javax.swing.JInternalFrame {
 
             long idCustomer = hdnCustomerId;
             if (idCustomer > 0) {
-                isNewCustomer = false;
-                customer = this._customerController.getCustomerById(idCustomer);
+                try {
+                    isNewCustomer = false;
+                    customer = this._customerController.getCustomerById(idCustomer);
 
-                if (!customer.getPerson().getFirstName().trim().equals(this.txt_first_name.getText().trim())
-                        || !customer.getPerson().getLastName().trim().equals(this.txt_last_name.getText().trim())
-                        || !CommonExtension.formatContactNo(customer.getPerson().getContactNo()).equals(CommonExtension.formatContactNo(this.txt_contact.getText()))
-                        || !customer.getPerson().getEmail().trim().equals(this.txt_email.getText().trim())) {
+                    if (!customer.getPerson().getFirstName().trim().equals(this.txt_first_name.getText().trim())
+                            || !customer.getPerson().getLastName().trim().equals(this.txt_last_name.getText().trim())
+                            || !CommonExtension.formatContactNo(customer.getPerson().getContactNo())
+                                    .equals(CommonExtension.formatContactNo(this.txt_contact.getText()))
+                            || !customer.getPerson().getEmail().trim().equals(this.txt_email.getText().trim())) {
 
-                    JOptionPane.showMessageDialog(this, CommonConstant.WARN_CUSTOMER_MATCHING, this.getTitle(), JOptionPane.WARNING_MESSAGE);
-                    CustomerModal customerModal = new CustomerModal(this, new MainMenuView(CommonSetting.COMPANY), true, customer);
-                    customerModal.setVisible(true);
-                    this.hdnCustomerId = 0;
-                    return getOrderDetails;
+                        JOptionPane.showMessageDialog(
+                                this,
+                                CommonConstant.WARN_CUSTOMER_MATCHING,
+                                this.getTitle(),
+                                JOptionPane.WARNING_MESSAGE
+                        );
+
+                        CustomerModal customerModal = new CustomerModal(
+                                this,
+                                new MenuViewTest(CommonSetting.COMPANY),
+                                true,
+                                customer
+                        );
+                        customerModal.setVisible(true);
+                        this.hdnCustomerId = 0;
+                        return getOrderDetails;
+                    }
+                } catch (BusinessException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Business error while retrieving customer: " + ex.getMessage(),
+                            this.getTitle(),
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Unexpected error while retrieving customer: " + e.getMessage(),
+                            this.getTitle(),
+                            JOptionPane.ERROR_MESSAGE
+                    );
                 }
             }
 
             if (isNewCustomer) {
+                try {
+                    Customer checkCustomer = _customerController.searchCustomerByContactNo(
+                            this.txt_contact.getText()
+                                    .replace("(", "")
+                                    .replace(")", "")
+                                    .replace("-", "")
+                                    .replace(" ", "")
+                    );
 
-                Customer checkCustomer = _customerController.searchCustomerByContactNo(this.txt_contact.getText().replace("(", "").replace(")", "").replace("-", "").replace(" ", ""));
+                    if (checkCustomer != null) {
+                        JOptionPane.showMessageDialog(
+                                this,
+                                CommonConstant.WARN_EXIST_PERSON,
+                                this.getTitle(),
+                                JOptionPane.WARNING_MESSAGE
+                        );
 
-                if (checkCustomer != null) {
-                    JOptionPane.showMessageDialog(this, CommonConstant.WARN_EXIST_PERSON, this.getTitle(), JOptionPane.WARNING_MESSAGE);
+                        CustomerModal customerModal = new CustomerModal(
+                                this,
+                                new MenuViewTest(CommonSetting.COMPANY),
+                                true,
+                                checkCustomer
+                        );
+                        customerModal.setVisible(true);
 
-                    CustomerModal customerModal = new CustomerModal(this, new MainMenuView(CommonSetting.COMPANY), true, checkCustomer);
-                    customerModal.setVisible(true);
+                        return getOrderDetails;
+                    } else {
+                        Person person = new Person(
+                                this.txt_first_name.getText().toUpperCase(),
+                                this.txt_last_name.getText().toUpperCase(),
+                                this.txt_contact.getText()
+                                        .replace("(", "")
+                                        .replace(")", "")
+                                        .replace("-", "")
+                                        .replace(" ", ""),
+                                this.txt_email.getText().toLowerCase()
+                        );
 
-                    return getOrderDetails;
-                } else {
+                        customer = new Customer(person, CommonSetting.COMPANY);
+                    }
 
-                    Person person = new Person(
-                            this.txt_first_name.getText().toUpperCase(),
-                            this.txt_last_name.getText().toUpperCase(),
-                            this.txt_contact.getText().replace("(", "").replace(")", "").replace("-", "").replace(" ", ""),
-                            this.txt_email.getText().toLowerCase());
-
-                    customer = new Customer(person, CommonSetting.COMPANY);
+                } catch (BusinessException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Business error while checking customer: " + ex.getMessage(),
+                            this.getTitle(),
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Unexpected error while checking customer: " + e.getMessage(),
+                            this.getTitle(),
+                            JOptionPane.ERROR_MESSAGE
+                    );
                 }
             }
 
@@ -368,7 +438,7 @@ public class CreatedServiceOrderView extends javax.swing.JInternalFrame {
 
     private void updateOrderStatus(OrderStatus newStatus, String confirmMessage, String noteMessage) {
         Date today = new Date();
-        
+
         int confirm = JOptionPane.showConfirmDialog(
                 this,
                 confirmMessage,
@@ -385,7 +455,7 @@ public class CreatedServiceOrderView extends javax.swing.JInternalFrame {
                 JOptionPane.showMessageDialog(this, CommonConstant.NOT_AUTHORIZED, null, JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            
+
             _serviceOrderModel.setStatus(newStatus);
             _serviceOrderModel.setEmployee(employee);
             _serviceOrderModel.setFinished(today);
@@ -482,6 +552,7 @@ public class CreatedServiceOrderView extends javax.swing.JInternalFrame {
         btn_fix = new javax.swing.JButton();
         btn_not_fix = new javax.swing.JButton();
         btn_deposit = new javax.swing.JButton();
+        btn_transfer_order = new javax.swing.JButton();
         txt_search_fault = new javax.swing.JTextField();
         lbl_search_fault_icon = new javax.swing.JLabel();
         layered_pane_list_fault = new javax.swing.JLayeredPane();
@@ -929,6 +1000,18 @@ public class CreatedServiceOrderView extends javax.swing.JInternalFrame {
             }
         });
 
+        btn_transfer_order.setBackground(new java.awt.Color(21, 76, 121));
+        btn_transfer_order.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+        btn_transfer_order.setForeground(new java.awt.Color(255, 255, 255));
+        btn_transfer_order.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icon_transfer.png"))); // NOI18N
+        btn_transfer_order.setText("Transfer");
+        btn_transfer_order.setNextFocusableComponent(txt_first_name);
+        btn_transfer_order.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_transfer_orderActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panel_order_buttonsLayout = new javax.swing.GroupLayout(panel_order_buttons);
         panel_order_buttons.setLayout(panel_order_buttonsLayout);
         panel_order_buttonsLayout.setHorizontalGroup(
@@ -943,8 +1026,10 @@ public class CreatedServiceOrderView extends javax.swing.JInternalFrame {
                 .addGap(18, 18, 18)
                 .addComponent(btn_deposit)
                 .addGap(18, 18, 18)
+                .addComponent(btn_transfer_order)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btn_fix)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btn_not_fix)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -958,7 +1043,8 @@ public class CreatedServiceOrderView extends javax.swing.JInternalFrame {
                     .addComponent(btn_notes)
                     .addComponent(btn_fix)
                     .addComponent(btn_not_fix)
-                    .addComponent(btn_deposit))
+                    .addComponent(btn_deposit)
+                    .addComponent(btn_transfer_order))
                 .addContainerGap())
         );
 
@@ -1306,7 +1392,7 @@ public class CreatedServiceOrderView extends javax.swing.JInternalFrame {
 
     private void btn_seacrh_customerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_seacrh_customerActionPerformed
         this.hdnCustomerId = 0;
-        CustomerModal customerModal = new CustomerModal(this, new MainMenuView(CommonSetting.COMPANY), true, null);
+        CustomerModal customerModal = new CustomerModal(this, new MenuViewTest(CommonSetting.COMPANY), true, null);
         customerModal.setVisible(true);
     }//GEN-LAST:event_btn_seacrh_customerActionPerformed
 
@@ -1319,27 +1405,7 @@ public class CreatedServiceOrderView extends javax.swing.JInternalFrame {
 
     private void table_view_faultsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table_view_faultsMouseClicked
         if (evt.getClickCount() == 2) {
-            int selectedRow = this.table_view_faults.getSelectedRow();
             this._dtmFault.removeRow(table_view_faults.getSelectedRow());
-
-//            if (this._dtmFault.getValueAt(selectedRow, 2) != null) {
-//                String password = CommonExtension.requestUserPassword();
-//                Employee employee = _employeeController.getEmployeeByPass(password);
-//                if (employee != null) {
-//
-//                    long idOrderFaultDeleted = this._orderFaultController.deleteOrderFault((long) this._dtmFault.getValueAt(selectedRow, 2));
-//
-//                    if (idOrderFaultDeleted > 0) {
-//                        this._dtmFault.removeRow(table_view_faults.getSelectedRow());
-//                    } else {
-//                        JOptionPane.showMessageDialog(this, CommonConstant.ERROR_DELETE_ITEM, this.getTitle(), JOptionPane.ERROR_MESSAGE);
-//                    }
-//                } else {
-//                    JOptionPane.showMessageDialog(this, CommonConstant.NOT_AUTHORIZED, this.getTitle(), JOptionPane.ERROR_MESSAGE);
-//                }
-//            } else {
-//                this._dtmFault.removeRow(table_view_faults.getSelectedRow());
-//            }
         }
     }//GEN-LAST:event_table_view_faultsMouseClicked
 
@@ -1477,7 +1543,6 @@ public class CreatedServiceOrderView extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txt_serial_numberKeyPressed
 
     private void btn_notesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_notesActionPerformed
-
         NoteModal noteModal = new NoteModal(_serviceOrderModel, SwingUtilities.getWindowAncestor(this), true);
         noteModal.setLocationRelativeTo(this);
         noteModal.setVisible(true);
@@ -1526,6 +1591,11 @@ public class CreatedServiceOrderView extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_txt_depositKeyPressed
 
+    private void btn_transfer_orderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_transfer_orderActionPerformed
+        TransferingOrderModal transferingModal = new TransferingOrderModal(_serviceOrderModel, SwingUtilities.getWindowAncestor(this), true);
+        transferingModal.setVisible(true);
+    }//GEN-LAST:event_btn_transfer_orderActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_copy;
     private javax.swing.JButton btn_deposit;
@@ -1536,6 +1606,7 @@ public class CreatedServiceOrderView extends javax.swing.JInternalFrame {
     private javax.swing.JButton btn_print;
     private javax.swing.JButton btn_save_order;
     private javax.swing.JButton btn_seacrh_customer;
+    private javax.swing.JButton btn_transfer_order;
     private javax.swing.JEditorPane editor_pane_notes;
     private javax.swing.JLayeredPane layered_pane_list_fault;
     private javax.swing.JLayeredPane layered_pane_list_prod_serv;
