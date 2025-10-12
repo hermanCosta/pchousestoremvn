@@ -237,7 +237,7 @@ public class LoginView extends JFrame {
                 try {
                     Company company = get();
                     if (company != null) {
-                        new MenuViewTest(company).setVisible(true);
+                        new MainMenuView(company).setVisible(true);
                         dispose();
                     } else {
                         JOptionPane.showMessageDialog(LoginView.this, CommonConstant.ERROR_LOGIN, getTitle(), JOptionPane.ERROR_MESSAGE);

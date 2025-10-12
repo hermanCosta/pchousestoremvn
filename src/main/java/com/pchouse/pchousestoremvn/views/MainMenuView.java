@@ -10,7 +10,7 @@ import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class MenuViewTest extends JFrame {
+public class MainMenuView extends JFrame {
 
     private JDesktopPane desktopPane;
     private JPanel sidePanel;
@@ -19,7 +19,7 @@ public class MenuViewTest extends JFrame {
     private static JFrame jFrameWindow;
     Company _company;
 
-    public MenuViewTest(Company company) {
+    public MainMenuView(Company company) {
         setTitle("PC House Store - Main Menu");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(1280, 720);
@@ -347,7 +347,7 @@ public class MenuViewTest extends JFrame {
             jFrameWindow.dispose();  // Fecha a janela anterior se existir
         }
 
-        jFrameWindow = new MenuViewTest(CommonSetting.COMPANY);
+        jFrameWindow = new MainMenuView(CommonSetting.COMPANY);
         jFrameWindow.setVisible(true);
     }
 }
