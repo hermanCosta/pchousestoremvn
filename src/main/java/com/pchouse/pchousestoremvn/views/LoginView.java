@@ -223,12 +223,18 @@ public class LoginView extends JFrame {
             return;
         }
 
+        // Debug logging
+        System.out.println("Login attempt - Username: " + username);
+        System.out.println("Login attempt - Password length: " + password.length());
+        String encryptedPassword = CommonExtension.encryptPassword(txtPassword);
+        System.out.println("Login attempt - Encrypted password: " + encryptedPassword);
+
         SwingWorker<Company, Void> worker = new SwingWorker<Company, Void>() {
             @Override
             protected Company doInBackground() throws Exception {
                 showLoading();
                 CompanyController controller = new CompanyController();
-                return controller.getCompany(username.toUpperCase(), CommonExtension.encryptPassword(txtPassword));
+                return controller.getCompany(username.toUpperCase(), encryptedPassword);
             }
 
             @Override
