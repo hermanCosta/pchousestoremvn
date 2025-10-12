@@ -25,13 +25,20 @@ public class CompanyDAO {
         EntityManager em = JPAUtil.getEntityManager();
         Company company = null;
         try {
+            // Debug logging
+            System.out.println("Attempting login for company: " + name);
+            System.out.println("Password hash length: " + (password != null ? password.length() : "null"));
+            
             TypedQuery<Company> query = em.createQuery(
                 "SELECT c FROM Company c WHERE c.name = :name AND c.password = :password", Company.class);
             query.setParameter("name", name);
             query.setParameter("password", password);
             company = query.getSingleResult();
+            
+            System.out.println("Login successful for company: " + name);
         } catch (Exception e) {
-            System.out.println("CompanyDAO: " + e.getMessage());
+            System.out.println("CompanyDAO Login Error: " + e.getMessage());
+            e.printStackTrace();
         } finally {
             em.close();
         }

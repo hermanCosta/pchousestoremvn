@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.Calendar;
@@ -170,7 +171,7 @@ public class CommonExtension {
         String encodePassword = null;
 
         Encoder encoder = Base64.getEncoder();
-        encodePassword = encoder.encodeToString(String.valueOf(jPasswordField.getPassword()).getBytes());
+        encodePassword = encoder.encodeToString(String.valueOf(jPasswordField.getPassword()).getBytes(StandardCharsets.UTF_8));
 
         return encodePassword;
     }
@@ -196,7 +197,7 @@ public class CommonExtension {
 
             //Encrypt password
             Encoder encoder = Base64.getEncoder();
-            encodePassword = encoder.encodeToString(passStr.getBytes());
+            encodePassword = encoder.encodeToString(passStr.getBytes(StandardCharsets.UTF_8));
         }
         return encodePassword;
     }

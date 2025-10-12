@@ -222,7 +222,7 @@ public class NewServiceOrderView extends javax.swing.JInternalFrame {
 
                         CustomerModal customerModal = new CustomerModal(
                                 this,
-                                new MenuViewTest(CommonSetting.COMPANY),
+                                new MainMenuView(CommonSetting.COMPANY),
                                 true,
                                 customer
                         );
@@ -1282,7 +1282,7 @@ public class NewServiceOrderView extends javax.swing.JInternalFrame {
 
     private void btn_seacrh_customerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_seacrh_customerActionPerformed
         this.hdnCustomerId = 0;
-        CustomerModal customerModal = new CustomerModal(this, new MenuViewTest(CommonSetting.COMPANY), true, null);
+        CustomerModal customerModal = new CustomerModal(this, new MainMenuView(CommonSetting.COMPANY), true, null);
         customerModal.setVisible(true);
     }//GEN-LAST:event_btn_seacrh_customerActionPerformed
 
