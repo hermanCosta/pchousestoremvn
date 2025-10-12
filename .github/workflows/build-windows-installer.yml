@@ -34,7 +34,7 @@ jobs:
             --app-version "1.0.0" `
             --vendor "PcHouse Software" `
             --java-options "--enable-preview" `
-            --win-menu --win-shortcut
+            --win-menu --win-shortcut `
             --dest output
 
       - name: Upload installer artifact
