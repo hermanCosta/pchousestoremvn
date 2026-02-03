@@ -29,12 +29,12 @@
             <property name="jakarta.persistence.jdbc.user" value="root"/>
             
             <!--Railway DataBase -->      
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://switchback.proxy.rlwy.net:14492/railway?useUnicode=true&amp;characterEncoding=UTF-8&amp;serverTimezone=UTC"/>
-            <property name="jakarta.persistence.jdbc.password" value="glqlYZktFywHENamqvLlBfpnhselBOFT"/>
+<!--            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://switchback.proxy.rlwy.net:14492/railway?useUnicode=true&amp;characterEncoding=UTF-8&amp;serverTimezone=UTC"/>
+            <property name="jakarta.persistence.jdbc.password" value="glqlYZktFywHENamqvLlBfpnhselBOFT"/> -->
       
             <!--Local DataBase -->
-<!--            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/PC_HOUSE_STORE"/>
-            <property name="jakarta.persistence.jdbc.password" value="hellmans"/>-->
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/PC_HOUSE_STORE"/>
+            <property name="jakarta.persistence.jdbc.password" value="hellmans"/>
             
             <!-- Configurações do Hibernate -->
 <!--            <property name="hibernate.hbm2ddl.auto" value="update"/>-->
